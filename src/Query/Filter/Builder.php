@@ -15,7 +15,7 @@ class Builder
     private $query = [];
 
     /**
-     * @var
+     * @var Parser
      */
     private $queryParser;
 
@@ -64,7 +64,7 @@ class Builder
      */
     public function build()
     {
-        return $this->queryParser->parse(json_encode($this->query));
+        return $this->queryParser->parse($this->query);
     }
 
     /**

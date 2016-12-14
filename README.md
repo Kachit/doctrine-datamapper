@@ -1,2 +1,2 @@
-# silex-db-layer
-Silex database layer
+# Silex database layer
+Simple silex database layer powered by doctrine2

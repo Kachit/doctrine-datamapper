@@ -7,6 +7,8 @@
  */
 namespace Kachit\Silex\Database\Query\Filter;
 
+use Doctrine\DBAL\Connection;
+
 class Condition
 {
     /**
@@ -15,17 +17,17 @@ class Condition
     private $field;
 
     /**
-     * @var
+     * @var string
      */
     private $operator;
 
     /**
-     * @var
+     * @var mixed
      */
     private $value;
 
     /**
-     * @var
+     * @var string
      */
     private $namedParam;
 
@@ -94,7 +96,7 @@ class Condition
     public function getType()
     {
         $operators = [Parser::OPERATOR_IS_IN, Parser::OPERATOR_IS_NOT_IN];
-        return (in_array($this->operator, $operators)) ? \Doctrine\DBAL\Connection::PARAM_STR_ARRAY : null;
+        return (in_array($this->operator, $operators)) ? Connection::PARAM_STR_ARRAY : null;
     }
 
     /**
