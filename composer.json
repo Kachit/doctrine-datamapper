@@ -1,0 +1,18 @@
+{
+    "name": "kachit/silex-db-layer",
+    "description": "Silex database layer",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kachit",
+            "email": "kachit@yandex.ru"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "Kachit\\Silex\\Database\\": "src/" }
+    },
+    "require": {
+        "doctrine/dbal":"2.5.*"
+    }
+}
