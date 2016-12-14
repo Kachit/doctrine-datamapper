@@ -182,7 +182,8 @@ abstract class Gateway implements GatewayInterface
     public function getTableColumns()
     {
         if (empty($this->tableColumns)) {
-            $columns = $this->getConnection()->query("SHOW COLUMNS FROM {$this->getTableName()}")->fetchAll();
+            $sql = $this->getConnection()->getDatabasePlatform()->getListTableColumnsSQL($this->getTableName());
+            $columns = $this->getConnection()->query($sql)->fetchAll();
             $this->tableColumns = (is_array($columns)) ? array_column($columns, 'Field') : [];
         }
         return $this->tableColumns;
