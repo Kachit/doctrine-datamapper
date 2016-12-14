@@ -8,6 +8,8 @@
 namespace Kachit\Silex\Database;
 
 use Kachit\Silex\Database\Query\Filter\Filter;
+use Kachit\Silex\Database\Column\Handler;
+
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
 
@@ -184,7 +186,8 @@ abstract class Gateway implements GatewayInterface
         if (empty($this->tableColumns)) {
             $sql = $this->getConnection()->getDatabasePlatform()->getListTableColumnsSQL($this->getTableName());
             $columns = $this->getConnection()->query($sql)->fetchAll();
-            $this->tableColumns = (is_array($columns)) ? array_column($columns, 'Field') : [];
+            $handler = $this->getColumnsHandler();
+            $this->tableColumns = $handler->handle($columns);
         }
         return $this->tableColumns;
     }
@@ -303,5 +306,13 @@ abstract class Gateway implements GatewayInterface
                 ->setParameter($condition->getNamedParam(), $condition->getValue(), $condition->getType())
             ;
         }
+    }
+
+    /**
+     * @return Handler
+     */
+    protected function getColumnsHandler()
+    {
+        return new Handler();
     }
 }

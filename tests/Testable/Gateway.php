@@ -10,6 +10,6 @@ class Gateway extends AbstractGateway
      */
     public function getTableName()
     {
-        return 'foo';
+        return 'posts';
     }
 }
