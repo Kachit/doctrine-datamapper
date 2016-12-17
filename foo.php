@@ -13,4 +13,21 @@ $connection = Doctrine\DBAL\DriverManager::getConnection($params, $config);
 
 $gateway = new Kachit\Silex\Database\Tests\Testable\Gateway($connection);
 
-var_dump($gateway->getTableColumns());
+class Foo extends \Kachit\Silex\Database\Entity {
+
+    protected $id;
+
+    /**
+     * @return mixed
+     */
+    public function getIdentifier()
+    {
+        return $this->id;
+    }
+}
+
+$mapper = new \Kachit\Silex\Database\Mapper($gateway, new \Kachit\Silex\Database\Hydrator('Foo'));
+
+$collection = $mapper->fetchAll();
+
+var_dump($collection);

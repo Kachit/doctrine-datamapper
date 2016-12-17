@@ -50,6 +50,9 @@ abstract class Entity implements EntityInterface, \JsonSerializable
         return $this->toArray();
     }
 
+    /**
+     * @return bool
+     */
     public function isNull()
     {
         return false;

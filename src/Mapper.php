@@ -9,7 +9,7 @@ namespace Kachit\Silex\Database;
 
 use Kachit\Silex\Database\Query\Filter\Filter;
 
-abstract class Mapper
+class Mapper implements MapperInterface
 {
     /**
      * @var GatewayInterface
@@ -36,7 +36,7 @@ abstract class Mapper
     public function __construct(GatewayInterface $gateway, HydratorInterface $hydrator, CollectionInterface $collection = null)
     {
         $this->gateway = $gateway;
-        $this->hydrator = $gateway;
+        $this->hydrator = $hydrator;
         $this->collection = ($collection) ? $collection : new Collection();
     }
 
@@ -55,20 +55,26 @@ abstract class Mapper
     }
 
     /**
-     * @param array $data
-     * @return EntityInterface
+     * @param EntityInterface $entity
+     * @return int
      */
-    public function createEntity(array $data = [])
+    public function save(EntityInterface $entity)
     {
-        return $this->hydrator->hydrate($data);
+        if ($entity->isNull()) {
+
+        }
+        $data = $this->hydrator->extract($entity);
+        return $this->gateway->insert($data);
     }
 
     /**
-     * @return Collection
+     * @param EntityInterface $entity
      */
-    public function createCollection()
+    public function delete(EntityInterface $entity)
     {
-        return clone $this->collection;
+        if ($entity->isNull()) {
+
+        }
     }
 
     /**
@@ -109,5 +115,22 @@ abstract class Mapper
     {
         $this->collection = $collection;
         return $this;
+    }
+
+    /**
+     * @param array $data
+     * @return EntityInterface
+     */
+    protected function createEntity(array $data = [])
+    {
+        return $this->hydrator->hydrate($data);
+    }
+
+    /**
+     * @return Collection
+     */
+    protected function createCollection()
+    {
+        return clone $this->collection;
     }
 }
