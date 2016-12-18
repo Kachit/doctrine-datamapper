@@ -7,26 +7,23 @@
  */
 namespace Kachit\Silex\Database;
 
+use Kachit\Silex\Database\Meta\Table;
 use Kachit\Silex\Database\Query\Filter\Filter;
-use Kachit\Silex\Database\Column\Handler;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
 
 abstract class Gateway implements GatewayInterface
 {
-    const PRIMARY_KEY_FIELD = 'id';
-    const TABLE_ALIAS = 't';
-
     /**
      * @var Connection
      */
     private $connection;
 
     /**
-     * @var array
+     * @var Table
      */
-    private $tableColumns = [];
+    private $metaTable;
 
     /**
      * Gateway constructor
@@ -35,7 +32,9 @@ abstract class Gateway implements GatewayInterface
      */
     public function __construct(Connection $connection)
     {
-        $this->setConnection($connection);
+        $this->connection = $connection;
+        $this->metaTable = new Table($this->connection, $this->getTableName());
+        $this->metaTable->initialize();
     }
 
     /**
@@ -95,9 +94,9 @@ abstract class Gateway implements GatewayInterface
      */
     public function fetchByPk($pkValue, $pkColumn = null)
     {
-        $pkColumn = ($pkColumn) ? $pkColumn : static::PRIMARY_KEY_FIELD;
+        $pkColumn = ($pkColumn) ? $pkColumn : $this->metaTable->getPrimaryKey();
         $result = $this->createQueryBuilder()
-            ->where(static::TABLE_ALIAS . ".$pkColumn = :$pkColumn")
+            ->where($this->getTableAlias() . ".$pkColumn = :$pkColumn")
             ->setParameter($pkColumn, $pkValue)
             ->execute()
             ->fetch()
@@ -113,11 +112,11 @@ abstract class Gateway implements GatewayInterface
      */
     public function fetchColumn($column, $pkValue, $pkColumn = null)
     {
-        $pkColumn = ($pkColumn) ? $pkColumn : static::PRIMARY_KEY_FIELD;
+        $pkColumn = ($pkColumn) ? $pkColumn : $this->metaTable->getPrimaryKey();
         return $this->createQueryBuilder()
             ->resetQueryPart('select')
             ->select($column)
-            ->where(static::TABLE_ALIAS . ".$pkColumn = :$pkColumn")
+            ->where($this->getTableAlias() . ".$pkColumn = :$pkColumn")
             ->setParameter($pkColumn, $pkValue)
             ->execute()
             ->fetchColumn()
@@ -131,35 +130,14 @@ abstract class Gateway implements GatewayInterface
     public function count(Filter $filter = null)
     {
         $queryBuilder = $this->createQueryBuilder();
-        $fieldCount = static::PRIMARY_KEY_FIELD;
+        $fieldCount = $this->metaTable->getPrimaryKey();
         if($filter) {
             $this->buildQuery($queryBuilder, $filter, true);
             $fieldCount = ($filter->getFieldCount()) ? $filter->getFieldCount() : $fieldCount;
         }
-        $fieldCount = static::TABLE_ALIAS . '.' . $fieldCount;
+        $fieldCount = $this->getTableAlias() . '.' . $fieldCount;
         $count = 'COUNT(' . $fieldCount . ')';
         $queryBuilder->resetQueryPart('select')->select($count);
-        return $queryBuilder
-            ->execute()
-            ->fetchColumn()
-        ;
-    }
-
-    /**
-     * @param Filter|null $filter
-     * @return bool|string
-     */
-    public function sum(Filter $filter = null)
-    {
-        $queryBuilder = $this->createQueryBuilder();
-        $fieldSum = static::PRIMARY_KEY_FIELD;
-        if($filter) {
-            $this->buildQuery($queryBuilder, $filter, true);
-            $fieldSum = ($filter->getFieldSum()) ? $filter->getFieldSum() : $fieldSum;
-        }
-        $fieldSum = static::TABLE_ALIAS . '.' . $fieldSum;
-        $sum = 'SUM(' . $fieldSum . ')';
-        $queryBuilder->resetQueryPart('select')->select($sum);
         return $queryBuilder
             ->execute()
             ->fetchColumn()
@@ -173,23 +151,9 @@ abstract class Gateway implements GatewayInterface
     {
         return $this->getConnection()
             ->createQueryBuilder()
-            ->from("{$this->getTableName()}", static::TABLE_ALIAS)
-            ->select(static::TABLE_ALIAS . '.*')
+            ->from("{$this->getTableName()}", $this->getTableAlias())
+            ->select($this->getTableAlias() . '.*')
         ;
-    }
-
-    /**
-     * @return array
-     */
-    public function getTableColumns()
-    {
-        if (empty($this->tableColumns)) {
-            $sql = $this->getConnection()->getDatabasePlatform()->getListTableColumnsSQL($this->getTableName());
-            $columns = $this->getConnection()->query($sql)->fetchAll();
-            $handler = $this->getColumnsHandler();
-            $this->tableColumns = $handler->handle($columns);
-        }
-        return $this->tableColumns;
     }
 
     /**
@@ -203,7 +167,7 @@ abstract class Gateway implements GatewayInterface
         foreach ($columns as $column) {
             $row[$column] = (isset($data[$column])) ? $data[$column] : null;
         }
-        unset($row[static::PRIMARY_KEY_FIELD]);
+        unset($row[$this->metaTable->getPrimaryKey()]);
         return $row;
     }
 
@@ -226,7 +190,7 @@ abstract class Gateway implements GatewayInterface
      */
     public function update(array $data, $pkValue, $pkColumn = null)
     {
-        $pkColumn = ($pkColumn) ? $pkColumn : static::PRIMARY_KEY_FIELD;
+        $pkColumn = ($pkColumn) ? $pkColumn : $this->metaTable->getPrimaryKey();
         $row = $this->createEmptyRow($data);
         return $this->getConnection()->update($this->getTableName(), $row, [$pkColumn => $pkValue]);
     }
@@ -238,7 +202,7 @@ abstract class Gateway implements GatewayInterface
      */
     public function delete($pkValue, $pkColumn = null)
     {
-        $pkColumn = ($pkColumn) ? $pkColumn : static::PRIMARY_KEY_FIELD;
+        $pkColumn = ($pkColumn) ? $pkColumn : $this->metaTable->getPrimaryKey();
         return $this->getConnection()->delete($this->getTableName(), [$pkColumn => $pkValue]);
     }
 
@@ -255,7 +219,7 @@ abstract class Gateway implements GatewayInterface
         $queryBuilder
             ->resetQueryPart('select')
             ->resetQueryPart('orderBy')
-            ->delete($this->getTableName(), static::TABLE_ALIAS)
+            ->delete($this->getTableName(), $this->getTableAlias())
         ;
         return $queryBuilder->execute();
     }
@@ -263,7 +227,15 @@ abstract class Gateway implements GatewayInterface
     /**
      * @return string
      */
-    abstract public function getTableName();
+    abstract protected function getTableName();
+
+    /**
+     * @return string
+     */
+    protected function getTableAlias()
+    {
+        return 't';
+    }
 
     /**
      * @param QueryBuilder $queryBuilder
@@ -283,7 +255,7 @@ abstract class Gateway implements GatewayInterface
 
         foreach ($filter->getOrderBy() as $field => $order) {
             if (in_array($field, $columns) && !$isCount) {
-                $queryBuilder->addOrderBy(static::TABLE_ALIAS . '.' . $field, $order);
+                $queryBuilder->addOrderBy($this->getTableAlias() . '.' . $field, $order);
             }
         }
     }
@@ -296,7 +268,7 @@ abstract class Gateway implements GatewayInterface
      */
     protected function buildQueryConditions(QueryBuilder $queryBuilder, array $conditions, array $columns = [], $tableAlias = null)
     {
-        $tableAlias = ($tableAlias) ? $tableAlias : static::TABLE_ALIAS;
+        $tableAlias = ($tableAlias) ? $tableAlias : $this->getTableAlias();
         foreach ($conditions as $condition) {
             if ($columns && !in_array($condition->getField(), $columns)) {
                 continue;
@@ -309,10 +281,10 @@ abstract class Gateway implements GatewayInterface
     }
 
     /**
-     * @return Handler
+     * @return array
      */
-    protected function getColumnsHandler()
+    protected function getTableColumns()
     {
-        return new Handler();
+        return $this->metaTable->getColumns();
     }
 }

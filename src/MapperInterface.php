@@ -22,4 +22,16 @@ interface MapperInterface
      * @return EntityInterface
      */
     public function fetch(Filter $filter = null);
+
+    /**
+     * @param EntityInterface $entity
+     * @return mixed
+     */
+    public function save(EntityInterface $entity);
+
+    /**
+     * @param EntityInterface $entity
+     * @return bool
+     */
+    public function delete(EntityInterface $entity);
 }
