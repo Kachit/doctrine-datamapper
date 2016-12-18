@@ -184,38 +184,34 @@ abstract class Gateway implements GatewayInterface
 
     /**
      * @param array $data
-     * @param $pkValue
-     * @param null $pkColumn
+     * @param Filter $filter
      * @return int
      */
-    public function update(array $data, $pkValue, $pkColumn = null)
+    public function update(array $data, Filter $filter)
     {
-        $pkColumn = ($pkColumn) ? $pkColumn : $this->metaTable->getPrimaryKey();
         $row = $this->createEmptyRow($data);
-        return $this->getConnection()->update($this->getTableName(), $row, [$pkColumn => $pkValue]);
+        $queryBuilder = $this->createQueryBuilder();
+        $this->buildQuery($queryBuilder, $filter);
+        $queryBuilder
+            ->resetQueryPart('select')
+            ->resetQueryPart('orderBy')
+            ->update($this->getTableName())
+        ;
+        foreach ($row as $column => $value)
+        {
+            $queryBuilder->set($column, $value);
+        }
+        return $queryBuilder->execute();
     }
 
     /**
-     * @param $pkValue
-     * @param null $pkColumn
+     * @param Filter $filter
      * @return int
      */
-    public function delete($pkValue, $pkColumn = null)
-    {
-        $pkColumn = ($pkColumn) ? $pkColumn : $this->metaTable->getPrimaryKey();
-        return $this->getConnection()->delete($this->getTableName(), [$pkColumn => $pkValue]);
-    }
-
-    /**
-     * @param Filter $filter = null
-     * @return int
-     */
-    public function deleteAll(Filter $filter = null)
+    public function delete(Filter $filter)
     {
         $queryBuilder = $this->createQueryBuilder();
-        if($filter) {
-            $this->buildQuery($queryBuilder, $filter);
-        }
+        $this->buildQuery($queryBuilder, $filter);
         $queryBuilder
             ->resetQueryPart('select')
             ->resetQueryPart('orderBy')

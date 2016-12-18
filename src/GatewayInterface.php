@@ -25,16 +25,14 @@ interface GatewayInterface
 
     /**
      * @param array $data
-     * @param $pkValue
-     * @param null $pkColumn
+     * @param Filter $filter
      * @return int
      */
-    public function update(array $data, $pkValue, $pkColumn = null);
+    public function update(array $data, Filter $filter);
 
     /**
-     * @param $pkValue
-     * @param null $pkColumn
+     * @param Filter $filter
      * @return int
      */
-    public function delete($pkValue, $pkColumn = null);
+    public function delete(Filter $filter);
 }
