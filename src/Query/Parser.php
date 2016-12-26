@@ -1,10 +1,11 @@
 <?php
-namespace Kachit\Silex\Database\Query\Filter;
+namespace Kachit\Silex\Database\Query;
 
 class Parser
 {
     const QUERY_PARAM_FILTER = '$filter';
     const QUERY_PARAM_ORDER_BY = '$orderby';
+    const QUERY_PARAM_GROUP_BY = '$group';
     const QUERY_PARAM_LIMIT = '$limit';
     const QUERY_PARAM_OFFSET = '$skip';
 
@@ -48,22 +49,20 @@ class Parser
 
     /**
      * @param string $query
-     * @return Filter|null
+     * @return Filter
      */
     public function parse($query)
     {
-        $filter = null;
-        //var_dump($query);
+        $filter = new Filter();
         if (is_string($query)) {
             $query = json_decode($query, true);
         }
         if (is_array($query)) {
-            $filter = new Filter();
             $this->parseLimitOffset($filter, $query);
             $this->parseFilter($filter, $query);
             $this->parseOrderBy($filter, $query);
+            $this->parseGroupBy($filter, $query);
         }
-        //var_dump($filter);
         return $filter;
     }
 
@@ -127,6 +126,21 @@ class Parser
                     if (in_array(strtolower($order), $orders)) {
                         $filter->addOrderBy($field, $order);
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param Filter $filter
+     * @param array $query
+     */
+    protected function parseGroupBy(Filter $filter, array $query)
+    {
+        if (isset($query[self::QUERY_PARAM_GROUP_BY]) && is_array($query[self::QUERY_PARAM_GROUP_BY])) {
+            foreach ($query[self::QUERY_PARAM_GROUP_BY] as $groupBy) {
+                foreach ($groupBy as $field) {
+                    $filter->addGroupBy($field);
                 }
             }
         }

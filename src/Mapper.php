@@ -7,7 +7,7 @@
  */
 namespace Kachit\Silex\Database;
 
-use Kachit\Silex\Database\Query\Filter\Filter;
+use Kachit\Silex\Database\Query\Filter;
 
 class Mapper implements MapperInterface
 {
@@ -22,21 +22,27 @@ class Mapper implements MapperInterface
     private $hydrator;
 
     /**
+     * @var EntityInterface
+     */
+    private $entity;
+
+    /**
      * @var CollectionInterface
      */
     private $collection;
 
     /**
-     * Mapper constructor
-     *
+     * Mapper constructor.
      * @param GatewayInterface $gateway
-     * @param HydratorInterface $hydrator
-     * @param CollectionInterface $collection
+     * @param EntityInterface $entity
+     * @param HydratorInterface|null $hydrator
+     * @param CollectionInterface|null $collection
      */
-    public function __construct(GatewayInterface $gateway, HydratorInterface $hydrator, CollectionInterface $collection = null)
+    public function __construct(GatewayInterface $gateway, EntityInterface $entity, HydratorInterface $hydrator = null, CollectionInterface $collection = null)
     {
         $this->gateway = $gateway;
-        $this->hydrator = $hydrator;
+        $this->entity = $entity;
+        $this->hydrator = ($hydrator) ? $hydrator : new Hydrator();
         $this->collection = ($collection) ? $collection : new Collection();
     }
 
@@ -69,12 +75,14 @@ class Mapper implements MapperInterface
 
     /**
      * @param EntityInterface $entity
+     * @return int
      */
     public function delete(EntityInterface $entity)
     {
         if ($entity->isNull()) {
 
         }
+        return $this->gateway->delete();
     }
 
     /**
@@ -123,7 +131,8 @@ class Mapper implements MapperInterface
      */
     protected function createEntity(array $data = [])
     {
-        return $this->hydrator->hydrate($data);
+        $entity = clone $this->entity;
+        return $this->hydrator->hydrate($data, $entity);
     }
 
     /**

@@ -7,7 +7,7 @@
  */
 namespace Kachit\Silex\Database;
 
-use Kachit\Silex\Database\Query\Filter\Filter;
+use Kachit\Silex\Database\Query\Filter;
 
 interface MapperInterface
 {

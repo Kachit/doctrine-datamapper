@@ -11,9 +11,10 @@ interface HydratorInterface
 {
     /**
      * @param array $data
-     * @return EntityInterface
+     * @param EntityInterface $entity
+     * @return mixed
      */
-    public function hydrate(array $data);
+    public function hydrate(array $data, EntityInterface $entity);
 
     /**
      * @param EntityInterface $entity

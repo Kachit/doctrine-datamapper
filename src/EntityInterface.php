@@ -19,9 +19,4 @@ interface EntityInterface extends NullableInterface
      * @return EntityInterface
      */
     public function fillFromArray(array $data);
-
-    /**
-     * @return mixed
-     */
-    public function getIdentifier();
 }

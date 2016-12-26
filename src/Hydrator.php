@@ -10,32 +10,13 @@ namespace Kachit\Silex\Database;
 class Hydrator implements HydratorInterface
 {
     /**
-     * @var string
-     */
-    private $entityClass;
-
-    /**
-     * @var EntityInterface
-     */
-    private $nullEntity;
-
-    /**
-     * Hydrator constructor.
-     * @param string $entityClass
-     */
-    public function __construct($entityClass)
-    {
-        $this->entityClass = $entityClass;
-    }
-
-    /**
      * @param array $data
-     * @return EntityInterface
+     * @param EntityInterface $entity
+     * @return EntityInterface|NullEntity
      */
-    public function hydrate(array $data)
+    public function hydrate(array $data, EntityInterface $entity)
     {
         $data = $this->convertForHydrate($data);
-        $entity = $this->createEntity();
         return ($data) ? $entity->fillFromArray($data) : new NullEntity();
     }
 
@@ -46,15 +27,6 @@ class Hydrator implements HydratorInterface
     public function extract(EntityInterface $entity)
     {
         return $this->convertForExtract($entity->toArray());
-    }
-
-    /**
-     * @return EntityInterface
-     */
-    protected function createEntity()
-    {
-        $entityClass = $this->entityClass;
-        return new $entityClass();
     }
 
     /**

@@ -1,5 +1,5 @@
 <?php
-namespace Kachit\Silex\Database\Query\Filter;
+namespace Kachit\Silex\Database\Query;
 
 class Filter
 {
@@ -12,6 +12,11 @@ class Filter
      * @var array
      */
     private $orderBy = [];
+
+    /**
+     * @var array
+     */
+    private $groupBy = [];
 
     /**
      * @var int
@@ -39,33 +44,21 @@ class Filter
     private $fieldAvg = null;
 
     /**
-     * @return Condition[]
+     * @param null $field
+     * @return Condition|Condition[]
      */
-    public function getConditions()
+    public function getConditions($field = null)
     {
-        return $this->conditions;
+        return ($field) ? $this->conditions[$field] : $this->conditions;
     }
 
     /**
-     * @return array
+     * @param string $field
+     * @return bool
      */
-    public function getConditionsByFields()
+    public function hasConditions($field)
     {
-        $data = [];
-        foreach ($this->conditions as $condition) {
-            $data[$condition->getField()][] = $condition;
-        }
-        return $data;
-    }
-
-    /**
-     * @param Condition[] $conditions
-     * @return $this
-     */
-    public function setConditions(array $conditions)
-    {
-        $this->conditions = $conditions;
-        return $this;
+        return isset($this->conditions[$field]);
     }
 
     /**
@@ -74,7 +67,7 @@ class Filter
      */
     public function addCondition(Condition $condition)
     {
-        $this->conditions[] = $condition;
+        $this->conditions[$condition->getField()][] = $condition;
         return $this;
     }
 
@@ -87,7 +80,7 @@ class Filter
     public function createCondition($field, $value, $operator = '=')
     {
         $condition = new Condition($field, $operator, $value);
-        $this->conditions[] = $condition;
+        $this->addCondition($condition);
         return $this;
     }
 
@@ -157,6 +150,34 @@ class Filter
     }
 
     /**
+     * @return array
+     */
+    public function getGroupBy()
+    {
+        return $this->groupBy;
+    }
+
+    /**
+     * @param array $groupBy
+     * @return $this
+     */
+    public function setGroupBy($groupBy)
+    {
+        $this->groupBy = $groupBy;
+        return $this;
+    }
+
+    /**
+     * @param $field
+     * @return $this
+     */
+    public function addGroupBy($field)
+    {
+        $this->groupBy[] = $field;
+        return $this;
+    }
+
+    /**
      * @return null
      */
     public function getFieldCount()
@@ -217,6 +238,7 @@ class Filter
     {
         $this->conditions = [];
         $this->orderBy = [];
+        $this->groupBy = [];
         $this->limit = 0;
         $this->offset = 0;
         $this->fieldAvg = null;

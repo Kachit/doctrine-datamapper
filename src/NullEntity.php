@@ -10,15 +10,6 @@ namespace Kachit\Silex\Database;
 class NullEntity implements EntityInterface
 {
     /**
-     * Entity constructor.
-     * @param array $data
-     */
-    public function __construct(array $data = [])
-    {
-
-    }
-
-    /**
      * @return array
      */
     public function toArray()

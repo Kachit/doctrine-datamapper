@@ -1,7 +1,7 @@
 <?php
 namespace Kachit\Silex\Database;
 
-use Kachit\Silex\Database\Query\Filter\Filter;
+use Kachit\Silex\Database\Query\Filter;
 
 interface GatewayInterface
 {
@@ -25,14 +25,14 @@ interface GatewayInterface
 
     /**
      * @param array $data
-     * @param Filter $filter
-     * @return int
+     * @param Filter|null $filter
+     * @return mixed
      */
-    public function update(array $data, Filter $filter);
+    public function update(array $data, Filter $filter = null);
 
     /**
-     * @param Filter $filter
-     * @return int
+     * @param Filter|null $filter
+     * @return mixed
      */
-    public function delete(Filter $filter);
+    public function delete(Filter $filter = null);
 }

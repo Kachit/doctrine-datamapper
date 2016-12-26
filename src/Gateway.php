@@ -8,7 +8,8 @@
 namespace Kachit\Silex\Database;
 
 use Kachit\Silex\Database\Meta\Table;
-use Kachit\Silex\Database\Query\Filter\Filter;
+use Kachit\Silex\Database\Query\Builder;
+use Kachit\Silex\Database\Query\Filter;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -26,6 +27,11 @@ abstract class Gateway implements GatewayInterface
     private $metaTable;
 
     /**
+     * @var Builder
+     */
+    private $builder;
+
+    /**
      * Gateway constructor
      *
      * @param Connection $connection
@@ -33,8 +39,6 @@ abstract class Gateway implements GatewayInterface
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;
-        $this->metaTable = new Table($this->connection, $this->getTableName());
-        $this->metaTable->initialize();
     }
 
     /**
@@ -62,9 +66,7 @@ abstract class Gateway implements GatewayInterface
     public function fetchAll(Filter $filter = null)
     {
         $queryBuilder = $this->createQueryBuilder();
-        if($filter) {
-            $this->buildQuery($queryBuilder, $filter);
-        }
+        $this->getBuilder()->build($queryBuilder, $filter);
         return $queryBuilder
             ->execute()
             ->fetchAll()
@@ -78,9 +80,7 @@ abstract class Gateway implements GatewayInterface
     public function fetch(Filter $filter = null)
     {
         $queryBuilder = $this->createQueryBuilder();
-        if($filter) {
-            $this->buildQuery($queryBuilder, $filter);
-        }
+        $this->getBuilder()->build($queryBuilder, $filter);
         return $queryBuilder
             ->execute()
             ->fetch()
@@ -88,36 +88,28 @@ abstract class Gateway implements GatewayInterface
     }
 
     /**
-     * @param $pkValue
-     * @param string $pkColumn
+     * @param mixed $pk
      * @return array
      */
-    public function fetchByPk($pkValue, $pkColumn = null)
+    public function fetchByPk($pk)
     {
-        $pkColumn = ($pkColumn) ? $pkColumn : $this->metaTable->getPrimaryKey();
-        $result = $this->createQueryBuilder()
-            ->where($this->getTableAlias() . ".$pkColumn = :$pkColumn")
-            ->setParameter($pkColumn, $pkValue)
-            ->execute()
-            ->fetch()
-        ;
-        return ($result) ? $result : [];
+        $pkColumn = $this->metaTable->getPrimaryKey();
+        $filter = (new Filter())->createCondition($pkColumn, $pk);
+        return $this->fetch($filter);
     }
 
     /**
      * @param string $column
-     * @param mixed $pkValue
-     * @param string $pkColumn
+     * @param Filter|null $filter
      * @return string
      */
-    public function fetchColumn($column, $pkValue, $pkColumn = null)
+    public function fetchColumn($column, Filter $filter = null)
     {
-        $pkColumn = ($pkColumn) ? $pkColumn : $this->metaTable->getPrimaryKey();
-        return $this->createQueryBuilder()
+        $queryBuilder = $this->createQueryBuilder();
+        $this->getBuilder()->build($queryBuilder, $filter);
+        return $queryBuilder
             ->resetQueryPart('select')
             ->select($column)
-            ->where($this->getTableAlias() . ".$pkColumn = :$pkColumn")
-            ->setParameter($pkColumn, $pkValue)
             ->execute()
             ->fetchColumn()
         ;
@@ -129,19 +121,10 @@ abstract class Gateway implements GatewayInterface
      */
     public function count(Filter $filter = null)
     {
-        $queryBuilder = $this->createQueryBuilder();
-        $fieldCount = $this->metaTable->getPrimaryKey();
-        if($filter) {
-            $this->buildQuery($queryBuilder, $filter, true);
-            $fieldCount = ($filter->getFieldCount()) ? $filter->getFieldCount() : $fieldCount;
-        }
+        $fieldCount = ($filter->getFieldCount()) ? $filter->getFieldCount() : $this->metaTable->getPrimaryKey();
         $fieldCount = $this->getTableAlias() . '.' . $fieldCount;
         $count = 'COUNT(' . $fieldCount . ')';
-        $queryBuilder->resetQueryPart('select')->select($count);
-        return $queryBuilder
-            ->execute()
-            ->fetchColumn()
-        ;
+        return $this->fetchColumn($count, $filter);
     }
 
     /**
@@ -151,7 +134,7 @@ abstract class Gateway implements GatewayInterface
     {
         return $this->getConnection()
             ->createQueryBuilder()
-            ->from("{$this->getTableName()}", $this->getTableAlias())
+            ->from($this->getTableName(), $this->getTableAlias())
             ->select($this->getTableAlias() . '.*')
         ;
     }
@@ -162,13 +145,7 @@ abstract class Gateway implements GatewayInterface
      */
     public function createEmptyRow(array $data = [])
     {
-        $columns = $this->getTableColumns();
-        $row = [];
-        foreach ($columns as $column) {
-            $row[$column] = (isset($data[$column])) ? $data[$column] : null;
-        }
-        unset($row[$this->metaTable->getPrimaryKey()]);
-        return $row;
+        return array_merge($this->getMetaTable()->getDefaultRow(), $data);
     }
 
     /**
@@ -178,6 +155,9 @@ abstract class Gateway implements GatewayInterface
     public function insert(array $data)
     {
         $row = $this->createEmptyRow($data);
+        if (isset($row[$this->getMetaTable()->getPrimaryKey()])) {
+            unset($row[$this->getMetaTable()->getPrimaryKey()]);
+        }
         $result = $this->getConnection()->insert($this->getTableName(), $row);
         return ($result) ? $this->getConnection()->lastInsertId() : $result;
     }
@@ -187,17 +167,16 @@ abstract class Gateway implements GatewayInterface
      * @param Filter $filter
      * @return int
      */
-    public function update(array $data, Filter $filter)
+    public function update(array $data, Filter $filter = null)
     {
-        $row = $this->createEmptyRow($data);
         $queryBuilder = $this->createQueryBuilder();
-        $this->buildQuery($queryBuilder, $filter);
+        $this->builder->build($queryBuilder, $filter);
         $queryBuilder
             ->resetQueryPart('select')
             ->resetQueryPart('orderBy')
-            ->update($this->getTableName())
+            ->update($this->getTableName(), $this->getTableAlias())
         ;
-        foreach ($row as $column => $value)
+        foreach ($data as $column => $value)
         {
             $queryBuilder->set($column, $value);
         }
@@ -208,10 +187,10 @@ abstract class Gateway implements GatewayInterface
      * @param Filter $filter
      * @return int
      */
-    public function delete(Filter $filter)
+    public function delete(Filter $filter = null)
     {
         $queryBuilder = $this->createQueryBuilder();
-        $this->buildQuery($queryBuilder, $filter);
+        $this->getBuilder()->build($queryBuilder, $filter);
         $queryBuilder
             ->resetQueryPart('select')
             ->resetQueryPart('orderBy')
@@ -234,53 +213,25 @@ abstract class Gateway implements GatewayInterface
     }
 
     /**
-     * @param QueryBuilder $queryBuilder
-     * @param Filter $filter
-     * @param bool $isCount
+     * @return Table
      */
-    protected function buildQuery(QueryBuilder $queryBuilder, Filter $filter, $isCount = false)
+    protected function getMetaTable()
     {
-        $columns = $this->getTableColumns();
-        if ($filter->getLimit() && !$isCount) {
-            $queryBuilder->setMaxResults($filter->getLimit());
+        if (empty($this->metaTable)) {
+            $this->metaTable = new Table($this->getConnection(), $this->getTableName());
+            $this->metaTable->initialize();
         }
-        if ($filter->getOffset() && !$isCount) {
-            $queryBuilder->setFirstResult($filter->getOffset());
-        }
-        $this->buildQueryConditions($queryBuilder, $filter->getConditions(), $columns);
-
-        foreach ($filter->getOrderBy() as $field => $order) {
-            if (in_array($field, $columns) && !$isCount) {
-                $queryBuilder->addOrderBy($this->getTableAlias() . '.' . $field, $order);
-            }
-        }
+        return $this->metaTable;
     }
 
     /**
-     * @param QueryBuilder $queryBuilder
-     * @param array $conditions
-     * @param array $columns
-     * @param string $tableAlias
+     * @return Builder
      */
-    protected function buildQueryConditions(QueryBuilder $queryBuilder, array $conditions, array $columns = [], $tableAlias = null)
+    protected function getBuilder()
     {
-        $tableAlias = ($tableAlias) ? $tableAlias : $this->getTableAlias();
-        foreach ($conditions as $condition) {
-            if ($columns && !in_array($condition->getField(), $columns)) {
-                continue;
-            }
-            $queryBuilder
-                ->andWhere($tableAlias . '.' . $condition->getConditionString())
-                ->setParameter($condition->getNamedParam(), $condition->getValue(), $condition->getType())
-            ;
+        if (empty($this->builder)) {
+            $this->builder = new Builder($this->getMetaTable()->getColumns(), $this->getTableAlias());
         }
-    }
-
-    /**
-     * @return array
-     */
-    protected function getTableColumns()
-    {
-        return $this->metaTable->getColumns();
+        return $this->builder;
     }
 }
