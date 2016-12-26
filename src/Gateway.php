@@ -106,7 +106,7 @@ abstract class Gateway implements GatewayInterface
     public function fetchColumn($column, Filter $filter = null)
     {
         $queryBuilder = $this->createQueryBuilder();
-        $this->getBuilder()->build($queryBuilder, $filter);
+        $this->getBuilder()->build($queryBuilder, $filter, true);
         return $queryBuilder
             ->resetQueryPart('select')
             ->select($column)
@@ -125,6 +125,18 @@ abstract class Gateway implements GatewayInterface
         $fieldCount = $this->getTableAlias() . '.' . $fieldCount;
         $count = 'COUNT(' . $fieldCount . ')';
         return $this->fetchColumn($count, $filter);
+    }
+
+    /**
+     * @param Filter|null $filter
+     * @return bool|string
+     */
+    public function sum(Filter $filter = null)
+    {
+        $fieldSum = ($filter->getFieldSum()) ? $filter->getFieldSum() : $this->metaTable->getPrimaryKey();
+        $fieldSum = $this->getTableAlias() . '.' . $fieldSum;
+        $sum = 'SUM(' . $fieldSum . ')';
+        return $this->fetchColumn($sum, $filter);
     }
 
     /**

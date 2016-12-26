@@ -87,7 +87,6 @@ class Parser
      */
     protected function parseConditions(Filter $filter, $field, $conditions)
     {
-        //var_dump($conditions);
         if (is_scalar($conditions)) {
             $filter->addCondition(new Condition($field, self::OPERATOR_IS_EQUAL, $conditions));
         } else {

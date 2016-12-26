@@ -36,16 +36,17 @@ class Builder
     /**
      * @param QueryBuilder $queryBuilder
      * @param Filter|null $filter
+     * @param bool $isAggregated
      */
-    public function build(QueryBuilder $queryBuilder, Filter $filter = null)
+    public function build(QueryBuilder $queryBuilder, Filter $filter = null, $isAggregated = false)
     {
         if (empty($filter)) {
             return;
         }
-        if ($filter->getLimit()) {
+        if ($filter->getLimit() && $isAggregated) {
             $queryBuilder->setMaxResults($filter->getLimit());
         }
-        if ($filter->getOffset()) {
+        if ($filter->getOffset() && $isAggregated) {
             $queryBuilder->setFirstResult($filter->getOffset());
         }
         $this->buildQueryConditions($queryBuilder, $filter->getConditions(), $this->columns);
