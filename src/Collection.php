@@ -22,7 +22,19 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
      */
     public function add(EntityInterface $entity)
     {
-        $this->data[] = $entity;
+        $this->data[$entity->getPk()] = $entity;
+        return $this;
+    }
+
+    /**
+     * @param EntityInterface[] $entities
+     * @return CollectionInterface
+     */
+    public function fill(array $entities)
+    {
+        foreach($entities as $entity) {
+            $this->add($entity);
+        }
         return $this;
     }
 
@@ -33,6 +45,21 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     public function get($index)
     {
         return $this->data[$index];
+    }
+
+    /**
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->data);
+    }
+    /**
+     * @return bool
+     */
+    public function isEmpty()
+    {
+        return empty($this->data);
     }
 
     /**
@@ -50,16 +77,6 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     public function toArray()
     {
         return $this->data;
-    }
-
-    /**
-     * @return array
-     */
-    public function toArrayRecursive()
-    {
-        return array_map(function(EntityInterface $entity){
-            return $entity->toArray();
-        }, $this->toArray());
     }
 
     /**

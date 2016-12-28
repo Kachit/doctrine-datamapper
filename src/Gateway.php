@@ -93,8 +93,7 @@ abstract class Gateway implements GatewayInterface
      */
     public function fetchByPk($pk)
     {
-        $pkColumn = $this->metaTable->getPrimaryKey();
-        $filter = (new Filter())->createCondition($pkColumn, $pk);
+        $filter = $this->buildPrimaryKeyFilter($pk);
         return $this->fetch($filter);
     }
 
@@ -128,18 +127,6 @@ abstract class Gateway implements GatewayInterface
     }
 
     /**
-     * @param Filter|null $filter
-     * @return bool|string
-     */
-    public function sum(Filter $filter = null)
-    {
-        $fieldSum = ($filter->getFieldSum()) ? $filter->getFieldSum() : $this->metaTable->getPrimaryKey();
-        $fieldSum = $this->getTableAlias() . '.' . $fieldSum;
-        $sum = 'SUM(' . $fieldSum . ')';
-        return $this->fetchColumn($sum, $filter);
-    }
-
-    /**
      * @return QueryBuilder
      */
     public function createQueryBuilder()
@@ -153,20 +140,11 @@ abstract class Gateway implements GatewayInterface
 
     /**
      * @param array $data
-     * @return array
-     */
-    public function createEmptyRow(array $data = [])
-    {
-        return array_merge($this->getMetaTable()->getDefaultRow(), $data);
-    }
-
-    /**
-     * @param array $data
      * @return int
      */
     public function insert(array $data)
     {
-        $row = $this->createEmptyRow($data);
+        $row = array_merge($this->getMetaTable()->getDefaultRow(), $data);
         if (isset($row[$this->getMetaTable()->getPrimaryKey()])) {
             unset($row[$this->getMetaTable()->getPrimaryKey()]);
         }
@@ -196,6 +174,17 @@ abstract class Gateway implements GatewayInterface
     }
 
     /**
+     * @param array $data
+     * @param mixed $pk
+     * @return int
+     */
+    public function updateByPk(array $data, $pk)
+    {
+        $filter = $this->buildPrimaryKeyFilter($pk);
+        return $this->update($data, $filter);
+    }
+
+    /**
      * @param Filter $filter
      * @return int
      */
@@ -212,6 +201,16 @@ abstract class Gateway implements GatewayInterface
     }
 
     /**
+     * @param mixed $pk
+     * @return int
+     */
+    public function deleteByPk($pk)
+    {
+        $filter = $this->buildPrimaryKeyFilter($pk);
+        return $this->delete($filter);
+    }
+
+    /**
      * @return string
      */
     abstract protected function getTableName();
@@ -222,6 +221,16 @@ abstract class Gateway implements GatewayInterface
     protected function getTableAlias()
     {
         return 't';
+    }
+
+    /**
+     * @param mixed $pk
+     * @return Filter
+     */
+    protected function buildPrimaryKeyFilter($pk)
+    {
+        $filter = (new Filter())->createCondition($this->getMetaTable()->getPrimaryKey(), $pk);
+        return $filter;
     }
 
     /**

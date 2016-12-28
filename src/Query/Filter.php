@@ -45,7 +45,7 @@ class Filter
 
     /**
      * @param null $field
-     * @return Condition|Condition[]
+     * @return array
      */
     public function getConditions($field = null)
     {

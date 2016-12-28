@@ -14,25 +14,26 @@ class Mapper implements MapperInterface
     /**
      * @var GatewayInterface
      */
-    private $gateway;
+    protected $gateway;
 
     /**
      * @var HydratorInterface
      */
-    private $hydrator;
+    protected $hydrator;
 
     /**
      * @var EntityInterface
      */
-    private $entity;
+    protected $entity;
 
     /**
      * @var CollectionInterface
      */
-    private $collection;
+    protected $collection;
 
     /**
-     * Mapper constructor.
+     * Mapper constructor
+     *
      * @param GatewayInterface $gateway
      * @param EntityInterface $entity
      * @param HydratorInterface|null $hydrator
@@ -48,41 +49,17 @@ class Mapper implements MapperInterface
 
     /**
      * @param Filter|null $filter
-     * @return Collection|Entity[]
+     * @return CollectionInterface|Entity[]
      */
     public function fetchAll(Filter $filter = null)
     {
-        $collection = $this->createCollection();
+        $collection = $this->cloneCollection();
         $data = $this->gateway->fetchAll($filter);
         foreach ($data as $row) {
-            $collection->add($this->createEntity($row));
+            $entity = $this->hydrator->hydrate($row, $this->cloneEntity());
+            $collection->add($entity);
         }
         return $collection;
-    }
-
-    /**
-     * @param EntityInterface $entity
-     * @return int
-     */
-    public function save(EntityInterface $entity)
-    {
-        if ($entity->isNull()) {
-
-        }
-        $data = $this->hydrator->extract($entity);
-        return $this->gateway->insert($data);
-    }
-
-    /**
-     * @param EntityInterface $entity
-     * @return int
-     */
-    public function delete(EntityInterface $entity)
-    {
-        if ($entity->isNull()) {
-
-        }
-        return $this->gateway->delete();
     }
 
     /**
@@ -92,8 +69,55 @@ class Mapper implements MapperInterface
     public function fetch(Filter $filter = null)
     {
         $data = $this->gateway->fetch($filter);
-        return $this->createEntity($data);
+        return $this->hydrator->hydrate($data, $this->cloneEntity());
     }
+
+    /**
+     * @param mixed $pk
+     * @return EntityInterface
+     */
+    public function fetchByPk($pk)
+    {
+        $data = $this->gateway->fetchByPk($pk);
+        return $this->hydrator->hydrate($data, $this->cloneEntity());
+    }
+
+    /**
+     * @param Filter|null $filter
+     * @return int
+     */
+    public function count(Filter $filter = null)
+    {
+        return $this->gateway->count($filter);
+    }
+
+    /**
+     * @param EntityInterface $entity
+     * @return EntityInterface
+     */
+    public function save(EntityInterface $entity)
+    {
+        $this->validateEntity($entity);
+        $pk = $entity->getPk();
+        if ($pk) {
+            $this->gateway->updateByPk($entity->toArray(), $pk);
+        } else {
+            $pk = $this->gateway->insert($entity->toArray());
+        }
+        return $this->fetchByPk($pk);
+    }
+
+    /**
+     * @param EntityInterface $entity
+     * @return int
+     */
+    public function delete(EntityInterface $entity)
+    {
+        $this->validateEntity($entity);
+        return $this->gateway->deleteByPk($entity->getPk());
+    }
+
+
 
     /**
      * @param GatewayInterface $gateway
@@ -126,20 +150,33 @@ class Mapper implements MapperInterface
     }
 
     /**
-     * @param array $data
-     * @return EntityInterface
+     * @param EntityInterface $entity
+     * @throws \Exception
      */
-    protected function createEntity(array $data = [])
+    protected function validateEntity(EntityInterface $entity)
     {
-        $entity = clone $this->entity;
-        return $this->hydrator->hydrate($data, $entity);
+        $entityClass = get_class($this->entity);
+        if ($entity->isNull()) {
+            throw new \Exception(sprintf('Entity "%s" is null', get_class($entity)));
+        }
+        if (!$entity instanceof $entityClass) {
+            throw new \Exception(sprintf('Entity "%s" is not valid', get_class($entity)));
+        }
     }
 
     /**
-     * @return Collection
+     * @return CollectionInterface
      */
-    protected function createCollection()
+    protected function cloneCollection()
     {
         return clone $this->collection;
+    }
+
+    /**
+     * @return EntityInterface
+     */
+    protected function cloneEntity()
+    {
+        return clone $this->entity;
     }
 }

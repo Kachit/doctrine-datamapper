@@ -7,12 +7,10 @@
  */
 namespace Kachit\Silex\Database\Query;
 
-use Doctrine\DBAL\Connection;
-
 class Condition
 {
     /**
-     * @var
+     * @var string
      */
     private $field;
 
@@ -27,11 +25,6 @@ class Condition
     private $value;
 
     /**
-     * @var string
-     */
-    private $namedParam;
-
-    /**
      * Condition constructor
      *
      * @param $field
@@ -43,7 +36,6 @@ class Condition
         $this->field = $field;
         $this->operator = $operator;
         $this->value = $value;
-        $this->namedParam = $this->field . '_' . uniqid();
     }
 
     /**
@@ -87,16 +79,7 @@ class Condition
      */
     public function getValue()
     {
-        return ($this->getOperator() == Parser::OPERATOR_IS_LIKE) ? '%' . $this->value . '%' : $this->value;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getType()
-    {
-        $operators = [Parser::OPERATOR_IS_IN, Parser::OPERATOR_IS_NOT_IN];
-        return (in_array($this->operator, $operators)) ? Connection::PARAM_STR_ARRAY : null;
+        return $this->value;
     }
 
     /**
@@ -107,23 +90,5 @@ class Condition
     {
         $this->value = $value;
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getConditionString()
-    {
-        $operators = [Parser::OPERATOR_IS_IN, Parser::OPERATOR_IS_NOT_IN];
-        $namedParam = (in_array($this->operator, $operators)) ? '(:' . $this->namedParam . ')' : ':' . $this->namedParam;
-        return "{$this->getField()} {$this->getOperator()} {$namedParam}";
-    }
-
-    /**
-     * @return string
-     */
-    public function getNamedParam()
-    {
-        return $this->namedParam;
     }
 }

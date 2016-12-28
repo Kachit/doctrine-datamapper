@@ -18,6 +18,7 @@ class Parser
     const OPERATOR_IS_LESS_THAN = '<';
     const OPERATOR_IS_LESS_THAN_OR_EQUAL = '<=';
     const OPERATOR_IS_LIKE = 'LIKE';
+    const OPERATOR_IS_NULL = 'NULL';
 
     const PARAM_IS_EQUAL = '$eq';
     const PARAM_IS_GREATER_THAN = '$gt';
@@ -28,6 +29,7 @@ class Parser
     const PARAM_IS_LESS_THAN_OR_EQUAL = '$lte';
     const PARAM_IS_LIKE = '$search';
     const PARAM_IS_NOT_EQUAL = '$ne';
+    const PARAM_IS_NULL = '$exists';
 
     const ORDER_ASC = 'asc';
     const ORDER_DESC = 'desc';
@@ -45,6 +47,7 @@ class Parser
         self::PARAM_IS_LESS_THAN => self::OPERATOR_IS_LESS_THAN,
         self::PARAM_IS_LESS_THAN_OR_EQUAL => self::OPERATOR_IS_LESS_THAN_OR_EQUAL,
         self::PARAM_IS_LIKE => self::OPERATOR_IS_LIKE,
+        self::PARAM_IS_NULL => self::OPERATOR_IS_NULL,
     ];
 
     /**

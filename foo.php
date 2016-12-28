@@ -11,6 +11,8 @@ $params = array(
 );
 $connection = Doctrine\DBAL\DriverManager::getConnection($params, $config);
 
-$gateway = new Kachit\Silex\Database\Tests\Testable\Gateway($connection);
+$table = new Kachit\Silex\Database\Meta\Table($connection, 'posts');
 
-var_dump($gateway->createEmptyRow());
+$table->initialize();
+
+var_dump($table);

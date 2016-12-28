@@ -8,6 +8,7 @@
 namespace Kachit\Silex\Database\Query;
 
 use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\DBAL\Connection;
 
 class Builder
 {
@@ -43,13 +44,16 @@ class Builder
         if (empty($filter)) {
             return;
         }
-        if ($filter->getLimit() && $isAggregated) {
+        if ($filter->getLimit() && !$isAggregated) {
             $queryBuilder->setMaxResults($filter->getLimit());
         }
-        if ($filter->getOffset() && $isAggregated) {
+        if ($filter->getOffset() && !$isAggregated) {
             $queryBuilder->setFirstResult($filter->getOffset());
         }
-        $this->buildQueryConditions($queryBuilder, $filter->getConditions(), $this->columns);
+
+        foreach ($filter->getConditions() as $field => $conditions) {
+            $this->buildQueryConditions($queryBuilder, $conditions, $this->columns, $this->tableAlias);
+        }
 
         foreach ($filter->getOrderBy() as $field => $order) {
             if (in_array($field, $this->columns)) {
@@ -66,15 +70,41 @@ class Builder
      */
     public function buildQueryConditions(QueryBuilder $queryBuilder, array $conditions, array $columns = [], $tableAlias = null)
     {
-        $tableAlias = ($tableAlias) ? $tableAlias : $this->tableAlias;
+        /* @var Condition $condition */
         foreach ($conditions as $condition) {
             if ($columns && !in_array($condition->getField(), $columns)) {
                 continue;
             }
-            $queryBuilder
-                ->andWhere($tableAlias . '.' . $condition->getConditionString())
-                ->setParameter($condition->getNamedParam(), $condition->getValue(), $condition->getType())
-            ;
+            $this->buildExpression($queryBuilder, $condition, $tableAlias);
         }
+    }
+
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param Condition $condition
+     * @param $tableAlias
+     */
+    protected function buildExpression(QueryBuilder $queryBuilder, Condition $condition, $tableAlias)
+    {
+        $namedParam = $namedParamComparison = $queryBuilder->createNamedParameter($condition->getField());
+        $expr = $queryBuilder->expr();
+        $operator = $condition->getOperator();
+        $field = $tableAlias . '.' . $condition->getField();
+        $type = null;
+        $value = $condition->getValue();
+        if (in_array($operator, [Parser::OPERATOR_IS_LIKE])) {
+            $value = '%' . $value . '%';
+        }
+        if (in_array($operator, [Parser::OPERATOR_IS_IN, Parser::OPERATOR_IS_NOT_IN])) {
+            $type = Connection::PARAM_STR_ARRAY;
+            $namedParamComparison = '(' . $namedParamComparison . ')';
+        }
+        if (in_array($operator, [Parser::OPERATOR_IS_NULL])) {
+            $value = ($value) ? 'IS NOT NULL' : 'IS NULL';
+        }
+        $queryBuilder
+            ->andWhere($expr->comparison($field, $operator, $namedParamComparison))
+            ->setParameter($namedParam, $value, $type)
+        ;
     }
 }

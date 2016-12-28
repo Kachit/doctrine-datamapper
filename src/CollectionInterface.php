@@ -28,12 +28,16 @@ interface CollectionInterface
     public function has($index);
 
     /**
+     * @return int
+     */
+    public function count();
+    /**
+     * @return bool
+     */
+    public function isEmpty();
+
+    /**
      * @return EntityInterface[]
      */
     public function toArray();
-
-    /**
-     * @return array[]
-     */
-    public function toArrayRecursive();
 }

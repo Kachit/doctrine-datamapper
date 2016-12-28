@@ -24,8 +24,20 @@ interface MapperInterface
     public function fetch(Filter $filter = null);
 
     /**
+     * @param mixed $pk
+     * @return EntityInterface
+     */
+    public function fetchByPk($pk);
+
+    /**
+     * @param Filter|null $filter
+     * @return int
+     */
+    public function count(Filter $filter = null);
+
+    /**
      * @param EntityInterface $entity
-     * @return mixed
+     * @return EntityInterface
      */
     public function save(EntityInterface $entity);
 
