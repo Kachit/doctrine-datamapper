@@ -5,11 +5,11 @@
  * Date: 05.02.2016
  * Time: 1:10
  */
-namespace Kachit\Silex\Database;
+namespace Kachit\Database;
 
-use Kachit\Silex\Database\Meta\Table;
-use Kachit\Silex\Database\Query\Builder;
-use Kachit\Silex\Database\Query\Filter;
+use Kachit\Database\Meta\Table;
+use Kachit\Database\Query\Builder;
+use Kachit\Database\Query\Filter;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;

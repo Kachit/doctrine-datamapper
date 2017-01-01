@@ -5,7 +5,7 @@
  * Date: 17.12.2016
  * Time: 19:37
  */
-namespace Kachit\Silex\Database;
+namespace Kachit\Database;
 
 interface EntityInterface extends NullableInterface
 {

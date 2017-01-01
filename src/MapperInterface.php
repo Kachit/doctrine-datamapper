@@ -5,9 +5,9 @@
  * Date: 17.12.2016
  * Time: 19:38
  */
-namespace Kachit\Silex\Database;
+namespace Kachit\Database;
 
-use Kachit\Silex\Database\Query\Filter;
+use Kachit\Database\Query\Filter;
 
 interface MapperInterface
 {

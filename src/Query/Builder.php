@@ -5,7 +5,7 @@
  * Date: 02.08.2016
  * Time: 11:26
  */
-namespace Kachit\Silex\Database\Query;
+namespace Kachit\Database\Query;
 
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\DBAL\Connection;

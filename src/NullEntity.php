@@ -5,10 +5,28 @@
  * Date: 26.10.2016
  * Time: 20:30
  */
-namespace Kachit\Silex\Database;
+namespace Kachit\Database;
 
 class NullEntity implements EntityInterface
 {
+    /**
+     * @return mixed
+     */
+    public function getPk()
+    {
+        return null;
+    }
+
+    /**
+     * @param mixed $pk
+     * @return EntityInterface
+     */
+    public function setPk($pk)
+    {
+        return $this;
+    }
+
+
     /**
      * @return array
      */

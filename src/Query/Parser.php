@@ -1,5 +1,5 @@
 <?php
-namespace Kachit\Silex\Database\Query;
+namespace Kachit\Database\Query;
 
 class Parser
 {

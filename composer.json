@@ -1,6 +1,6 @@
 {
-    "name": "kachit/silex-db-layer",
-    "description": "Silex database layer",
+    "name": "kachit/simple-db-layer",
+    "description": "Simple database layer",
     "minimum-stability": "stable",
     "type": "library",
     "license": "MIT",
@@ -11,15 +11,13 @@
         }
     ],
     "autoload": {
-        "psr-4": { "Kachit\\Silex\\Database\\": "src/" }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Kachit\\Silex\\Database\\Tests\\": "tests"
-        }
+        "psr-4": { "Kachit\\Database\\": "src/" }
     },
     "require": {
         "php": "^5.5",
         "doctrine/dbal":"2.5.*"
+    },
+    "require-dev": {
+        "codeception/codeception": ">=2.2 <2.2.7"
     }
 }

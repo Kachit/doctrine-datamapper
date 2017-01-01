@@ -5,7 +5,7 @@
  * Date: 29.07.2016
  * Time: 0:18
  */
-namespace Kachit\Silex\Database\Query;
+namespace Kachit\Database\Query;
 
 class Condition
 {

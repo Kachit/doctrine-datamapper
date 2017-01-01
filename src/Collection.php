@@ -5,7 +5,7 @@
  * Date: 26.10.2016
  * Time: 20:30
  */
-namespace Kachit\Silex\Database;
+namespace Kachit\Database;
 
 use Traversable;
 

@@ -1,7 +1,7 @@
 <?php
-namespace Kachit\Silex\Database;
+namespace Kachit\Database;
 
-use Kachit\Silex\Database\Query\Filter;
+use Kachit\Database\Query\Filter;
 
 interface GatewayInterface
 {

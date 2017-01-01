@@ -1,5 +1,5 @@
 <?php
-namespace Kachit\Silex\Database\Meta;
+namespace Kachit\Database\Meta;
 
 use Doctrine\DBAL\Connection;
 

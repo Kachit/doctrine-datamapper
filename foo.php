@@ -11,7 +11,7 @@ $params = array(
 );
 $connection = Doctrine\DBAL\DriverManager::getConnection($params, $config);
 
-$table = new Kachit\Silex\Database\Meta\Table($connection, 'posts');
+$table = new Kachit\Database\Meta\Table($connection, 'posts');
 
 $table->initialize();
 
