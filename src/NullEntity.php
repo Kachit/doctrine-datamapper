@@ -1,9 +1,9 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: Kachit
- * Date: 26.10.2016
- * Time: 20:30
+ * Null entity class
+ *
+ * @author Kachit
+ * @package Kachit\Database
  */
 namespace Kachit\Database;
 

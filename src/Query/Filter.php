@@ -1,4 +1,10 @@
 <?php
+/**
+ * Query filter class
+ *
+ * @author Kachit
+ * @package Kachit\Database
+ */
 namespace Kachit\Database\Query;
 
 class Filter

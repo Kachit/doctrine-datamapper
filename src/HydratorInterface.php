@@ -1,9 +1,9 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: Kachit
- * Date: 17.12.2016
- * Time: 19:36
+ * Hydrator interface
+ *
+ * @author Kachit
+ * @package Kachit\Database
  */
 namespace Kachit\Database;
 

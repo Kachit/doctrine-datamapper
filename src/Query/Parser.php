@@ -1,4 +1,10 @@
 <?php
+/**
+ * Query parser class
+ *
+ * @author Kachit
+ * @package Kachit\Database
+ */
 namespace Kachit\Database\Query;
 
 class Parser

@@ -1,9 +1,9 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: Kachit
- * Date: 29.07.2016
- * Time: 0:18
+ * Query condition class
+ *
+ * @author Kachit
+ * @package Kachit\Database
  */
 namespace Kachit\Database\Query;
 

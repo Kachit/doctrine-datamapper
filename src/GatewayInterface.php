@@ -1,4 +1,10 @@
 <?php
+/**
+ * Gateway interface
+ *
+ * @author Kachit
+ * @package Kachit\Database
+ */
 namespace Kachit\Database;
 
 use Kachit\Database\Query\Filter;

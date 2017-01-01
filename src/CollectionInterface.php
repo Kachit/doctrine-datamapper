@@ -1,9 +1,9 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: Kachit
- * Date: 17.12.2016
- * Time: 20:00
+ * Collection interface
+ *
+ * @author Kachit
+ * @package Kachit\Database
  */
 namespace Kachit\Database;
 

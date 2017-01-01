@@ -1,2 +1,2 @@
-# Silex database layer
-Simple silex database layer powered by doctrine2
+# Simple database layer
+Simple database layer powered by doctrine2

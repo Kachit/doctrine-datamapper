@@ -1,9 +1,9 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: Kachit
- * Date: 05.02.2016
- * Time: 1:10
+ * Abstract gateway class
+ *
+ * @author Kachit
+ * @package Kachit\Database
  */
 namespace Kachit\Database;
 

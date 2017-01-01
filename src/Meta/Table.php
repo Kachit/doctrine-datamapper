@@ -1,4 +1,10 @@
 <?php
+/**
+ * Meta table class
+ *
+ * @author Kachit
+ * @package Kachit\Database
+ */
 namespace Kachit\Database\Meta;
 
 use Doctrine\DBAL\Connection;
