@@ -99,10 +99,11 @@ class Mapper implements MapperInterface
     {
         $this->validateEntity($entity);
         $pk = $entity->getPk();
+        $data = $entity->toArray();
         if ($pk) {
-            $this->gateway->updateByPk($entity->toArray(), $pk);
+            $this->gateway->updateByPk($data, $pk);
         } else {
-            $pk = $this->gateway->insert($entity->toArray());
+            $pk = $this->gateway->insert($data);
         }
         return $this->fetchByPk($pk);
     }
@@ -116,8 +117,6 @@ class Mapper implements MapperInterface
         $this->validateEntity($entity);
         return $this->gateway->deleteByPk($entity->getPk());
     }
-
-
 
     /**
      * @param GatewayInterface $gateway
@@ -155,12 +154,13 @@ class Mapper implements MapperInterface
      */
     protected function validateEntity(EntityInterface $entity)
     {
-        $entityClass = get_class($this->entity);
+        $expectedClass = get_class($this->entity);
+        $actualClass = get_class($entity);
         if ($entity->isNull()) {
-            throw new \Exception(sprintf('Entity "%s" is null', get_class($entity)));
+            throw new \Exception(sprintf('Entity "%s" is null', $actualClass));
         }
-        if (!$entity instanceof $entityClass) {
-            throw new \Exception(sprintf('Entity "%s" is not valid', get_class($entity)));
+        if (!$entity instanceof $expectedClass) {
+            throw new \Exception(sprintf('Entity "%s" is not valid', $actualClass));
         }
     }
 

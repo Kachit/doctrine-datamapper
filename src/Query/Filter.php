@@ -73,7 +73,7 @@ class Filter
      */
     public function addCondition(Condition $condition)
     {
-        $this->conditions[$condition->getField()][] = $condition;
+        $this->conditions[$condition->getField()][$condition->getOperator()] = $condition;
         return $this;
     }
 
@@ -87,6 +87,49 @@ class Filter
     {
         $condition = new Condition($field, $operator, $value);
         $this->addCondition($condition);
+        return $this;
+    }
+
+    /**
+     * @param string $field
+     * @return Filter
+     */
+    public function deleteConditions($field)
+    {
+        if ($this->hasConditions($field)) {
+            unset($this->conditions[$field]);
+        }
+        return $this;
+    }
+    /**
+     * @param string $field
+     * @param string $operator
+     * @return bool
+     */
+    public function hasCondition($field, $operator)
+    {
+        return isset($this->conditions[$field][$operator]);
+    }
+    /**
+     * @param string $field
+     * @param string $operator
+     * @return Condition|null
+     */
+    public function getCondition($field, $operator)
+    {
+        return $this->hasCondition($field, $operator) ? $this->conditions[$field][$operator] : null;
+    }
+
+    /**
+     * @param string $field
+     * @param string $operator
+     * @return Filter
+     */
+    public function deleteCondition($field, $operator)
+    {
+        if ($this->hasCondition($field, $operator)) {
+            unset($this->conditions[$field][$operator]);
+        }
         return $this;
     }
 

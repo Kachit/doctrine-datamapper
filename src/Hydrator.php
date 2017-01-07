@@ -10,6 +10,20 @@ namespace Kachit\Database;
 class Hydrator implements HydratorInterface
 {
     /**
+     * @var EntityInterface
+     */
+    protected $nullEntity;
+
+    /**
+     * Hydrator constructor.
+     * @param EntityInterface|null $nullEntity
+     */
+    public function __construct(EntityInterface $nullEntity = null)
+    {
+        $this->nullEntity = ($nullEntity) ? $nullEntity : new NullEntity();
+    }
+
+    /**
      * @param array $data
      * @param EntityInterface $entity
      * @return EntityInterface|NullEntity
@@ -17,7 +31,7 @@ class Hydrator implements HydratorInterface
     public function hydrate(array $data, EntityInterface $entity)
     {
         $data = $this->convertForHydrate($data);
-        return ($data) ? $entity->fillFromArray($data) : new NullEntity();
+        return ($data) ? $entity->fillFromArray($data) : $this->nullEntity;
     }
 
     /**

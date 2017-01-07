@@ -45,6 +45,15 @@ class NullEntity implements EntityInterface
     }
 
     /**
+     * @param $name
+     * @param $arguments
+     */
+    public function __call($name, $arguments)
+    {
+        // TODO: Implement __call() method.
+    }
+
+    /**
      * @return bool
      */
     public function isNull()
