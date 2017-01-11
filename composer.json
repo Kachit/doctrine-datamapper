@@ -14,7 +14,7 @@
         "psr-4": { "Kachit\\Database\\": "src/" }
     },
     "require": {
-        "php": "^5.5",
+        "php": ">=5.5",
         "doctrine/dbal":"2.5.*"
     },
     "require-dev": {

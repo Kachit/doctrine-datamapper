@@ -31,7 +31,7 @@ class Hydrator implements HydratorInterface
     public function hydrate(array $data, EntityInterface $entity)
     {
         $data = $this->convertForHydrate($data);
-        return ($data) ? $entity->fillFromArray($data) : $this->nullEntity;
+        return ($data) ? $entity->fillFromArray($data) : $this->createNullEntity();
     }
 
     /**
@@ -59,5 +59,13 @@ class Hydrator implements HydratorInterface
     protected function convertForExtract(array $data)
     {
         return $data;
+    }
+
+    /**
+     * @return EntityInterface|NullEntity
+     */
+    protected function createNullEntity()
+    {
+        return clone $this->nullEntity;
     }
 }
