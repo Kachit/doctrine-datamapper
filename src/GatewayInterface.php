@@ -31,9 +31,10 @@ interface GatewayInterface
 
     /**
      * @param Filter|null $filter
-     * @return int
+     * @param null $column
+     * @return mixed
      */
-    public function count(Filter $filter = null);
+    public function count(Filter $filter = null, $column = null);
 
     /**
      * @param string $column

@@ -53,10 +53,10 @@ class Mapper implements MapperInterface
      */
     public function fetchAll(Filter $filter = null)
     {
-        $collection = $this->cloneCollection();
+        $collection = $this->createCollection();
         $data = $this->gateway->fetchAll($filter);
         foreach ($data as $row) {
-            $entity = $this->hydrator->hydrate($row, $this->cloneEntity());
+            $entity = $this->hydrator->hydrate($row, $this->createEntity());
             $collection->add($entity);
         }
         return $collection;
@@ -69,7 +69,7 @@ class Mapper implements MapperInterface
     public function fetch(Filter $filter = null)
     {
         $data = $this->gateway->fetch($filter);
-        return $this->hydrator->hydrate($data, $this->cloneEntity());
+        return $this->hydrator->hydrate($data, $this->createEntity());
     }
 
     /**
@@ -79,7 +79,7 @@ class Mapper implements MapperInterface
     public function fetchByPk($pk)
     {
         $data = $this->gateway->fetchByPk($pk);
-        return $this->hydrator->hydrate($data, $this->cloneEntity());
+        return $this->hydrator->hydrate($data, $this->createEntity());
     }
 
     /**
@@ -167,7 +167,7 @@ class Mapper implements MapperInterface
     /**
      * @return CollectionInterface
      */
-    protected function cloneCollection()
+    protected function createCollection()
     {
         return clone $this->collection;
     }
@@ -175,7 +175,7 @@ class Mapper implements MapperInterface
     /**
      * @return EntityInterface
      */
-    protected function cloneEntity()
+    protected function createEntity()
     {
         return clone $this->entity;
     }

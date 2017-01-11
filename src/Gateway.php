@@ -81,10 +81,11 @@ abstract class Gateway implements GatewayInterface
     {
         $queryBuilder = $this->createQueryBuilder();
         $this->getBuilder()->build($queryBuilder, $filter);
-        return $queryBuilder
+        $result = $queryBuilder
             ->execute()
             ->fetch()
         ;
+        return ($result) ? $result : [];
     }
 
     /**
@@ -116,11 +117,12 @@ abstract class Gateway implements GatewayInterface
 
     /**
      * @param Filter|null $filter
-     * @return bool|string
+     * @param null $column
+     * @return string
      */
-    public function count(Filter $filter = null)
+    public function count(Filter $filter = null, $column = null)
     {
-        $fieldCount = ($filter->getFieldCount()) ? $filter->getFieldCount() : $this->metaTable->getPrimaryKey();
+        $fieldCount = ($column) ? $column : $this->getMetaTable()->getPrimaryKey();
         $fieldCount = $this->getTableAlias() . '.' . $fieldCount;
         $count = 'COUNT(' . $fieldCount . ')';
         return $this->fetchColumn($count, $filter);
@@ -134,7 +136,7 @@ abstract class Gateway implements GatewayInterface
         return $this->getConnection()
             ->createQueryBuilder()
             ->from($this->getTableName(), $this->getTableAlias())
-            ->select($this->getTableAlias() . '.*')
+            ->select($this->getTableFields())
         ;
     }
 
@@ -145,9 +147,6 @@ abstract class Gateway implements GatewayInterface
     public function insert(array $data)
     {
         $row = array_merge($this->getMetaTable()->getDefaultRow(), $data);
-        if (isset($row[$this->getMetaTable()->getPrimaryKey()])) {
-            unset($row[$this->getMetaTable()->getPrimaryKey()]);
-        }
         $result = $this->getConnection()->insert($this->getTableName(), $row);
         return ($result) ? $this->getConnection()->lastInsertId() : $result;
     }
@@ -160,15 +159,18 @@ abstract class Gateway implements GatewayInterface
     public function update(array $data, Filter $filter = null)
     {
         $queryBuilder = $this->createQueryBuilder();
-        $this->builder->build($queryBuilder, $filter);
+        $this->getBuilder()->build($queryBuilder, $filter);
         $queryBuilder
             ->resetQueryPart('select')
             ->resetQueryPart('orderBy')
             ->update($this->getTableName(), $this->getTableAlias())
         ;
+        $columns = $this->getMetaTable()->getColumns();
         foreach ($data as $column => $value)
         {
-            $queryBuilder->set($column, $value);
+            if(in_array($column, $columns)) {
+                $queryBuilder->set($column, $value);
+            }
         }
         return $queryBuilder->execute();
     }
@@ -191,12 +193,8 @@ abstract class Gateway implements GatewayInterface
     public function delete(Filter $filter = null)
     {
         $queryBuilder = $this->createQueryBuilder();
+        $queryBuilder->delete($this->getTableName());
         $this->getBuilder()->build($queryBuilder, $filter);
-        $queryBuilder
-            ->resetQueryPart('select')
-            ->resetQueryPart('orderBy')
-            ->delete($this->getTableName(), $this->getTableAlias())
-        ;
         return $queryBuilder->execute();
     }
 
@@ -221,6 +219,14 @@ abstract class Gateway implements GatewayInterface
     protected function getTableAlias()
     {
         return 't';
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTableFields()
+    {
+        return $this->getTableAlias() . '.*';
     }
 
     /**

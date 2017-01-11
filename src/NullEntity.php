@@ -32,7 +32,7 @@ class NullEntity implements EntityInterface
      */
     public function toArray()
     {
-        return get_object_vars($this);
+        return [];
     }
 
     /**
@@ -45,12 +45,16 @@ class NullEntity implements EntityInterface
     }
 
     /**
-     * @param $name
-     * @param $arguments
+     * is triggered when invoking inaccessible methods in an object context.
+     *
+     * @param $name string
+     * @param $arguments array
+     * @return mixed
+     * @link http://php.net/manual/en/language.oop5.overloading.php#language.oop5.overloading.methods
      */
     public function __call($name, $arguments)
     {
-        // TODO: Implement __call() method.
+        return $this->__callHandler($name, $arguments);
     }
 
     /**
@@ -59,5 +63,26 @@ class NullEntity implements EntityInterface
     public function isNull()
     {
         return true;
+    }
+
+    /**
+     * @param string $name
+     * @param array $arguments
+     * @return null|EntityInterface
+     */
+    protected function __callHandler($name, $arguments)
+    {
+        $result = null;
+        switch(true) {
+            case (0 === strpos($name, 'get')):
+                $result = null;
+                break;
+            case (0 === strpos($name, 'set')):
+                $result = $this;
+                break;
+            default:
+                $result = null;
+        }
+        return $result;
     }
 }

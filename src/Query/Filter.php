@@ -10,7 +10,7 @@ namespace Kachit\Database\Query;
 class Filter
 {
     /**
-     * @var Condition[]
+     * @var array
      */
     private $conditions = [];
 

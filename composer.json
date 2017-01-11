@@ -13,6 +13,11 @@
     "autoload": {
         "psr-4": { "Kachit\\Database\\": "src/" }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Stubs\\": "./tests/Stubs/"
+        }
+    },
     "require": {
         "php": ">=5.5",
         "doctrine/dbal":"2.5.*"

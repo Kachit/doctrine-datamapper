@@ -91,4 +91,12 @@ class Condition
         $this->value = $value;
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function isList()
+    {
+        return is_array($this->value);
+    }
 }

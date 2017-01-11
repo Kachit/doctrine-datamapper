@@ -86,25 +86,22 @@ class Builder
      */
     protected function buildExpression(QueryBuilder $queryBuilder, Condition $condition, $tableAlias)
     {
-        $namedParam = $namedParamComparison = $queryBuilder->createNamedParameter($condition->getField());
         $expr = $queryBuilder->expr();
         $operator = $condition->getOperator();
-        $field = $tableAlias . '.' . $condition->getField();
-        $type = null;
+        $field = ($queryBuilder->getType() !== QueryBuilder::DELETE) ? $tableAlias . '.' . $condition->getField() : $condition->getField();
+        $type = ($condition->isList()) ? Connection::PARAM_STR_ARRAY : null;
         $value = $condition->getValue();
-        if (in_array($operator, [Parser::OPERATOR_IS_LIKE])) {
-            $value = '%' . $value . '%';
-        }
-        if (in_array($operator, [Parser::OPERATOR_IS_IN, Parser::OPERATOR_IS_NOT_IN])) {
-            $type = Connection::PARAM_STR_ARRAY;
-            $namedParamComparison = '(' . $namedParamComparison . ')';
-        }
         if (in_array($operator, [Parser::OPERATOR_IS_NULL])) {
             $value = ($value) ? 'IS NOT NULL' : 'IS NULL';
         }
+        $namedParameter = $queryBuilder->createNamedParameter($value, $type);
+
+        if($condition->isList()) {
+            $namedParameter = '(' . $namedParameter . ')';
+        }
+        $where = $expr->comparison($field, $operator, $namedParameter);
         $queryBuilder
-            ->andWhere($expr->comparison($field, $operator, $namedParamComparison))
-            ->setParameter($namedParam, $value, $type)
+            ->andWhere($where)
         ;
     }
 }
