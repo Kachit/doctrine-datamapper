@@ -22,6 +22,7 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
      */
     public function add(EntityInterface $entity)
     {
+        $this->checkEntity($entity);
         $this->data[$entity->getPk()] = $entity;
         return $this;
     }
@@ -41,10 +42,28 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     /**
      * @param mixed $index
      * @return EntityInterface
+     * @throws \Exception
      */
     public function get($index)
     {
+        if (!$this->has($index)) {
+            throw new \Exception(sprintf('Entity with index "%s" is not exists', $index));
+        }
         return $this->data[$index];
+    }
+
+    /**
+     * @param mixed $index
+     * @return CollectionInterface
+     * @throws \Exception
+     */
+    public function remove($index)
+    {
+        if (!$this->has($index)) {
+            throw new \Exception(sprintf('Entity with index "%s" is not exists', $index));
+        }
+        unset($this->data[$index]);
+        return $this;
     }
 
     /**
@@ -101,5 +120,19 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     public function jsonSerialize()
     {
         return $this->toArray();
+    }
+
+    /**
+     * @param EntityInterface $entity
+     * @throws \Exception
+     */
+    protected function checkEntity(EntityInterface $entity)
+    {
+        if ($entity->isNull()) {
+            throw new \Exception('Entity is null');
+        }
+        if (empty($entity->getPk())) {
+            throw new \Exception('Entity has no primary key');
+        }
     }
 }

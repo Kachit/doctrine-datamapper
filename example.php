@@ -1,11 +1,11 @@
 <?php
 require_once 'vendor/autoload.php';
 
-//use Stubs\DB\Gateway as UsersGateway;
+use Stubs\DB\Gateway as UsersGateway;
 use Kachit\Database\Query\Filter;
 use Kachit\Database\Mapper;
 use Kachit\Database\Gateway;
-//use Stubs\DB\Entity as User;
+use Stubs\DB\Entity as User;
 
 $params = [
     'dbname' => 'phalcondb',
@@ -18,27 +18,7 @@ $params = [
 $config = new Doctrine\DBAL\Configuration();
 $connection = Doctrine\DBAL\DriverManager::getConnection($params, $config);
 
-class UsersGateway extends Gateway
-{
-    /**
-     * Get table name
-     *
-     * @return string
-     */
-    protected function getTableName()
-    {
-        return 'users';
-    }
-}
-
 $gateway = new UsersGateway($connection);
-$query = ['$filter' => [
-
-    'active' => ['$or' => [1, 2]],
-    'id' => ['$in' => [1, 2, 3]],
-
-    //or
-]];
 
 //Fetch all
 //var_dump($gateway->fetchAll());
@@ -76,10 +56,11 @@ $filter = new Filter();
 $filter->createCondition('id', 8);
 //var_dump($gateway->delete($filter));
 
-//$mapper = new Mapper($gateway, new User());
+$mapper = new Mapper($gateway, new User());
 /* @var User $user */
-//$user = $mapper->fetchByPk(6);
+$user = $mapper->fetchByPk(5);
+//var_dump($user);
 //$user->setActive(0);
 
 //$mapper->delete($user);
-//var_dump($mapper->fetchAll());
+var_dump($mapper->fetchAll());
