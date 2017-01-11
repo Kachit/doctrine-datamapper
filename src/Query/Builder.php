@@ -60,6 +60,11 @@ class Builder
                 $queryBuilder->addOrderBy($this->tableAlias . '.' . $field, $order);
             }
         }
+        foreach ($filter->getGroupBy() as $field) {
+            if (in_array($field, $this->columns)) {
+                $queryBuilder->addGroupBy($this->tableAlias . '.' . $field);
+            }
+        }
     }
 
     /**
@@ -75,7 +80,7 @@ class Builder
             if ($columns && !in_array($condition->getField(), $columns)) {
                 continue;
             }
-            $this->buildExpression($queryBuilder, $condition, $tableAlias);
+            $this->buildSingleCondition($queryBuilder, $condition, $tableAlias);
         }
     }
 
@@ -84,11 +89,11 @@ class Builder
      * @param Condition $condition
      * @param $tableAlias
      */
-    protected function buildExpression(QueryBuilder $queryBuilder, Condition $condition, $tableAlias)
+    public function buildSingleCondition(QueryBuilder $queryBuilder, Condition $condition, $tableAlias)
     {
         $expr = $queryBuilder->expr();
         $operator = $condition->getOperator();
-        $field = ($queryBuilder->getType() !== QueryBuilder::DELETE) ? $tableAlias . '.' . $condition->getField() : $condition->getField();
+        $field = ($queryBuilder->getType() !== QueryBuilder::DELETE && $tableAlias) ? $tableAlias . '.' . $condition->getField() : $condition->getField();
         $type = ($condition->isList()) ? Connection::PARAM_STR_ARRAY : null;
         $value = $condition->getValue();
         if (in_array($operator, [Parser::OPERATOR_IS_NULL])) {

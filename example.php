@@ -15,8 +15,8 @@ $params = [
     'driver' => 'pdo_mysql',
 ];
 
-$config = new \Doctrine\DBAL\Configuration();
-$connection = \Doctrine\DBAL\DriverManager::getConnection($params, $config);
+$config = new Doctrine\DBAL\Configuration();
+$connection = Doctrine\DBAL\DriverManager::getConnection($params, $config);
 
 class UsersGateway extends Gateway
 {
@@ -33,8 +33,11 @@ class UsersGateway extends Gateway
 
 $gateway = new UsersGateway($connection);
 $query = ['$filter' => [
-    'active' => 1,
+
+    'active' => ['$or' => [1, 2]],
     'id' => ['$in' => [1, 2, 3]],
+
+    //or
 ]];
 
 //Fetch all
@@ -71,7 +74,7 @@ $filter->createCondition('id', 10);
 //Delete
 $filter = new Filter();
 $filter->createCondition('id', 8);
-var_dump($gateway->delete($filter));
+//var_dump($gateway->delete($filter));
 
 //$mapper = new Mapper($gateway, new User());
 /* @var User $user */

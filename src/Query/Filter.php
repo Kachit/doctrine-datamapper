@@ -35,21 +35,6 @@ class Filter
     private $offset = 0;
 
     /**
-     * @var null
-     */
-    private $fieldCount = null;
-
-    /**
-     * @var null
-     */
-    private $fieldSum = null;
-
-    /**
-     * @var null
-     */
-    private $fieldAvg = null;
-
-    /**
      * @param null $field
      * @return array
      */
@@ -227,60 +212,6 @@ class Filter
     }
 
     /**
-     * @return null
-     */
-    public function getFieldCount()
-    {
-        return $this->fieldCount;
-    }
-
-    /**
-     * @param null $fieldCount
-     * @return $this
-     */
-    public function setFieldCount($fieldCount)
-    {
-        $this->fieldCount = $fieldCount;
-        return $this;
-    }
-
-    /**
-     * @return null
-     */
-    public function getFieldSum()
-    {
-        return $this->fieldSum;
-    }
-
-    /**
-     * @param null $fieldSum
-     * @return $this
-     */
-    public function setFieldSum($fieldSum)
-    {
-        $this->fieldSum = $fieldSum;
-        return $this;
-    }
-
-    /**
-     * @return null
-     */
-    public function getFieldAvg()
-    {
-        return $this->fieldAvg;
-    }
-
-    /**
-     * @param null $fieldAvg
-     * @return $this
-     */
-    public function setFieldAvg($fieldAvg)
-    {
-        $this->fieldAvg = $fieldAvg;
-        return $this;
-    }
-
-    /**
      * @return $this
      */
     public function clear()
@@ -290,9 +221,19 @@ class Filter
         $this->groupBy = [];
         $this->limit = 0;
         $this->offset = 0;
-        $this->fieldAvg = null;
-        $this->fieldSum = null;
-        $this->fieldCount = null;
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEmpty()
+    {
+        return (empty($this->conditions)
+            && empty($this->orderBy)
+            && empty($this->groupBy)
+            && empty($this->limit)
+            && empty($this->offset)
+        );
     }
 }
