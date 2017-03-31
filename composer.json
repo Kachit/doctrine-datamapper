@@ -1,6 +1,6 @@
 {
-    "name": "kachit/simple-db-layer",
-    "description": "Simple database layer",
+    "name": "kachit/doctrine-dao-wrapper",
+    "description": "Simple database layer powered by doctrine 2",
     "minimum-stability": "stable",
     "type": "library",
     "license": "MIT",
