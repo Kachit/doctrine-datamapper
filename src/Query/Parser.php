@@ -20,7 +20,7 @@ class Parser
     const OPERATOR_IS_GREATER_THAN = '>';
     const OPERATOR_IS_GREATER_THAN_OR_EQUAL = '>=';
     const OPERATOR_IS_IN = 'IN';
-    const OPERATOR_IS_NOT_IN = 'IN';
+    const OPERATOR_IS_NOT_IN = 'NOT IN';
     const OPERATOR_IS_LESS_THAN = '<';
     const OPERATOR_IS_LESS_THAN_OR_EQUAL = '<=';
     const OPERATOR_IS_LIKE = 'LIKE';
