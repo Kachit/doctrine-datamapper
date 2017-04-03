@@ -93,7 +93,7 @@ class Mapper implements MapperInterface
 
     /**
      * @param EntityInterface $entity
-     * @return EntityInterface
+     * @return bool
      */
     public function save(EntityInterface $entity)
     {
@@ -101,11 +101,12 @@ class Mapper implements MapperInterface
         $pk = $entity->getPk();
         $data = $entity->toArray();
         if ($pk) {
-            $this->gateway->updateByPk($data, $pk);
+            $result = $this->gateway->updateByPk($data, $pk);
         } else {
-            $pk = $this->gateway->insert($data);
+            $result = $this->gateway->insert($data);
+            $entity->setPk($result);
         }
-        return $this->fetchByPk($pk);
+        return $result;
     }
 
     /**
