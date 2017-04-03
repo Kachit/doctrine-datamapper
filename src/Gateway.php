@@ -66,7 +66,7 @@ abstract class Gateway implements GatewayInterface
     public function fetchAll(Filter $filter = null)
     {
         $queryBuilder = $this->createQueryBuilder();
-        $this->getBuilder()->build($queryBuilder, $filter);
+        $this->buildQuery($queryBuilder, $filter);
         return $queryBuilder
             ->execute()
             ->fetchAll()
@@ -80,7 +80,7 @@ abstract class Gateway implements GatewayInterface
     public function fetch(Filter $filter = null)
     {
         $queryBuilder = $this->createQueryBuilder();
-        $this->getBuilder()->build($queryBuilder, $filter);
+        $this->buildQuery($queryBuilder, $filter);
         $result = $queryBuilder
             ->execute()
             ->fetch()
@@ -106,7 +106,7 @@ abstract class Gateway implements GatewayInterface
     public function fetchColumn($column, Filter $filter = null)
     {
         $queryBuilder = $this->createQueryBuilder();
-        $this->getBuilder()->build($queryBuilder, $filter, true);
+        $this->buildQuery($queryBuilder, $filter, true);
         return $queryBuilder
             ->resetQueryPart('select')
             ->select($column)
@@ -260,5 +260,15 @@ abstract class Gateway implements GatewayInterface
             $this->builder = new Builder($this->getMetaTable()->getColumns(), $this->getTableAlias());
         }
         return $this->builder;
+    }
+
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param Filter|null $filter
+     * @param bool $isAggregated
+     */
+    public function buildQuery(QueryBuilder $queryBuilder, Filter $filter = null, $isAggregated = false)
+    {
+        $this->getBuilder()->build($queryBuilder, $filter, $isAggregated);
     }
 }
