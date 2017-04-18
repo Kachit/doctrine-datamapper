@@ -146,7 +146,7 @@ abstract class Gateway implements GatewayInterface
      */
     public function insert(array $data)
     {
-        $row = array_merge($this->getMetaTable()->getDefaultRow(), $data);
+        $row = $this->filterRow($data, $this->getMetaTable()->getColumns());
         $result = $this->getConnection()->insert($this->getTableName(), $row);
         return ($result) ? $this->getConnection()->lastInsertId() : $result;
     }
@@ -237,6 +237,21 @@ abstract class Gateway implements GatewayInterface
     {
         $filter = (new Filter())->createCondition($this->getMetaTable()->getPrimaryKey(), $pk);
         return $filter;
+    }
+
+    /**
+     * @param array $data
+     * @param array $columns
+     * @return array
+     */
+    protected function filterRow(array $data, array $columns)
+    {
+        foreach ($data as $key => $value) {
+            if (!in_array($key, $columns)) {
+                unset($data[$key]);
+            }
+        }
+        return $data;
     }
 
     /**
