@@ -146,7 +146,7 @@ abstract class Gateway implements GatewayInterface
      */
     public function insert(array $data)
     {
-        $row = $this->filterRow($data, $this->getMetaTable()->getColumns());
+        $row = $this->getMetaTable()->filterRow($data);
         $result = $this->getConnection()->insert($this->getTableName(), $row);
         return ($result) ? $this->getConnection()->lastInsertId() : $result;
     }
@@ -165,12 +165,9 @@ abstract class Gateway implements GatewayInterface
             ->resetQueryPart('orderBy')
             ->update($this->getTableName(), $this->getTableAlias())
         ;
-        $columns = $this->getMetaTable()->getColumns();
-        foreach ($data as $column => $value)
-        {
-            if(in_array($column, $columns)) {
-                $queryBuilder->set($column, $value);
-            }
+        $data = $this->getMetaTable()->filterRow($data);
+        foreach ($data as $column => $value) {
+            $queryBuilder->set($column, $value);
         }
         return $queryBuilder->execute();
     }
@@ -237,21 +234,6 @@ abstract class Gateway implements GatewayInterface
     {
         $filter = (new Filter())->createCondition($this->getMetaTable()->getPrimaryKey(), $pk);
         return $filter;
-    }
-
-    /**
-     * @param array $data
-     * @param array $columns
-     * @return array
-     */
-    protected function filterRow(array $data, array $columns)
-    {
-        foreach ($data as $key => $value) {
-            if (!in_array($key, $columns)) {
-                unset($data[$key]);
-            }
-        }
-        return $data;
     }
 
     /**

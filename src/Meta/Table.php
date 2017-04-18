@@ -73,6 +73,21 @@ class Table
     }
 
     /**
+     * @param array $data
+     * @return array
+     */
+    public function filterRow(array $data)
+    {
+        $columns = $this->getColumns();
+        foreach ($data as $key => $value) {
+            if (!in_array($key, $columns) || empty($value)) {
+                unset($data[$key]);
+            }
+        }
+        return $data;
+    }
+
+    /**
      *
      */
     public function initialize()
