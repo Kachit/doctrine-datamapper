@@ -99,7 +99,7 @@ class Mapper implements MapperInterface
     {
         $this->validateEntity($entity);
         $pk = $entity->getPk();
-        $data = $entity->toArray();
+        $data = $this->hydrator->extract($entity);
         if ($pk) {
             $result = $this->gateway->updateByPk($data, $pk);
         } else {
