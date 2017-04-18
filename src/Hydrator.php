@@ -30,8 +30,7 @@ class Hydrator implements HydratorInterface
      */
     public function hydrate(array $data, EntityInterface $entity)
     {
-        $data = $this->convertForHydrate($data);
-        return ($data) ? $entity->fillFromArray($data) : $this->createNullEntity();
+        return ($data) ? $entity->fillFromArray($this->convertForHydrate($data)) : $this->createNullEntity();
     }
 
     /**
