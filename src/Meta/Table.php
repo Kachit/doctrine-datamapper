@@ -32,6 +32,20 @@ class Table
     private $connection;
 
     /**
+     * @var array
+     */
+    private $metaFieldNames = [
+        'pdo_pgsql' => [
+            'fieldName' => 'field',
+            'defaultValueName' => 'default',
+        ],
+        'pdo_mysql' => [
+            'fieldName' => 'Field',
+            'defaultValueName' => 'Default',
+        ],
+    ];
+
+    /**
      * MetaData constructor.
      * @param Connection $connection
      * @param $table
@@ -84,7 +98,8 @@ class Table
     {
         $result = [];
         foreach ($columns as $column) {
-            $this->columns[$column['Field']] = $this->extractDefaultValue($column);
+            $columnName = $this->metaFieldNames[$this->connection->getDriver()->getName()]['fieldName'];
+            $this->columns[$column[$columnName]] = $this->extractDefaultValue($column);
             $this->extractPrimaryKey($column);
         }
         return $result;
@@ -96,7 +111,8 @@ class Table
      */
     private function extractDefaultValue(array $column)
     {
-        return $column['Default'];
+        $name = $this->metaFieldNames[$this->connection->getDriver()->getName()]['defaultValueName'];
+        return $column[$name];
     }
 
     /**
@@ -104,8 +120,16 @@ class Table
      */
     private function extractPrimaryKey(array $column)
     {
-        if ($column['Key'] == 'PRI' && empty($this->primaryKey)) {
-            $this->primaryKey = $column['Field'];
+        if (empty($this->primaryKey)) {
+            $driver = $this->connection->getDriver()->getName();
+            if ($driver == 'pdo_mysql' &&  isset($column['Key']) && $column['Key'] == 'PRI') {
+                $columnName = $this->metaFieldNames[$driver]['fieldName'];
+                $this->primaryKey = $column[$columnName];
+            }
+            if ($driver == 'pdo_pgsql' &&  isset($column['pri']) && $column['pri'] == 't') {
+                $columnName = $this->metaFieldNames[$driver]['fieldName'];
+                $this->primaryKey = $column[$columnName];
+            }
         }
     }
 }
