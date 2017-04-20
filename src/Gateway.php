@@ -167,7 +167,7 @@ abstract class Gateway implements GatewayInterface
         ;
         $data = $this->getMetaTable()->filterRow($data);
         foreach ($data as $column => $value) {
-            $queryBuilder->set($column, $value);
+            $queryBuilder->set($column, $this->getConnection()->quote($value));
         }
         return $queryBuilder->execute();
     }
