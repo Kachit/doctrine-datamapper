@@ -1,5 +1,5 @@
 {
-    "name": "kachit/doctrine-dao-wrapper",
+    "name": "kachit/doctrine-datamapper",
     "description": "Simple database layer powered by doctrine 2",
     "minimum-stability": "stable",
     "type": "library",
