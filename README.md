@@ -1,8 +1,8 @@
-Simple database layer
+Simple datamapper
 ===========
 [![License](https://poser.pugx.org/leaphly/cart-bundle/license.svg)](https://packagist.org/packages/leaphly/cart-bundle)
 
-Simple database layer powered by doctrine2
+Simple datamapper powered by doctrine2
 
 ```php
 $gateway = new Gateway($doctrineConnection);

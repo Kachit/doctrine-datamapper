@@ -1,6 +1,6 @@
 {
     "name": "kachit/doctrine-datamapper",
-    "description": "Simple database layer powered by doctrine 2",
+    "description": "Simple datamapper powered by doctrine 2",
     "minimum-stability": "stable",
     "type": "library",
     "license": "MIT",
