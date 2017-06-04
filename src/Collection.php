@@ -7,6 +7,7 @@
  */
 namespace Kachit\Database;
 
+use Kachit\Database\Exception\CollectionException;
 use Traversable;
 
 class Collection implements CollectionInterface, \JsonSerializable, \IteratorAggregate
@@ -47,7 +48,7 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     public function get($index)
     {
         if (!$this->has($index)) {
-            throw new \Exception(sprintf('Entity with index "%s" is not exists', $index));
+            throw new CollectionException(sprintf('Entity with index "%s" is not exists', $index));
         }
         return $this->data[$index];
     }
@@ -60,7 +61,7 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     public function remove($index)
     {
         if (!$this->has($index)) {
-            throw new \Exception(sprintf('Entity with index "%s" is not exists', $index));
+            throw new CollectionException(sprintf('Entity with index "%s" is not exists', $index));
         }
         unset($this->data[$index]);
         return $this;
@@ -129,10 +130,10 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     protected function checkEntity(EntityInterface $entity)
     {
         if ($entity->isNull()) {
-            throw new \Exception('Entity is null');
+            throw new CollectionException('Entity is null');
         }
         if (empty($entity->getPk())) {
-            throw new \Exception('Entity has no primary key');
+            throw new CollectionException('Entity has no primary key');
         }
     }
 }

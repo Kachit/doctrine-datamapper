@@ -7,6 +7,7 @@
  */
 namespace Kachit\Database;
 
+use Kachit\Database\Exception\MapperException;
 use Kachit\Database\Query\Filter;
 
 class Mapper implements MapperInterface
@@ -158,10 +159,10 @@ class Mapper implements MapperInterface
         $expectedClass = get_class($this->entity);
         $actualClass = get_class($entity);
         if ($entity->isNull()) {
-            throw new \Exception(sprintf('Entity "%s" is null', $actualClass));
+            throw new MapperException(sprintf('Entity "%s" is null', $actualClass));
         }
         if (!$entity instanceof $expectedClass) {
-            throw new \Exception(sprintf('Entity "%s" is not valid', $actualClass));
+            throw new MapperException(sprintf('Entity "%s" is not valid', $actualClass));
         }
     }
 

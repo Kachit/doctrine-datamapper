@@ -7,6 +7,8 @@
  */
 namespace Kachit\Database;
 
+use Kachit\Database\Exception\EntityException;
+
 abstract class Entity implements EntityInterface, \JsonSerializable
 {
     /**
@@ -35,6 +37,43 @@ abstract class Entity implements EntityInterface, \JsonSerializable
         foreach ($this as $key => $value) {
             $this->$key = (isset($data[$key])) ? $data[$key] : $value;
         }
+        return $this;
+    }
+
+    /**
+     * @param mixed $field
+     * @return bool
+     */
+    public function hasEntityField($field)
+    {
+        return property_exists($this, $field);
+    }
+
+    /**
+     * @param mixed $field
+     * @return mixed
+     * @throws EntityException
+     */
+    public function getEntityField($field)
+    {
+        if (!$this->hasEntityField($field)) {
+            throw new EntityException('Property is not exists');
+        }
+        return $this->$field;
+    }
+
+    /**
+     * @param mixed $field
+     * @param mixed $value
+     * @return $this
+     * @throws EntityException
+     */
+    public function setEntityField($field, $value)
+    {
+        if (!$this->hasEntityField($field)) {
+            throw new EntityException('Property is not exists');
+        }
+        $this->$field = $value;
         return $this;
     }
 

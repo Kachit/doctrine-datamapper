@@ -3,6 +3,8 @@ use Stubs\DB\Entity;
 use Kachit\Database\Mapper;
 use Stubs\DB\Gateway;
 use Kachit\Database\NullEntity;
+use Kachit\Database\Exception\MapperException;
+use Kachit\Database\CollectionInterface;
 
 class MapperTest extends \Codeception\Test\Unit {
 
@@ -23,7 +25,7 @@ class MapperTest extends \Codeception\Test\Unit {
         $entity = $mapper->fetch();
         $this->assertNotEmpty($entity);
         $this->assertTrue(is_object($entity));
-        $this->assertInstanceOf('Stubs\DB\Entity', $entity);
+        $this->assertInstanceOf(Entity::class, $entity);
         $this->assertFalse($entity->isNull());
         $this->assertEquals($entity->getId(), $entity->getPk());
         $this->assertEquals('foo', $entity->getName());
@@ -44,7 +46,7 @@ class MapperTest extends \Codeception\Test\Unit {
         $entity = $mapper->fetch();
         $this->assertNotEmpty($entity);
         $this->assertTrue(is_object($entity));
-        $this->assertInstanceOf('Kachit\Database\NullEntity', $entity);
+        $this->assertInstanceOf(NullEntity::class, $entity);
         $this->assertTrue($entity->isNull());
         $this->assertEquals($entity->getId(), $entity->getPk());
         $this->assertEquals(null, $entity->getName());
@@ -64,7 +66,7 @@ class MapperTest extends \Codeception\Test\Unit {
         $collection = $mapper->fetchAll();
         $this->assertNotEmpty($collection);
         $this->assertTrue(is_object($collection));
-        $this->assertInstanceOf('Kachit\Database\CollectionInterface', $collection);
+        $this->assertInstanceOf(CollectionInterface::class, $collection);
         $this->assertEquals(2, $collection->count());
         $this->assertTrue($collection->has(1));
         $this->assertTrue($collection->has(2));
@@ -81,7 +83,7 @@ class MapperTest extends \Codeception\Test\Unit {
         $collection = $mapper->fetchAll();
         $this->assertNotEmpty($collection);
         $this->assertTrue(is_object($collection));
-        $this->assertInstanceOf('Kachit\Database\CollectionInterface', $collection);
+        $this->assertInstanceOf(CollectionInterface::class, $collection);
         $this->assertEquals(0, $collection->count());
     }
 
@@ -90,7 +92,7 @@ class MapperTest extends \Codeception\Test\Unit {
      */
     public function testSaveNullEntity()
     {
-        $this->expectException('Exception');
+        $this->expectException(MapperException::class);
         $this->expectExceptionMessage('Entity "Kachit\Database\NullEntity" is null');
         $array = [];
         $gateway = $this->getGatewayMock('fetchAll', $array);
@@ -104,7 +106,7 @@ class MapperTest extends \Codeception\Test\Unit {
      */
     public function testSaveWrongEntity()
     {
-        $this->expectException('Exception');
+        $this->expectException(MapperException::class);
         $array = [];
         $gateway = $this->getGatewayMock('fetchAll', $array);
         $entity = $this->getEntityMock();

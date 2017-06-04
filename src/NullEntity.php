@@ -45,6 +45,34 @@ class NullEntity implements EntityInterface
     }
 
     /**
+     * @param mixed $field
+     * @return mixed
+     */
+    public function getEntityField($field)
+    {
+        return null;
+    }
+
+    /**
+     * @param mixed $field
+     * @return bool
+     */
+    public function hasEntityField($field)
+    {
+        return false;
+    }
+
+    /**
+     * @param mixed $field
+     * @param mixed $value
+     * @return EntityInterface
+     */
+    public function setEntityField($field, $value)
+    {
+        return $this;
+    }
+
+    /**
      * is triggered when invoking inaccessible methods in an object context.
      *
      * @param $name string

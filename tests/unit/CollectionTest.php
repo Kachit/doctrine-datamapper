@@ -3,6 +3,7 @@ use Stubs\DB\Entity;
 
 use Kachit\Database\Collection;
 use Kachit\Database\NullEntity;
+use Kachit\Database\Exception\CollectionException;
 
 class CollectionTest extends \Codeception\Test\Unit {
 
@@ -34,7 +35,7 @@ class CollectionTest extends \Codeception\Test\Unit {
      */
     public function testAddNullEntity()
     {
-        $this->expectException('Exception');
+        $this->expectException(CollectionException::class);
         $this->expectExceptionMessage('Entity is null');
         $entity = new NullEntity();
         $collection = new Collection();
@@ -46,7 +47,7 @@ class CollectionTest extends \Codeception\Test\Unit {
      */
     public function testGetNonExistingEntity()
     {
-        $this->expectException('Exception');
+        $this->expectException(CollectionException::class);
         $this->expectExceptionMessage('Entity with index "1" is not exists');
         $collection = new Collection();
         $collection->get(1);
@@ -57,7 +58,7 @@ class CollectionTest extends \Codeception\Test\Unit {
      */
     public function testRemoveNonExistingEntity()
     {
-        $this->expectException('Exception');
+        $this->expectException(CollectionException::class);
         $this->expectExceptionMessage('Entity with index "1" is not exists');
         $collection = new Collection();
         $collection->remove(1);

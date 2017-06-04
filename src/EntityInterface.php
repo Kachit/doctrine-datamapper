@@ -30,4 +30,23 @@ interface EntityInterface extends NullableInterface
      * @return EntityInterface
      */
     public function fillFromArray(array $data);
+
+    /**
+     * @param mixed $field
+     * @return bool
+     */
+    public function hasEntityField($field);
+
+    /**
+     * @param mixed $field
+     * @return mixed
+     */
+    public function getEntityField($field);
+
+    /**
+     * @param mixed $field
+     * @param mixed $value
+     * @return EntityInterface
+     */
+    public function setEntityField($field, $value);
 }
