@@ -2,6 +2,8 @@
 use Codeception\Util\Debug;
 use Kachit\Database\Hydrator;
 use Stubs\DB\Entity;
+use Kachit\Database\EntityInterface;
+use Kachit\Database\NullEntity;
 
 class HydratorTest extends \Codeception\Test\Unit
 {
@@ -22,8 +24,8 @@ class HydratorTest extends \Codeception\Test\Unit
         $entity = new Entity($array);
         $this->assertNotEmpty($result);
         $this->assertTrue(is_object($result));
-        $this->assertInstanceOf('Stubs\DB\Entity', $result);
-        $this->assertInstanceOf('Kachit\Database\EntityInterface', $result);
+        $this->assertInstanceOf(Entity::class, $result);
+        $this->assertInstanceOf(EntityInterface::class, $result);
         $this->assertEquals($entity->getId(), $result->getId());
         $this->assertEquals($entity->getPk(), $result->getPk());
         $this->assertEquals($entity->getName(), $result->getName());
@@ -41,8 +43,8 @@ class HydratorTest extends \Codeception\Test\Unit
         $entity = new Entity($array);
         $this->assertNotEmpty($result);
         $this->assertTrue(is_object($result));
-        $this->assertInstanceOf('Kachit\Database\EntityInterface', $result);
-        $this->assertInstanceOf('Kachit\Database\NullEntity', $result);
+        $this->assertInstanceOf(EntityInterface::class, $result);
+        $this->assertInstanceOf(NullEntity::class, $result);
         $this->assertEquals($entity->getId(), $result->getId());
         $this->assertEquals($entity->getPk(), $result->getPk());
         $this->assertEquals($entity->getName(), $result->getName());
