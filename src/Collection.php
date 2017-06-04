@@ -74,6 +74,7 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     {
         return count($this->data);
     }
+
     /**
      * @return bool
      */
@@ -92,11 +93,54 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     }
 
     /**
+     * Get first object
+     *
+     * @return EntityInterface
+     */
+    public function getFirst()
+    {
+        $data = $this->toArray();
+        return array_shift($data);
+    }
+    /**
+     * Get last object
+     *
+     * @return EntityInterface
+     */
+    public function getLast()
+    {
+        $data = $this->toArray();
+        return array_pop($data);
+    }
+
+    /**
      * @return EntityInterface[]
      */
     public function toArray()
     {
         return $this->data;
+    }
+
+    /**
+     * Filter collection by user function
+     *
+     * @param \Closure $function
+     * @return Collection|EntityInterface[]
+     */
+    public function filter(\Closure $function)
+    {
+        $data = array_filter($this->data, $function);
+        return new static($data);
+    }
+
+    /**
+     * Get object ids
+     *
+     * @return array
+     */
+    public function getKeys()
+    {
+        return array_keys($this->data);
     }
 
     /**
