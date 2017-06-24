@@ -9,6 +9,7 @@ namespace Kachit\Database;
 
 use Kachit\Database\Exception\CollectionException;
 use Traversable;
+use Closure;
 
 class Collection implements CollectionInterface, \JsonSerializable, \IteratorAggregate
 {
@@ -124,10 +125,10 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     /**
      * Filter collection by user function
      *
-     * @param \Closure $function
+     * @param Closure $function
      * @return Collection|EntityInterface[]
      */
-    public function filter(\Closure $function)
+    public function filter(Closure $function)
     {
         $data = array_filter($this->data, $function);
         return new static($data);
