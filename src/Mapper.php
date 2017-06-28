@@ -52,42 +52,37 @@ class Mapper implements MapperInterface
      * @param Filter|null $filter
      * @return CollectionInterface|Entity[]
      */
-    public function fetchAll(Filter $filter = null)
+    public function fetchAll(Filter $filter = null): CollectionInterface
     {
-        $collection = $this->createCollection();
         $data = $this->gateway->fetchAll($filter);
-        foreach ($data as $row) {
-            $entity = $this->hydrator->hydrate($row, $this->createEntity());
-            $collection->add($entity);
-        }
-        return $collection;
+        return $this->hydrateCollection($data);
     }
 
     /**
      * @param Filter|null $filter
      * @return EntityInterface
      */
-    public function fetch(Filter $filter = null)
+    public function fetch(Filter $filter = null): EntityInterface
     {
         $data = $this->gateway->fetch($filter);
-        return $this->hydrator->hydrate($data, $this->createEntity());
+        return $this->hydrateEntity($data);
     }
 
     /**
      * @param mixed $pk
      * @return EntityInterface
      */
-    public function fetchByPk($pk)
+    public function fetchByPk($pk): EntityInterface
     {
         $data = $this->gateway->fetchByPk($pk);
-        return $this->hydrator->hydrate($data, $this->createEntity());
+        return $this->hydrateEntity($data);
     }
 
     /**
      * @param Filter|null $filter
      * @return int
      */
-    public function count(Filter $filter = null)
+    public function count(Filter $filter = null): int
     {
         return $this->gateway->count($filter);
     }
@@ -112,9 +107,9 @@ class Mapper implements MapperInterface
 
     /**
      * @param EntityInterface $entity
-     * @return int
+     * @return bool
      */
-    public function delete(EntityInterface $entity)
+    public function delete(EntityInterface $entity): bool
     {
         $this->validateEntity($entity);
         return $this->gateway->deleteByPk($entity->getPk());
@@ -151,8 +146,31 @@ class Mapper implements MapperInterface
     }
 
     /**
+     * @param array $data
+     * @return EntityInterface|NullEntity
+     */
+    protected function hydrateEntity(array $data): EntityInterface
+    {
+        return $this->hydrator->hydrate($data, $this->createEntity());
+    }
+
+    /**
+     * @param array $data
+     * @return CollectionInterface
+     */
+    protected function hydrateCollection(array $data): CollectionInterface
+    {
+        $collection = $this->createCollection();
+        foreach ($data as $row) {
+            $entity = $this->hydrateEntity($row);
+            $collection->add($entity);
+        }
+        return $collection;
+    }
+
+    /**
      * @param EntityInterface $entity
-     * @throws \Exception
+     * @throws MapperException
      */
     protected function validateEntity(EntityInterface $entity)
     {

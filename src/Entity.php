@@ -23,16 +23,16 @@ abstract class Entity implements EntityInterface, \JsonSerializable
     /**
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return get_object_vars($this);
     }
 
     /**
      * @param array $data
-     * @return $this
+     * @return EntityInterface
      */
-    public function fillFromArray(array $data)
+    public function fillFromArray(array $data): EntityInterface
     {
         foreach ($this as $key => $value) {
             $this->$key = (isset($data[$key])) ? $data[$key] : $value;
@@ -44,7 +44,7 @@ abstract class Entity implements EntityInterface, \JsonSerializable
      * @param mixed $field
      * @return bool
      */
-    public function hasEntityField($field)
+    public function hasEntityField($field): bool
     {
         return property_exists($this, $field);
     }
@@ -65,10 +65,10 @@ abstract class Entity implements EntityInterface, \JsonSerializable
     /**
      * @param mixed $field
      * @param mixed $value
-     * @return $this
+     * @return EntityInterface
      * @throws EntityException
      */
-    public function setEntityField($field, $value)
+    public function setEntityField($field, $value): EntityInterface
     {
         if (!$this->hasEntityField($field)) {
             throw new EntityException('Property is not exists');
@@ -92,7 +92,7 @@ abstract class Entity implements EntityInterface, \JsonSerializable
     /**
      * @return bool
      */
-    public function isNull()
+    public function isNull(): bool
     {
         return false;
     }

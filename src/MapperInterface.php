@@ -13,31 +13,31 @@ interface MapperInterface
 {
     /**
      * @param Filter|null $filter
-     * @return EntityInterface[]|Collection
+     * @return EntityInterface[]|CollectionInterface
      */
-    public function fetchAll(Filter $filter = null);
+    public function fetchAll(Filter $filter = null): CollectionInterface;
 
     /**
      * @param Filter|null $filter
      * @return EntityInterface
      */
-    public function fetch(Filter $filter = null);
+    public function fetch(Filter $filter = null): EntityInterface;
 
     /**
      * @param mixed $pk
      * @return EntityInterface
      */
-    public function fetchByPk($pk);
+    public function fetchByPk($pk): EntityInterface;
 
     /**
      * @param Filter|null $filter
      * @return int
      */
-    public function count(Filter $filter = null);
+    public function count(Filter $filter = null): int;
 
     /**
      * @param EntityInterface $entity
-     * @return EntityInterface
+     * @return bool
      */
     public function save(EntityInterface $entity);
 
@@ -45,5 +45,5 @@ interface MapperInterface
      * @param EntityInterface $entity
      * @return bool
      */
-    public function delete(EntityInterface $entity);
+    public function delete(EntityInterface $entity): bool;
 }

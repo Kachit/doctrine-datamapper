@@ -13,11 +13,6 @@ use Doctrine\DBAL\Connection;
 class Builder
 {
     /**
-     * @var array
-     */
-    private $columns = [];
-
-    /**
      * @var string
      */
     private $tableAlias;
@@ -25,61 +20,51 @@ class Builder
     /**
      * Builder constructor.
      *
-     * @param array $columns
      * @param $tableAlias
      */
-    public function __construct(array $columns, $tableAlias)
+    public function __construct(string $tableAlias)
     {
-        $this->columns = $columns;
         $this->tableAlias = $tableAlias;
     }
 
     /**
      * @param QueryBuilder $queryBuilder
      * @param Filter|null $filter
-     * @param bool $isAggregated
      */
-    public function build(QueryBuilder $queryBuilder, Filter $filter = null, $isAggregated = false)
+    public function build(QueryBuilder $queryBuilder, Filter $filter = null)
     {
         if (empty($filter)) {
             return;
         }
-        if ($filter->getLimit() && !$isAggregated) {
+        if ($filter->getLimit()) {
             $queryBuilder->setMaxResults($filter->getLimit());
         }
-        if ($filter->getOffset() && !$isAggregated) {
+        if ($filter->getOffset()) {
             $queryBuilder->setFirstResult($filter->getOffset());
         }
 
         foreach ($filter->getConditions() as $field => $conditions) {
-            $this->buildQueryConditions($queryBuilder, $conditions, $this->columns, $this->tableAlias);
+            $this->buildQueryConditions($queryBuilder, $conditions, $this->tableAlias);
         }
 
         foreach ($filter->getOrderBy() as $field => $order) {
-            if (in_array($field, $this->columns)) {
-                $queryBuilder->addOrderBy($this->tableAlias . '.' . $field, $order);
-            }
+            $queryBuilder->addOrderBy($this->tableAlias . '.' . $field, $order);
         }
         foreach ($filter->getGroupBy() as $field) {
-            if (in_array($field, $this->columns)) {
-                $queryBuilder->addGroupBy($this->tableAlias . '.' . $field);
-            }
+            $queryBuilder->addGroupBy($this->tableAlias . '.' . $field);
         }
     }
 
     /**
      * @param QueryBuilder $queryBuilder
      * @param array $conditions
-     * @param array $columns
      * @param string $tableAlias
      */
-    public function buildQueryConditions(QueryBuilder $queryBuilder, array $conditions, array $columns = [], $tableAlias = null)
+    public function buildQueryConditions(QueryBuilder $queryBuilder, array $conditions, $tableAlias = null)
     {
+        $tableAlias = $tableAlias ? $tableAlias : $this->tableAlias;
         /* @var Condition $condition */
         foreach ($conditions as $condition) {
-            if ($columns && !in_array($condition->getField(), $columns)) {
-                continue;
-            }
             $this->buildSingleCondition($queryBuilder, $condition, $tableAlias);
         }
     }

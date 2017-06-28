@@ -12,5 +12,5 @@ interface NullableInterface
     /**
      * @return bool
      */
-    public function isNull();
+    public function isNull(): bool;
 }

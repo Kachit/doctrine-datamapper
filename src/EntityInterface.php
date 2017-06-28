@@ -23,19 +23,19 @@ interface EntityInterface extends NullableInterface
     /**
      * @return array
      */
-    public function toArray();
+    public function toArray(): array;
 
     /**
      * @param array $data
      * @return EntityInterface
      */
-    public function fillFromArray(array $data);
+    public function fillFromArray(array $data): EntityInterface;
 
     /**
      * @param mixed $field
      * @return bool
      */
-    public function hasEntityField($field);
+    public function hasEntityField($field): bool;
 
     /**
      * @param mixed $field
@@ -48,5 +48,5 @@ interface EntityInterface extends NullableInterface
      * @param mixed $value
      * @return EntityInterface
      */
-    public function setEntityField($field, $value);
+    public function setEntityField($field, $value): EntityInterface;
 }

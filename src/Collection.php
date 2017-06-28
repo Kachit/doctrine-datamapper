@@ -20,9 +20,10 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
 
     /**
      * @param EntityInterface $entity
-     * @return $this
+     * @throws CollectionException
+     * @return CollectionInterface
      */
-    public function add(EntityInterface $entity)
+    public function add(EntityInterface $entity): CollectionInterface
     {
         $this->checkEntity($entity);
         $this->data[$entity->getPk()] = $entity;
@@ -33,7 +34,7 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
      * @param EntityInterface[] $entities
      * @return CollectionInterface
      */
-    public function fill(array $entities)
+    public function fill(array $entities): CollectionInterface
     {
         foreach($entities as $entity) {
             $this->add($entity);
@@ -44,9 +45,9 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     /**
      * @param mixed $index
      * @return EntityInterface
-     * @throws \Exception
+     * @throws CollectionException
      */
-    public function get($index)
+    public function get($index): EntityInterface
     {
         if (!$this->has($index)) {
             throw new CollectionException(sprintf('Entity with index "%s" is not exists', $index));
@@ -57,9 +58,9 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     /**
      * @param mixed $index
      * @return CollectionInterface
-     * @throws \Exception
+     * @throws CollectionException
      */
-    public function remove($index)
+    public function remove($index): CollectionInterface
     {
         if (!$this->has($index)) {
             throw new CollectionException(sprintf('Entity with index "%s" is not exists', $index));
@@ -71,7 +72,7 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     /**
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->data);
     }
@@ -79,7 +80,7 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     /**
      * @return bool
      */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return empty($this->data);
     }
@@ -88,7 +89,7 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
      * @param mixed $index
      * @return bool
      */
-    public function has($index)
+    public function has($index): bool
     {
         return isset($this->data[$index]);
     }
@@ -96,28 +97,36 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     /**
      * Get first object
      *
+     * @throws CollectionException
      * @return EntityInterface
      */
-    public function getFirst()
+    public function getFirst(): EntityInterface
     {
         $data = $this->toArray();
+        if (empty($data)) {
+            throw new CollectionException('Collection is empty');
+        }
         return array_shift($data);
     }
     /**
      * Get last object
      *
+     * @throws CollectionException
      * @return EntityInterface
      */
-    public function getLast()
+    public function getLast(): EntityInterface
     {
         $data = $this->toArray();
+        if (empty($data)) {
+            throw new CollectionException('Collection is empty');
+        }
         return array_pop($data);
     }
 
     /**
      * @return EntityInterface[]
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->data;
     }
@@ -126,20 +135,20 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
      * Filter collection by user function
      *
      * @param Closure $function
-     * @return Collection|EntityInterface[]
+     * @return CollectionInterface|EntityInterface[]
      */
-    public function filter(Closure $function)
+    public function filter(Closure $function): CollectionInterface
     {
         $data = array_filter($this->data, $function);
         return new static($data);
     }
 
     /**
-     * Get object ids
+     * Get object keys
      *
      * @return array
      */
-    public function getKeys()
+    public function getKeys(): array
     {
         return array_keys($this->data);
     }
@@ -170,7 +179,7 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
 
     /**
      * @param EntityInterface $entity
-     * @throws \Exception
+     * @throws CollectionException
      */
     protected function checkEntity(EntityInterface $entity)
     {
