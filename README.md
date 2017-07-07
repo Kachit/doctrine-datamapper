@@ -9,7 +9,9 @@ Simple datamapper powered by doctrine2
 //create db connection
 $params = []
 $connection = new Doctrine\DBAL\Connection($params);
+```
 
+```php
 //create your table gateway
 $gateway = new Your\Project\Namespace\TableGateway($connection);
 
@@ -23,4 +25,21 @@ $rows = $gateway->fetchAll();
 $filter = new Kachit\Database\Query\Filter();
 $filter->createCondition('active', true);
 $rows = $gateway->fetchAll($filter);
+```
+
+```php
+//create mapper
+$entity = new Your\Project\Namespace\Entity();
+$mapper = new Your\Project\Namespace\Mapper($gateway, $entity);
+
+//fetch by PK
+$entity = $mapper->fetchByPk(1);
+
+//fetch all without filter
+$collection = $mapper->fetchAll();
+
+//fetch list with filter (all active)
+$filter = new Kachit\Database\Query\Filter();
+$filter->createCondition('active', true);
+$collection = $mapper->fetchAll($filter);
 ```
