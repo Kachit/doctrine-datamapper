@@ -1,6 +1,6 @@
 <?php
 use Kachit\Database\Query\Filter;
-use Kachit\Database\Query\Parser;
+use Kachit\Database\Query\JsonQuery;
 
 class ParserTest extends \Codeception\Test\Unit {
 
@@ -12,7 +12,7 @@ class ParserTest extends \Codeception\Test\Unit {
     /**
      *
      */
-    public function testCreateFilterFromArray()
+    public function _testCreateFilterFromArray()
     {
         $query = ['$filter' =>
             [
@@ -22,7 +22,7 @@ class ParserTest extends \Codeception\Test\Unit {
                 ]
             ]
         ];
-        $parser = new Parser();
+        $parser = new JsonQuery();
         $filter = $parser->parse($query);
         $this->assertTrue($filter->hasCondition('active', '='));
         $this->assertTrue($filter->hasCondition('id', 'IN'));
@@ -45,7 +45,7 @@ class ParserTest extends \Codeception\Test\Unit {
     /**
      *
      */
-    public function testCreateFilterFromJson()
+    public function _testCreateFilterFromJson()
     {
         $query = ['$filter' =>
             [
@@ -56,7 +56,7 @@ class ParserTest extends \Codeception\Test\Unit {
             ]
         ];
         $query = json_encode($query);
-        $parser = new Parser();
+        $parser = new JsonQuery();
         $filter = $parser->parse($query);
         $this->assertTrue($filter->hasCondition('active', '='));
         $this->assertTrue($filter->hasCondition('id', 'IN'));

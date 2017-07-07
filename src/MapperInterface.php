@@ -39,7 +39,7 @@ interface MapperInterface
      * @param EntityInterface $entity
      * @return bool
      */
-    public function save(EntityInterface $entity);
+    public function save(EntityInterface $entity): bool;
 
     /**
      * @param EntityInterface $entity

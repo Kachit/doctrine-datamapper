@@ -44,10 +44,10 @@ class NullEntity implements EntityInterface
     }
 
     /**
-     * @param mixed $field
+     * @param string $field
      * @return mixed
      */
-    public function getEntityField($field)
+    public function getEntityField(string $field)
     {
         return null;
     }
@@ -56,7 +56,7 @@ class NullEntity implements EntityInterface
      * @param mixed $field
      * @return bool
      */
-    public function hasEntityField($field): bool
+    public function hasEntityField(string $field): bool
     {
         return false;
     }
@@ -66,7 +66,7 @@ class NullEntity implements EntityInterface
      * @param mixed $value
      * @return EntityInterface
      */
-    public function setEntityField($field, $value): EntityInterface
+    public function setEntityField(string $field, $value): EntityInterface
     {
         return $this;
     }
@@ -97,7 +97,7 @@ class NullEntity implements EntityInterface
      * @param array $arguments
      * @return null|EntityInterface
      */
-    protected function __callHandler($name, $arguments)
+    protected function __callHandler($name, $arguments = [])
     {
         $result = null;
         switch(true) {

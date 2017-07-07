@@ -5,9 +5,12 @@
  * @author Kachit
  * @package Kachit\Database
  */
-namespace Kachit\Database\Query;
+namespace Kachit\Database\Query\Parser;
 
-class Parser
+use Kachit\Database\Query\FilterInterface;
+use Kachit\Database\Query\ParserInterface;
+
+class JsonQuery implements ParserInterface
 {
     const QUERY_PARAM_FILTER = '$filter';
     const QUERY_PARAM_ORDER_BY = '$orderby';
@@ -58,9 +61,9 @@ class Parser
 
     /**
      * @param string $query
-     * @return Filter
+     * @return FilterInterface
      */
-    public function parse($query)
+    public function parse($query): FilterInterface
     {
         $filter = new Filter();
         if (is_string($query)) {

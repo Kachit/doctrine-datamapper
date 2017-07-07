@@ -16,11 +16,10 @@ class Hydrator implements HydratorInterface
 
     /**
      * Hydrator constructor.
-     * @param EntityInterface|null $nullEntity
      */
-    public function __construct(EntityInterface $nullEntity = null)
+    public function __construct()
     {
-        $this->nullEntity = ($nullEntity) ? $nullEntity : new NullEntity();
+        $this->nullEntity = new NullEntity();
     }
 
     /**

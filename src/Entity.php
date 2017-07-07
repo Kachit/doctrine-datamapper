@@ -41,20 +41,20 @@ abstract class Entity implements EntityInterface, \JsonSerializable
     }
 
     /**
-     * @param mixed $field
+     * @param string $field
      * @return bool
      */
-    public function hasEntityField($field): bool
+    public function hasEntityField(string $field): bool
     {
         return property_exists($this, $field);
     }
 
     /**
-     * @param mixed $field
+     * @param string $field
      * @return mixed
      * @throws EntityException
      */
-    public function getEntityField($field)
+    public function getEntityField(string $field)
     {
         if (!$this->hasEntityField($field)) {
             throw new EntityException('Property is not exists');
@@ -63,12 +63,12 @@ abstract class Entity implements EntityInterface, \JsonSerializable
     }
 
     /**
-     * @param mixed $field
+     * @param string $field
      * @param mixed $value
      * @return EntityInterface
      * @throws EntityException
      */
-    public function setEntityField($field, $value): EntityInterface
+    public function setEntityField(string $field, $value): EntityInterface
     {
         if (!$this->hasEntityField($field)) {
             throw new EntityException('Property is not exists');

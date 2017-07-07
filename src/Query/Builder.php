@@ -29,9 +29,9 @@ class Builder
 
     /**
      * @param QueryBuilder $queryBuilder
-     * @param Filter|null $filter
+     * @param FilterInterface|null $filter
      */
-    public function build(QueryBuilder $queryBuilder, Filter $filter = null)
+    public function build(QueryBuilder $queryBuilder, FilterInterface $filter = null)
     {
         if (empty($filter)) {
             return;
@@ -81,7 +81,7 @@ class Builder
         $field = ($queryBuilder->getType() !== QueryBuilder::DELETE && $tableAlias) ? $tableAlias . '.' . $condition->getField() : $condition->getField();
         $type = ($condition->isList()) ? Connection::PARAM_STR_ARRAY : null;
         $value = $condition->getValue();
-        if (in_array($operator, [Parser::OPERATOR_IS_NULL])) {
+        if (in_array($operator, [FilterInterface::OPERATOR_IS_NULL])) {
             $value = ($value) ? 'IS NOT NULL' : 'IS NULL';
         }
         $namedParameter = $queryBuilder->createNamedParameter($value, $type);

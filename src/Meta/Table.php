@@ -11,6 +11,8 @@ use Doctrine\DBAL\Connection;
 
 class Table
 {
+    protected $fields;
+
     /**
      * @var mixed
      */
@@ -50,7 +52,7 @@ class Table
      * @param Connection $connection
      * @param $table
      */
-    public function __construct(Connection $connection, $table)
+    public function __construct(Connection $connection, string $table)
     {
         $this->connection = $connection;
         $this->table = $table;

@@ -7,12 +7,14 @@
  */
 namespace Kachit\Database\Query;
 
-class Filter
+use Kachit\Database\Query\Condition\Collection;
+
+class Filter implements FilterInterface
 {
     /**
-     * @var array
+     * @var Collection
      */
-    private $conditions = [];
+    private $conditions;
 
     /**
      * @var array
@@ -35,102 +37,80 @@ class Filter
     private $offset = 0;
 
     /**
-     * @param null $field
-     * @return array
+     * Filter constructor.
+     * @param Collection|null $conditions
      */
-    public function getConditions($field = null)
+    public function __construct(Collection $conditions = null)
     {
-        return ($field) ? $this->conditions[$field] : $this->conditions;
+        $this->conditions = $conditions ?? new Collection();
     }
 
     /**
      * @param string $field
+     * @param string $operator
      * @return bool
      */
-    public function hasConditions($field)
+    public function hasCondition(string $field, string $operator): bool
     {
-        return isset($this->conditions[$field]);
+        return $this->conditions->hasByFieldAndOperator($field, $operator);
+    }
+
+    /**
+     * @param string $field
+     * @param string $operator
+     * @return Condition
+     */
+    public function getCondition(string $field, string $operator): Condition
+    {
+        return $this->conditions->getByFieldAndOperator($field, $operator);
+    }
+
+    /**
+     * @param string $field
+     * @param string $operator
+     * @return FilterInterface
+     */
+    public function deleteCondition(string $field, string $operator): FilterInterface
+    {
+        $this->conditions->removeByFieldAndOperator($field, $operator);
+        return $this;
     }
 
     /**
      * @param Condition $condition
-     * @return $this
+     * @return FilterInterface
      */
-    public function addCondition(Condition $condition)
+    public function addCondition(Condition $condition): FilterInterface
     {
-        $this->conditions[$condition->getField()][$condition->getOperator()] = $condition;
-        return $this;
-    }
-
-    /**
-     * @param $field
-     * @param $value
-     * @param string $operator
-     * @return $this
-     */
-    public function createCondition($field, $value, $operator = '=')
-    {
-        $condition = new Condition($field, $operator, $value);
-        $this->addCondition($condition);
+        $this->conditions->add($condition);
         return $this;
     }
 
     /**
      * @param string $field
-     * @return Filter
-     */
-    public function deleteConditions($field)
-    {
-        if ($this->hasConditions($field)) {
-            unset($this->conditions[$field]);
-        }
-        return $this;
-    }
-    /**
-     * @param string $field
+     * @param mixed $value
      * @param string $operator
-     * @return bool
+     * @return FilterInterface
      */
-    public function hasCondition($field, $operator)
+    public function createCondition(string $field, $value, string $operator = self::OPERATOR_IS_EQUAL): FilterInterface
     {
-        return isset($this->conditions[$field][$operator]);
-    }
-    /**
-     * @param string $field
-     * @param string $operator
-     * @return Condition|null
-     */
-    public function getCondition($field, $operator)
-    {
-        return $this->hasCondition($field, $operator) ? $this->conditions[$field][$operator] : null;
-    }
-
-    /**
-     * @param string $field
-     * @param string $operator
-     * @return Filter
-     */
-    public function deleteCondition($field, $operator)
-    {
-        if ($this->hasCondition($field, $operator)) {
-            unset($this->conditions[$field][$operator]);
-        }
+        $this->addCondition(new Condition($field, $operator, $value));
         return $this;
     }
 
     /**
      * @return int
      */
-    public function getLimit()
+    public function getLimit(): int
     {
         return $this->limit;
     }
 
     /**
      * @param int $limit
-     * @return $this
+     * @return FilterInterface
      */
-    public function setLimit($limit)
+    public function setLimit(int $limit): FilterInterface
     {
         $this->limit = (int)$limit;
         return $this;
@@ -139,16 +119,16 @@ class Filter
     /**
      * @return int
      */
-    public function getOffset()
+    public function getOffset(): int
     {
         return $this->offset;
     }
 
     /**
      * @param int $offset
-     * @return $this
+     * @return FilterInterface
      */
-    public function setOffset($offset)
+    public function setOffset(int $offset): FilterInterface
     {
         $this->offset = (int)$offset;
         return $this;
@@ -157,27 +137,27 @@ class Filter
     /**
      * @return array
      */
-    public function getOrderBy()
+    public function getOrderBy(): array
     {
         return $this->orderBy;
     }
 
     /**
      * @param array $orderBy
-     * @return $this
+     * @return FilterInterface
      */
-    public function setOrderBy(array $orderBy)
+    public function setOrderBy(array $orderBy): FilterInterface
     {
         $this->orderBy = $orderBy;
         return $this;
     }
 
     /**
-     * @param $field
-     * @param $order
-     * @return $this
+     * @param string $field
+     * @param string $order
+     * @return FilterInterface
      */
-    public function addOrderBy($field, $order)
+    public function addOrderBy(string $field, string $order): FilterInterface
     {
         $this->orderBy[$field] = $order;
         return $this;
@@ -186,37 +166,37 @@ class Filter
     /**
      * @return array
      */
-    public function getGroupBy()
+    public function getGroupBy(): array
     {
         return $this->groupBy;
     }
 
     /**
      * @param array $groupBy
-     * @return $this
+     * @return FilterInterface
      */
-    public function setGroupBy($groupBy)
+    public function setGroupBy(array $groupBy): FilterInterface
     {
         $this->groupBy = $groupBy;
         return $this;
     }
 
     /**
-     * @param $field
-     * @return $this
+     * @param string $field
+     * @return FilterInterface
      */
-    public function addGroupBy($field)
+    public function addGroupBy(string $field): FilterInterface
     {
         $this->groupBy[] = $field;
         return $this;
     }
 
     /**
-     * @return $this
+     * @return FilterInterface
      */
-    public function clear()
+    public function clear(): FilterInterface
     {
-        $this->conditions = [];
+        $this->conditions->clear();
         $this->orderBy = [];
         $this->groupBy = [];
         $this->limit = 0;
@@ -227,9 +207,9 @@ class Filter
     /**
      * @return bool
      */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
-        return (empty($this->conditions)
+        return ($this->conditions->isEmpty()
             && empty($this->orderBy)
             && empty($this->groupBy)
             && empty($this->limit)

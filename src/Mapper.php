@@ -33,6 +33,11 @@ class Mapper implements MapperInterface
     protected $collection;
 
     /**
+     * @var EntityValidatorInterface
+     */
+    protected $validator;
+
+    /**
      * Mapper constructor
      *
      * @param GatewayInterface $gateway
@@ -91,7 +96,7 @@ class Mapper implements MapperInterface
      * @param EntityInterface $entity
      * @return bool
      */
-    public function save(EntityInterface $entity)
+    public function save(EntityInterface $entity): bool
     {
         $this->validateEntity($entity);
         $pk = $entity->getPk();
@@ -102,7 +107,7 @@ class Mapper implements MapperInterface
             $result = $this->gateway->insert($data);
             $entity->setPk($result);
         }
-        return $result;
+        return (bool)$result;
     }
 
     /**

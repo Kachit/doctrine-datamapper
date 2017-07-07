@@ -31,7 +31,7 @@ class Condition
      * @param $operator
      * @param $value
      */
-    public function __construct($field, $operator, $value)
+    public function __construct(string $field, string $operator, $value)
     {
         $this->field = $field;
         $this->operator = $operator;
@@ -39,9 +39,9 @@ class Condition
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getField()
+    public function getField(): string
     {
         return $this->field;
     }
@@ -50,16 +50,16 @@ class Condition
      * @param mixed $field
      * @return $this
      */
-    public function setField($field)
+    public function setField(string $field)
     {
         $this->field = $field;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getOperator()
+    public function getOperator(): string
     {
         return $this->operator;
     }
@@ -68,7 +68,7 @@ class Condition
      * @param mixed $operator
      * @return $this
      */
-    public function setOperator($operator)
+    public function setOperator(string $operator)
     {
         $this->operator = $operator;
         return $this;
@@ -95,7 +95,7 @@ class Condition
     /**
      * @return bool
      */
-    public function isList()
+    public function isList(): bool
     {
         return is_array($this->value);
     }

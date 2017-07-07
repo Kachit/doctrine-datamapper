@@ -32,21 +32,21 @@ interface EntityInterface extends NullableInterface
     public function fillFromArray(array $data): EntityInterface;
 
     /**
-     * @param mixed $field
+     * @param string $field
      * @return bool
      */
-    public function hasEntityField($field): bool;
+    public function hasEntityField(string $field): bool;
 
     /**
-     * @param mixed $field
+     * @param string $field
      * @return mixed
      */
-    public function getEntityField($field);
+    public function getEntityField(string $field);
 
     /**
-     * @param mixed $field
+     * @param string $field
      * @param mixed $value
      * @return EntityInterface
      */
-    public function setEntityField($field, $value): EntityInterface;
+    public function setEntityField(string $field, $value): EntityInterface;
 }
