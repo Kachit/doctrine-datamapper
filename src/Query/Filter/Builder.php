@@ -139,7 +139,7 @@ class Builder
      * @param int $limit
      * @return $this
      */
-    public function setLimit(int $limit)
+    public function limit(int $limit)
     {
         $this->filter->setLimit($limit);
         return $this;
@@ -149,7 +149,7 @@ class Builder
      * @param int $offset
      * @return $this
      */
-    public function setOffset(int $offset)
+    public function offset(int $offset)
     {
         $this->filter->setOffset($offset);
         return $this;

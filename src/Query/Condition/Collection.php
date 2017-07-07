@@ -86,6 +86,14 @@ class Collection
     }
 
     /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return $this->data;
+    }
+
+    /**
      * @return bool
      */
     public function isEmpty(): bool

@@ -6,9 +6,21 @@ Simple datamapper
 Simple datamapper powered by doctrine2
 
 ```php
-$gateway = new Gateway($doctrineConnection);
+//create db connection
+$params = []
+$connection = new Doctrine\DBAL\Connection($params);
 
+//create your table gateway
+$gateway = new Your\Project\Namespace\TableGateway($connection);
+
+//fetch by PK
 $row = $gateway->fetchByPk($id);
 
+//fetch all without filter
 $rows = $gateway->fetchAll();
+
+//fetch list with filter (all active)
+$filter = new Kachit\Database\Query\Filter();
+$filter->createCondition('active', true);
+$rows = $gateway->fetchAll($filter);
 ```

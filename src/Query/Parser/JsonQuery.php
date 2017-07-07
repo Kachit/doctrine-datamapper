@@ -9,6 +9,7 @@ namespace Kachit\Database\Query\Parser;
 
 use Kachit\Database\Query\FilterInterface;
 use Kachit\Database\Query\ParserInterface;
+use Kachit\Database\Query\Filter;
 
 class JsonQuery implements ParserInterface
 {
@@ -17,17 +18,6 @@ class JsonQuery implements ParserInterface
     const QUERY_PARAM_GROUP_BY = '$group';
     const QUERY_PARAM_LIMIT = '$limit';
     const QUERY_PARAM_OFFSET = '$skip';
-
-    const OPERATOR_IS_EQUAL = '=';
-    const OPERATOR_IS_NOT_EQUAL = '!=';
-    const OPERATOR_IS_GREATER_THAN = '>';
-    const OPERATOR_IS_GREATER_THAN_OR_EQUAL = '>=';
-    const OPERATOR_IS_IN = 'IN';
-    const OPERATOR_IS_NOT_IN = 'NOT IN';
-    const OPERATOR_IS_LESS_THAN = '<';
-    const OPERATOR_IS_LESS_THAN_OR_EQUAL = '<=';
-    const OPERATOR_IS_LIKE = 'LIKE';
-    const OPERATOR_IS_NULL = 'NULL';
 
     const PARAM_IS_EQUAL = '$eq';
     const PARAM_IS_GREATER_THAN = '$gt';
@@ -47,20 +37,20 @@ class JsonQuery implements ParserInterface
      * @var array
      */
     protected $paramsOperatorsMap = [
-        self::PARAM_IS_EQUAL => self::OPERATOR_IS_EQUAL,
-        self::PARAM_IS_NOT_EQUAL => self::OPERATOR_IS_NOT_EQUAL,
-        self::PARAM_IS_GREATER_THAN => self::OPERATOR_IS_GREATER_THAN,
-        self::PARAM_IS_GREATER_THAN_OR_EQUAL => self::OPERATOR_IS_GREATER_THAN_OR_EQUAL,
-        self::PARAM_IS_IN => self::OPERATOR_IS_IN,
-        self::PARAM_IS_NOT_IN => self::OPERATOR_IS_NOT_IN,
-        self::PARAM_IS_LESS_THAN => self::OPERATOR_IS_LESS_THAN,
-        self::PARAM_IS_LESS_THAN_OR_EQUAL => self::OPERATOR_IS_LESS_THAN_OR_EQUAL,
-        self::PARAM_IS_LIKE => self::OPERATOR_IS_LIKE,
-        self::PARAM_IS_NULL => self::OPERATOR_IS_NULL,
+        self::PARAM_IS_EQUAL => FilterInterface::OPERATOR_IS_EQUAL,
+        self::PARAM_IS_NOT_EQUAL => FilterInterface::OPERATOR_IS_NOT_EQUAL,
+        self::PARAM_IS_GREATER_THAN => FilterInterface::OPERATOR_IS_GREATER_THAN,
+        self::PARAM_IS_GREATER_THAN_OR_EQUAL => FilterInterface::OPERATOR_IS_GREATER_THAN_OR_EQUAL,
+        self::PARAM_IS_IN => FilterInterface::OPERATOR_IS_IN,
+        self::PARAM_IS_NOT_IN => FilterInterface::OPERATOR_IS_NOT_IN,
+        self::PARAM_IS_LESS_THAN => FilterInterface::OPERATOR_IS_LESS_THAN,
+        self::PARAM_IS_LESS_THAN_OR_EQUAL => FilterInterface::OPERATOR_IS_LESS_THAN_OR_EQUAL,
+        self::PARAM_IS_LIKE => FilterInterface::OPERATOR_IS_LIKE,
+        self::PARAM_IS_NULL => FilterInterface::OPERATOR_IS_NULL,
     ];
 
     /**
-     * @param string $query
+     * @param mixed $query
      * @return FilterInterface
      */
     public function parse($query): FilterInterface
@@ -100,11 +90,11 @@ class JsonQuery implements ParserInterface
     protected function parseConditions(Filter $filter, $field, $conditions)
     {
         if (is_scalar($conditions)) {
-            $filter->addCondition(new Condition($field, self::OPERATOR_IS_EQUAL, $conditions));
+            $filter->createCondition($field, $conditions, FilterInterface::OPERATOR_IS_EQUAL);
         } else {
             foreach ($conditions as $param => $value) {
                 if (isset($this->paramsOperatorsMap[$param])) {
-                    $filter->addCondition(new Condition($field, $this->paramsOperatorsMap[$param], $value));
+                    $filter->createCondition($field, $value, $this->paramsOperatorsMap[$param]);
                 }
             }
         }

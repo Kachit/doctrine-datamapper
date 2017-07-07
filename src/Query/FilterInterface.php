@@ -25,6 +25,11 @@ interface FilterInterface
     const ORDER_DESC = 'desc';
 
     /**
+     * @return array
+     */
+    public function getConditions(): array;
+
+    /**
      * @param string $field
      * @param string $operator
      * @return bool

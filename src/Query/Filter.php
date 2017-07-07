@@ -46,6 +46,14 @@ class Filter implements FilterInterface
     }
 
     /**
+     * @return array
+     */
+    public function getConditions(): array
+    {
+        return $this->conditions->toArray();
+    }
+
+    /**
      * @param string $field
      * @param string $operator
      * @return bool
