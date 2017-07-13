@@ -124,6 +124,27 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     }
 
     /**
+     * @param string $valueField
+     * @param string|null $keyField
+     * @return array
+     */
+    public function extract(string $valueField, string $keyField = null): array
+    {
+        $result = [];
+        /* @var EntityInterface $entity */
+        foreach ($this as $entity) {
+            $value = $entity->getEntityField($valueField);
+            if ($keyField) {
+                $key = $entity->getEntityField($keyField);
+                $result[$key] = $value;
+            } else {
+                $result[] = $value;
+            }
+        }
+        return $result;
+    }
+
+    /**
      * @return EntityInterface[]
      */
     public function toArray(): array

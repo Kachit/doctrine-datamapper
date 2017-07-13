@@ -30,6 +30,26 @@ class CollectionTest extends \Codeception\Test\Unit {
         $this->assertTrue($collection->remove(1)->isEmpty());
     }
 
+    public function testExtractValue()
+    {
+        $collection = new Collection();
+        $collection->add(new Entity(['id' => 1, 'name' => 'foo1', 'email' => 'foo1@bar', 'active' => 1]));
+        $collection->add(new Entity(['id' => 2, 'name' => 'foo2', 'email' => 'foo2@bar', 'active' => 1]));
+        $result = $collection->extract('name');
+        $this->assertEquals(['foo1', 'foo2'], $result);
+
+    }
+
+    public function testExtractKeyValue()
+    {
+        $collection = new Collection();
+        $collection->add(new Entity(['id' => 1, 'name' => 'foo1', 'email' => 'foo1@bar', 'active' => 1]));
+        $collection->add(new Entity(['id' => 2, 'name' => 'foo2', 'email' => 'foo2@bar', 'active' => 1]));
+        $result = $collection->extract('name', 'id');
+        $this->assertEquals([1 => 'foo1', 2 => 'foo2'], $result);
+
+    }
+
     /**
      *
      */

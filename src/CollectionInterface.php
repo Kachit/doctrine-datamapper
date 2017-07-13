@@ -76,6 +76,13 @@ interface CollectionInterface
     public function getKeys(): array;
 
     /**
+     * @param string $valueField
+     * @param string|null $keyField
+     * @return array
+     */
+    public function extract(string $valueField, string $keyField = null): array;
+
+    /**
      * @return EntityInterface[]
      */
     public function toArray(): array;
