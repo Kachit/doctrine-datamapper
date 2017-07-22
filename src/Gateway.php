@@ -13,6 +13,7 @@ use Kachit\Database\Query\Filter;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
+use Kachit\Database\Query\FilterInterface;
 
 abstract class Gateway implements GatewayInterface
 {
@@ -229,7 +230,7 @@ abstract class Gateway implements GatewayInterface
 
     /**
      * @param mixed $pk
-     * @return Filter
+     * @return FilterInterface
      */
     protected function buildPrimaryKeyFilter($pk)
     {
