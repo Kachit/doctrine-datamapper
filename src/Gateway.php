@@ -109,6 +109,7 @@ abstract class Gateway implements GatewayInterface
         $this->buildQuery($queryBuilder, $filter);
         return $queryBuilder
             ->resetQueryPart('select')
+            ->resetQueryPart('orderBy')
             ->select($column)
             ->execute()
             ->fetchColumn()
