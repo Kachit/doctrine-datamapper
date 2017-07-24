@@ -74,10 +74,10 @@ class JsonQuery implements ParserInterface
      */
     protected function parseFilter(Filter $filter, array $query)
     {
-        if (!isset($query[self::QUERY_PARAM_FILTER]) || !is_array($query[self::QUERY_PARAM_FILTER])) {
+        if (!isset($query[static::QUERY_PARAM_FILTER]) || !is_array($query[static::QUERY_PARAM_FILTER])) {
             return;
         }
-        foreach ($query[self::QUERY_PARAM_FILTER] as $field => $conditions) {
+        foreach ($query[static::QUERY_PARAM_FILTER] as $field => $conditions) {
             $this->parseConditions($filter, $field, $conditions);
         }
     }
@@ -106,11 +106,11 @@ class JsonQuery implements ParserInterface
      */
     protected function parseLimitOffset(Filter $filter, array $query)
     {
-        if (isset($query[self::QUERY_PARAM_LIMIT])) {
-            $filter->setLimit($this->filterValue($query[self::QUERY_PARAM_LIMIT], FILTER_SANITIZE_NUMBER_INT ));
+        if (isset($query[static::QUERY_PARAM_LIMIT])) {
+            $filter->setLimit($this->filterValue($query[static::QUERY_PARAM_LIMIT], FILTER_SANITIZE_NUMBER_INT ));
         }
-        if (isset($query[self::QUERY_PARAM_OFFSET])) {
-            $filter->setOffset($this->filterValue($query[self::QUERY_PARAM_OFFSET], FILTER_SANITIZE_NUMBER_INT ));
+        if (isset($query[static::QUERY_PARAM_OFFSET])) {
+            $filter->setOffset($this->filterValue($query[static::QUERY_PARAM_OFFSET], FILTER_SANITIZE_NUMBER_INT ));
         }
     }
 
@@ -120,7 +120,7 @@ class JsonQuery implements ParserInterface
      */
     protected function parseOrderBy(Filter $filter, array $query)
     {
-        if (isset($query[self::QUERY_PARAM_ORDER_BY]) && is_array($query[self::QUERY_PARAM_ORDER_BY])) {
+        if (isset($query[static::QUERY_PARAM_ORDER_BY]) && is_array($query[static::QUERY_PARAM_ORDER_BY])) {
             $orders = [self::ORDER_ASC, self::ORDER_DESC];
             foreach ($query[self::QUERY_PARAM_ORDER_BY] as $orderBy) {
                 foreach ($orderBy as $field => $order) {
@@ -138,8 +138,8 @@ class JsonQuery implements ParserInterface
      */
     protected function parseGroupBy(Filter $filter, array $query)
     {
-        if (isset($query[self::QUERY_PARAM_GROUP_BY]) && is_array($query[self::QUERY_PARAM_GROUP_BY])) {
-            foreach ($query[self::QUERY_PARAM_GROUP_BY] as $groupBy) {
+        if (isset($query[static::QUERY_PARAM_GROUP_BY]) && is_array($query[static::QUERY_PARAM_GROUP_BY])) {
+            foreach ($query[static::QUERY_PARAM_GROUP_BY] as $groupBy) {
                 foreach ($groupBy as $field) {
                     $filter->addGroupBy($field);
                 }

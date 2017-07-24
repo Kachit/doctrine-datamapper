@@ -1,9 +1,9 @@
 <?php
 use Kachit\Database\Query\Filter;
-use Kachit\Database\Query\Parser\JsonQuery;
+use Kachit\Database\Query\Parser\GetParamsQuery;
 use Kachit\Database\Query\Condition;
 
-class ParserTest extends \Codeception\Test\Unit {
+class GetParamsParserTest extends \Codeception\Test\Unit {
 
     /**
      * @var \UnitTester
@@ -15,15 +15,15 @@ class ParserTest extends \Codeception\Test\Unit {
      */
     public function testCreateFilterFromArray()
     {
-        $query = ['$filter' =>
+        $query = ['filter' =>
             [
                 'active' => 1,
                 'id' => [
-                    '$in' => [1, 2, 3]
+                    '$in' => '1, 2, 3'
                 ]
             ]
         ];
-        $parser = new JsonQuery();
+        $parser = new GetParamsQuery();
         $filter = $parser->parse($query);
         $this->assertInstanceOf(Filter::class, $filter);
         $this->assertTrue($filter->hasCondition('active', '='));
@@ -47,36 +47,13 @@ class ParserTest extends \Codeception\Test\Unit {
     /**
      *
      */
-    public function testCreateFilterFromJson()
+    public function testCreateFilterWithLimitOffset()
     {
-        $query = ['$filter' =>
-            [
-                'active' => 1,
-                'id' => [
-                    '$in' => [1, 2, 3]
-                ]
-            ]
-        ];
-        $query = json_encode($query);
-        $parser = new JsonQuery();
+        $query = ['limit' => 10, 'offset' => 10];
+        $parser = new GetParamsQuery();
         $filter = $parser->parse($query);
-        $this->assertInstanceOf(Filter::class, $filter);
-        $this->assertTrue($filter->hasCondition('active', '='));
-        $this->assertTrue($filter->hasCondition('id', 'IN'));
-        $condition = $filter->getCondition('active', '=');
-        $this->assertNotEmpty($condition);
-        $this->assertTrue(is_object($condition));
-        $this->assertInstanceOf(Condition::class, $condition);
-        $this->assertEquals(1, $condition->getValue());
-        $this->assertEquals('active', $condition->getField());
-        $this->assertEquals('=', $condition->getOperator());
-        $condition = $filter->getCondition('id', 'IN');
-        $this->assertNotEmpty($condition);
-        $this->assertTrue(is_object($condition));
-        $this->assertInstanceOf(Condition::class, $condition);
-        $this->assertEquals([1, 2, 3], $condition->getValue());
-        $this->assertEquals('id', $condition->getField());
-        $this->assertEquals('IN', $condition->getOperator());
+        $this->assertEquals($query['limit'], $filter->getLimit());
+        $this->assertEquals($query['offset'], $filter->getOffset());
     }
 
     /**
@@ -84,7 +61,7 @@ class ParserTest extends \Codeception\Test\Unit {
      */
     public function testCreateFilterFromEmpty()
     {
-        $parser = new JsonQuery();
+        $parser = new GetParamsQuery();
         $filter = $parser->parse(null);
         $this->assertInstanceOf(Filter::class, $filter);
     }
