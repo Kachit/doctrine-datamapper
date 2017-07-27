@@ -19,6 +19,15 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     protected $data = [];
 
     /**
+     * Collection constructor.
+     * @param array $data
+     */
+    public function __construct(array $data = [])
+    {
+        $this->fill($data);
+    }
+
+    /**
      * @param EntityInterface $entity
      * @throws CollectionException
      * @return CollectionInterface
