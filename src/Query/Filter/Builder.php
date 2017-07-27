@@ -156,6 +156,28 @@ class Builder
     }
 
     /**
+     * @param string $field
+     * @param bool $asc
+     * @return $this
+     */
+    public function order(string $field, bool $asc = true)
+    {
+        $order = ($asc) ? FilterInterface::ORDER_ASC : Filter::ORDER_DESC;
+        $this->filter->addOrderBy($field, $order);
+        return $this;
+    }
+
+    /**
+     * @param string $field
+     * @return $this
+     */
+    public function group(string $field)
+    {
+        $this->filter->addGroupBy($field);
+        return $this;
+    }
+
+    /**
      * @return FilterInterface
      */
     public function getFilter(): FilterInterface
