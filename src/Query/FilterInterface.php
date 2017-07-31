@@ -34,21 +34,21 @@ interface FilterInterface
      * @param string $operator
      * @return bool
      */
-    public function hasCondition(string $field, string $operator): bool;
+    public function hasCondition(string $field, string $operator = self::OPERATOR_IS_EQUAL): bool;
 
     /**
      * @param string $field
      * @param string $operator
      * @return Condition
      */
-    public function getCondition(string $field, string $operator): Condition;
+    public function getCondition(string $field, string $operator = self::OPERATOR_IS_EQUAL): Condition;
 
     /**
      * @param string $field
      * @param string $operator
      * @return FilterInterface
      */
-    public function deleteCondition(string $field, string $operator): FilterInterface;
+    public function deleteCondition(string $field, string $operator = self::OPERATOR_IS_EQUAL): FilterInterface;
 
     /**
      * @param Condition $condition

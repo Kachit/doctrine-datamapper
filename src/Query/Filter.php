@@ -58,7 +58,7 @@ class Filter implements FilterInterface
      * @param string $operator
      * @return bool
      */
-    public function hasCondition(string $field, string $operator): bool
+    public function hasCondition(string $field, string $operator = self::OPERATOR_IS_EQUAL): bool
     {
         return $this->conditions->hasByFieldAndOperator($field, $operator);
     }
@@ -68,7 +68,7 @@ class Filter implements FilterInterface
      * @param string $operator
      * @return Condition
      */
-    public function getCondition(string $field, string $operator): Condition
+    public function getCondition(string $field, string $operator = self::OPERATOR_IS_EQUAL): Condition
     {
         return $this->conditions->getByFieldAndOperator($field, $operator);
     }
@@ -78,7 +78,7 @@ class Filter implements FilterInterface
      * @param string $operator
      * @return FilterInterface
      */
-    public function deleteCondition(string $field, string $operator): FilterInterface
+    public function deleteCondition(string $field, string $operator = self::OPERATOR_IS_EQUAL): FilterInterface
     {
         $this->conditions->removeByFieldAndOperator($field, $operator);
         return $this;
