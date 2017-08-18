@@ -47,6 +47,23 @@ class GetParamsParserTest extends \Codeception\Test\Unit {
     /**
      *
      */
+    public function testCreateFilterWithOrderBy()
+    {
+        $query = ['order' => [
+            'field' => 'foo',
+            'type' => 'asc',
+        ]];
+        $parser = new GetParamsQuery();
+        $filter = $parser->parse($query);
+        $this->assertInstanceOf(Filter::class, $filter);
+        $order = $filter->getOrderBy();
+        $this->assertArrayHasKey('foo', $order);
+        $this->assertEquals('asc', $order['foo']);
+    }
+
+    /**
+     *
+     */
     public function testCreateFilterWithLimitOffset()
     {
         $query = ['limit' => 10, 'offset' => 10];

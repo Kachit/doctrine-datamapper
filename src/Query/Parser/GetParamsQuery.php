@@ -29,6 +29,24 @@ class GetParamsQuery extends JsonQuery
 
     /**
      * @param Filter $filter
+     * @param array $query
+     */
+    protected function parseOrderBy(Filter $filter, array $query)
+    {
+        if (isset($query[static::QUERY_PARAM_ORDER_BY]['field'])) {
+            $order = $query[static::QUERY_PARAM_ORDER_BY]['field'];
+            if (isset($query[static::QUERY_PARAM_ORDER_BY]['type'])) {
+                $type = $query[static::QUERY_PARAM_ORDER_BY]['type'];
+                $type = (in_array(strtolower($type), [self::ORDER_ASC, self::ORDER_DESC])) ? $type: self::ORDER_ASC;
+            } else {
+                $type = self::ORDER_ASC;
+            }
+            $filter->addOrderBy($order, $type);
+        }
+    }
+
+    /**
+     * @param Filter $filter
      * @param $field
      * @param $conditions
      */
