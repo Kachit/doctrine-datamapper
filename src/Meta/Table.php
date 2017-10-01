@@ -82,7 +82,7 @@ class Table
     {
         $columns = $this->getColumns();
         foreach ($data as $key => $value) {
-            if (!in_array($key, $columns) || empty($value)) {
+            if (!in_array($key, $columns) || is_null($value)) {
                 unset($data[$key]);
             }
         }
