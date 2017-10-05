@@ -19,18 +19,19 @@ class Validator implements EntityValidatorInterface
     /**
      * Validator constructor
      *
-     * @param string $entityClass
+     * @param EntityInterface $entityClass
      */
-    public function __construct(string $entityClass)
+    public function __construct(EntityInterface $entityClass)
     {
-        $this->entityClass = $entityClass;
+        $this->entityClass = get_class($entityClass);
     }
 
     /**
      * @param EntityInterface $entity
+     * @param string|null $pkField
      * @throws EntityException
      */
-    public function validate(EntityInterface $entity)
+    public function validate(EntityInterface $entity, string $pkField = null)
     {
         $actualClass = get_class($entity);
         if ($entity->isNull()) {
@@ -38,6 +39,9 @@ class Validator implements EntityValidatorInterface
         }
         if (!$entity instanceof $this->entityClass) {
             throw new EntityException(sprintf('Entity "%s" is not valid', $actualClass));
+        }
+        if (!$entity->hasEntityField($pkField)) {
+            throw new EntityException(sprintf('Entity "%s" has not primary key field', $actualClass));
         }
     }
 }

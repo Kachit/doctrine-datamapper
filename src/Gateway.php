@@ -204,11 +204,6 @@ abstract class Gateway implements GatewayInterface
     /**
      * @return string
      */
-    abstract protected function getTableName(): string;
-
-    /**
-     * @return string
-     */
     protected function getTableAlias(): string
     {
         return 't';

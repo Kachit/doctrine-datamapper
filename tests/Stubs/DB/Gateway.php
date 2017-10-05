@@ -16,7 +16,7 @@ class Gateway extends AbstractGateway
      *
      * @return string
      */
-    protected function getTableName(): string
+    public function getTableName(): string
     {
         return 'users';
     }

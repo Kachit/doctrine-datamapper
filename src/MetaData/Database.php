@@ -9,25 +9,25 @@ namespace Kachit\Database\MetaData;
 
 use Doctrine\DBAL\Connection;
 use Kachit\Database\MetaDataInterface;
+use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Schema\Column;
 
 class Database implements MetaDataInterface
 {
-    protected $fields;
-
     /**
-     * @var mixed
+     * @var bool
      */
-    private $primaryKey;
-
-    /**
-     * @var array
-     */
-    private $columns = [];
+    private $initialized = false;
 
     /**
      * @var string
      */
     private $table;
+
+    /**
+     * @var array
+     */
+    private $columns;
 
     /**
      * @var Connection
@@ -51,12 +51,12 @@ class Database implements MetaDataInterface
     /**
      * MetaData constructor.
      * @param Connection $connection
-     * @param $table
+     * @param string $tableName
      */
-    public function __construct(Connection $connection, string $table)
+    public function __construct(Connection $connection, string $tableName)
     {
         $this->connection = $connection;
-        $this->table = $table;
+        $this->table = new Table($tableName);
     }
 
     /**
@@ -64,22 +64,15 @@ class Database implements MetaDataInterface
      */
     public function getColumns(): array
     {
+        $this->initialize();
         return array_keys($this->columns);
-    }
-
-    /**
-     * @return array
-     */
-    public function getDefaultRow()
-    {
-        return $this->columns;
     }
 
     /**
      * @param array $data
      * @return array
      */
-    public function filterRow(array $data)
+    public function filterRow(array $data): array
     {
         $columns = $this->getColumns();
         foreach ($data as $key => $value) {
@@ -91,21 +84,24 @@ class Database implements MetaDataInterface
     }
 
     /**
-     *
+     * @return void
      */
     public function initialize()
     {
-        $sql = $this->connection->getDatabasePlatform()->getListTableColumnsSQL($this->table);
-        $columns = $this->connection->query($sql)->fetchAll();
-        $this->extractMeta($columns);
+        if (empty($this->initialized)) {
+            $sql = $this->connection->getDatabasePlatform()->getListTableColumnsSQL($this->table->getName());
+            $columns = $this->connection->query($sql)->fetchAll();
+            $this->initialized = true;
+        }
     }
 
     /**
      * @return string
      */
-    public function getPrimaryKey(): string
+    public function getPrimaryKeyColumn(): string
     {
-        return $this->primaryKey;
+        $this->initialize();
+        return 'id';
     }
 
     /**

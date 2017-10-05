@@ -14,6 +14,11 @@ interface GatewayInterface
     const DEFAULT_PRIMARY_KEY = 'id';
 
     /**
+     * @return string
+     */
+    public function getTableName(): string;
+
+    /**
      * @param Filter|null $filter
      * @return array
      */

@@ -12,7 +12,7 @@ interface MetaDataInterface
     /**
      * @return string
      */
-    public function getPrimaryKey(): string;
+    public function getPrimaryKeyColumn(): string;
 
     /**
      * @return array
@@ -20,7 +20,8 @@ interface MetaDataInterface
     public function getColumns(): array;
 
     /**
-     * @return void
+     * @param array $array
+     * @return array
      */
-    public function initialize();
+    public function filterRow(array $array): array;
 }

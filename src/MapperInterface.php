@@ -46,4 +46,9 @@ interface MapperInterface
      * @return bool
      */
     public function delete(EntityInterface $entity): bool;
+
+    /**
+     * @return GatewayInterface
+     */
+    public function getTableGateway(): GatewayInterface;
 }

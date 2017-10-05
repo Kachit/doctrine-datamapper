@@ -55,9 +55,10 @@ class Mapper implements MapperInterface
     {
         $this->gateway = $gateway;
         $this->entity = $entity;
-        $this->hydrator = ($hydrator) ? $hydrator : $this->getDefaultHydrator();
-        $this->collection = ($collection) ? $collection : $this->getDefaultCollection();
-        $this->metaData = $this->getDefaultMetadata();
+        $this->hydrator = ($hydrator) ? $hydrator : $this->createDefaultHydrator();
+        $this->collection = ($collection) ? $collection : $this->createDefaultCollection();
+        $this->metaData = $this->createDefaultMetadata();
+        $this->validator = $this->createDefaultValidator();
     }
 
     /**
@@ -86,7 +87,8 @@ class Mapper implements MapperInterface
      */
     public function fetchByPk($pk): EntityInterface
     {
-        $data = $this->gateway->fetchByPk($pk);
+        $pkField = $this->metaData->getPrimaryKeyColumn();
+        $data = $this->gateway->fetchByPk($pk, $pkField);
         return $this->hydrateEntity($data);
     }
 
@@ -102,16 +104,24 @@ class Mapper implements MapperInterface
     /**
      * @param EntityInterface $entity
      * @return bool
+     * @throws MapperException
      */
     public function save(EntityInterface $entity): bool
     {
-        $pk = $entity->getPk();
+        $pkField = $this->metaData->getPrimaryKeyColumn();
+        $this->validator->validate($entity, $pkField);
         $data = $this->hydrator->extract($entity);
+        $data = $this->metaData->filterRow($data);
+        $pk = $entity->getEntityField($pkField);
         if ($pk) {
-            $result = $this->gateway->updateByPk($data, $pk);
+            $result = $this->gateway->updateByPk($data, $pk, $pkField);
         } else {
             $result = $this->gateway->insert($data);
-            $entity->setPk($result);
+            $pk = $result;
+        }
+        if ($pk) {
+            $entity->setEntityField($pkField, $pk);
+            $this->syncEntity($entity);
         }
         return (bool)$result;
     }
@@ -119,40 +129,33 @@ class Mapper implements MapperInterface
     /**
      * @param EntityInterface $entity
      * @return bool
+     * @throws MapperException
      */
     public function delete(EntityInterface $entity): bool
     {
-        return $this->gateway->deleteByPk($entity->getPk());
+        $pkField = $this->metaData->getPrimaryKeyColumn();
+        $this->validator->validate($entity, $pkField);
+        return $this->gateway->deleteByPk($entity->getEntityField($pkField), $pkField);
     }
 
     /**
-     * @param GatewayInterface $gateway
-     * @return $this
+     * @return GatewayInterface
      */
-    public function setGateway(GatewayInterface $gateway)
+    public function getTableGateway(): GatewayInterface
     {
-        $this->gateway = $gateway;
-        return $this;
+        return $this->gateway;
     }
 
     /**
-     * @param HydratorInterface $hydrator
-     * @return $this
+     * @param EntityInterface $entity
      */
-    public function setHydrator(HydratorInterface $hydrator)
+    protected function syncEntity(EntityInterface $entity)
     {
-        $this->hydrator = $hydrator;
-        return $this;
-    }
-
-    /**
-     * @param CollectionInterface $collection
-     * @return $this
-     */
-    public function setCollection(CollectionInterface $collection)
-    {
-        $this->collection = $collection;
-        return $this;
+        $pkField = $this->metaData->getPrimaryKeyColumn();
+        $this->validator->validate($entity, $pkField);
+        $pk = $entity->getEntityField($pkField);
+        $data = $this->gateway->fetchByPk($pk, $pkField);
+        $this->hydrator->hydrate($data, $entity);
     }
 
     /**
@@ -197,7 +200,7 @@ class Mapper implements MapperInterface
     /**
      * @return Collection
      */
-    protected function getDefaultCollection(): Collection
+    protected function createDefaultCollection(): Collection
     {
         return new Collection();
     }
@@ -205,16 +208,24 @@ class Mapper implements MapperInterface
     /**
      * @return Hydrator
      */
-    protected function getDefaultHydrator(): Hydrator
+    protected function createDefaultHydrator(): Hydrator
     {
         return new Hydrator();
     }
 
     /**
+     * @return Validator
+     */
+    protected function createDefaultValidator(): Validator
+    {
+        return new Validator($this->entity);
+    }
+
+    /**
      * @return MetaDataInterface
      */
-    protected function getDefaultMetadata(): MetaDataInterface
+    protected function createDefaultMetadata(): MetaDataInterface
     {
-        return new Database($this->gateway->getConnection(), 'qwerty');
+        return new Database($this->gateway->getConnection(), $this->gateway->getTableName());
     }
 }
