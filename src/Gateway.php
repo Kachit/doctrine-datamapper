@@ -7,7 +7,6 @@
  */
 namespace Kachit\Database;
 
-use Kachit\Database\Meta\Table;
 use Kachit\Database\Query\Builder;
 use Kachit\Database\Query\Filter;
 
@@ -21,11 +20,6 @@ abstract class Gateway implements GatewayInterface
      * @var Connection
      */
     private $connection;
-
-    /**
-     * @var Table
-     */
-    private $metaTable;
 
     /**
      * @var Builder
@@ -64,7 +58,7 @@ abstract class Gateway implements GatewayInterface
      * @param Filter|null $filter
      * @return array
      */
-    public function fetchAll(Filter $filter = null)
+    public function fetchAll(Filter $filter = null): array
     {
         $queryBuilder = $this->createQueryBuilder();
         $this->buildQuery($queryBuilder, $filter);
@@ -78,7 +72,7 @@ abstract class Gateway implements GatewayInterface
      * @param Filter|null $filter
      * @return array
      */
-    public function fetch(Filter $filter = null)
+    public function fetch(Filter $filter = null): array
     {
         $queryBuilder = $this->createQueryBuilder();
         $this->buildQuery($queryBuilder, $filter);
@@ -91,20 +85,21 @@ abstract class Gateway implements GatewayInterface
 
     /**
      * @param mixed $pk
+     * @param string $pkField
      * @return array
      */
-    public function fetchByPk($pk)
+    public function fetchByPk($pk, string $pkField = self::DEFAULT_PRIMARY_KEY): array
     {
-        $filter = $this->buildPrimaryKeyFilter($pk);
+        $filter = $this->buildPrimaryKeyFilter($pkField, $pk);
         return $this->fetch($filter);
     }
 
     /**
      * @param string $column
      * @param Filter|null $filter
-     * @return string
+     * @return mixed
      */
-    public function fetchColumn($column, Filter $filter = null)
+    public function fetchColumn(string $column, Filter $filter = null)
     {
         $queryBuilder = $this->createQueryBuilder();
         $this->buildQuery($queryBuilder, $filter);
@@ -119,15 +114,15 @@ abstract class Gateway implements GatewayInterface
 
     /**
      * @param Filter|null $filter
-     * @param null $column
-     * @return string
+     * @param string|null $column
+     * @return int
      */
-    public function count(Filter $filter = null, $column = null)
+    public function count(Filter $filter = null, string $column = null): int
     {
-        $fieldCount = ($column) ? $column : $this->getMetaTable()->getPrimaryKey();
+        $fieldCount = ($column) ? $column : $this->getTableFields();
         $fieldCount = $this->getTableAlias() . '.' . $fieldCount;
         $count = 'COUNT(' . $fieldCount . ')';
-        return $this->fetchColumn($count, $filter);
+        return (int)$this->fetchColumn($count, $filter);
     }
 
     /**
@@ -144,12 +139,11 @@ abstract class Gateway implements GatewayInterface
 
     /**
      * @param array $data
-     * @return int
+     * @return int|bool
      */
     public function insert(array $data)
     {
-        $row = $this->getMetaTable()->filterRow($data);
-        $result = $this->getConnection()->insert($this->getTableName(), $row);
+        $result = $this->getConnection()->insert($this->getTableName(), $data);
         return ($result) ? $this->getConnection()->lastInsertId() : $result;
     }
 
@@ -158,7 +152,7 @@ abstract class Gateway implements GatewayInterface
      * @param Filter $filter
      * @return int
      */
-    public function update(array $data, Filter $filter = null)
+    public function update(array $data, Filter $filter = null): int
     {
         $queryBuilder = $this->createQueryBuilder();
         $this->getBuilder()->build($queryBuilder, $filter);
@@ -167,21 +161,21 @@ abstract class Gateway implements GatewayInterface
             ->resetQueryPart('orderBy')
             ->update($this->getTableName(), $this->getTableAlias())
         ;
-        $data = $this->getMetaTable()->filterRow($data);
         foreach ($data as $column => $value) {
             $queryBuilder->set($column, $this->getConnection()->quote($value));
         }
-        return $queryBuilder->execute();
+        return (int)$queryBuilder->execute();
     }
 
     /**
      * @param array $data
      * @param mixed $pk
+     * @param string $pkField
      * @return int
      */
-    public function updateByPk(array $data, $pk)
+    public function updateByPk(array $data, $pk, string $pkField = self::DEFAULT_PRIMARY_KEY): int
     {
-        $filter = $this->buildPrimaryKeyFilter($pk);
+        $filter = $this->buildPrimaryKeyFilter($pkField, $pk);
         return $this->update($data, $filter);
     }
 
@@ -189,33 +183,34 @@ abstract class Gateway implements GatewayInterface
      * @param Filter $filter
      * @return int
      */
-    public function delete(Filter $filter = null)
+    public function delete(Filter $filter = null): int
     {
         $queryBuilder = $this->createQueryBuilder();
         $queryBuilder->delete($this->getTableName());
         $this->getBuilder()->build($queryBuilder, $filter);
-        return $queryBuilder->execute();
+        return (int)$queryBuilder->execute();
     }
 
     /**
      * @param mixed $pk
+     * @param string $pkField
      * @return int
      */
-    public function deleteByPk($pk)
+    public function deleteByPk($pk, string $pkField = self::DEFAULT_PRIMARY_KEY): int
     {
-        $filter = $this->buildPrimaryKeyFilter($pk);
+        $filter = $this->buildPrimaryKeyFilter($pkField, $pk);
         return $this->delete($filter);
     }
 
     /**
      * @return string
      */
-    abstract protected function getTableName();
+    abstract protected function getTableName(): string;
 
     /**
      * @return string
      */
-    protected function getTableAlias()
+    protected function getTableAlias(): string
     {
         return 't';
     }
@@ -229,25 +224,14 @@ abstract class Gateway implements GatewayInterface
     }
 
     /**
+     * @param string $pkField
      * @param mixed $pk
      * @return FilterInterface
      */
-    protected function buildPrimaryKeyFilter($pk)
+    protected function buildPrimaryKeyFilter(string $pkField, $pk)
     {
-        $filter = (new Filter())->createCondition($this->getMetaTable()->getPrimaryKey(), $pk);
+        $filter = (new Filter())->createCondition($pkField, $pk);
         return $filter;
-    }
-
-    /**
-     * @return Table
-     */
-    protected function getMetaTable()
-    {
-        if (empty($this->metaTable)) {
-            $this->metaTable = new Table($this->getConnection(), $this->getTableName());
-            $this->metaTable->initialize();
-        }
-        return $this->metaTable;
     }
 
     /**

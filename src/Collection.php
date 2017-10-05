@@ -34,8 +34,7 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
      */
     public function add(EntityInterface $entity): CollectionInterface
     {
-        $this->checkEntity($entity);
-        $this->data[$entity->getPk()] = $entity;
+        $this->data[] = $entity;
         return $this;
     }
 
@@ -205,19 +204,5 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     public function jsonSerialize()
     {
         return $this->toArray();
-    }
-
-    /**
-     * @param EntityInterface $entity
-     * @throws CollectionException
-     */
-    protected function checkEntity(EntityInterface $entity)
-    {
-        if ($entity->isNull()) {
-            throw new CollectionException('Entity is null');
-        }
-        if (empty($entity->getPk())) {
-            throw new CollectionException('Entity has no primary key');
-        }
     }
 }

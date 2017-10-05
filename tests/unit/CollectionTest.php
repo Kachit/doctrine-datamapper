@@ -23,11 +23,11 @@ class CollectionTest extends \Codeception\Test\Unit {
         $collection->add($entity);
         $this->assertFalse($collection->isEmpty());
         $this->assertEquals(1, $collection->count());
-        $this->assertTrue($collection->has(1));
-        $this->assertEquals($entity, $collection->get(1));
-        $this->assertEquals([1 => $entity], $collection->toArray());
-        $this->assertEquals(json_encode([1 => $array]), json_encode($collection));
-        $this->assertTrue($collection->remove(1)->isEmpty());
+        $this->assertTrue($collection->has(0));
+        $this->assertEquals($entity, $collection->get(0));
+        $this->assertEquals([$entity], $collection->toArray());
+        $this->assertEquals(json_encode([$array]), json_encode($collection));
+        $this->assertTrue($collection->remove(0)->isEmpty());
     }
 
     public function testExtractValue()
@@ -53,18 +53,6 @@ class CollectionTest extends \Codeception\Test\Unit {
     /**
      *
      */
-    public function testAddNullEntity()
-    {
-        $this->expectException(CollectionException::class);
-        $this->expectExceptionMessage('Entity is null');
-        $entity = new NullEntity();
-        $collection = new Collection();
-        $collection->add($entity);
-    }
-
-    /**
-     *
-     */
     public function testGetNonExistingEntity()
     {
         $this->expectException(CollectionException::class);
@@ -82,17 +70,5 @@ class CollectionTest extends \Codeception\Test\Unit {
         $this->expectExceptionMessage('Entity with index "1" is not exists');
         $collection = new Collection();
         $collection->remove(1);
-    }
-
-    /**
-     *
-     */
-    public function testAddEntityWithoutPK()
-    {
-        $this->expectException('Exception');
-        $this->expectExceptionMessage('Entity has no primary key');
-        $entity = new Entity();
-        $collection = new Collection();
-        $collection->add($entity);
     }
 }

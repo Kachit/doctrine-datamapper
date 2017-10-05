@@ -7,16 +7,13 @@
  */
 namespace Kachit\Database;
 
+use Kachit\Database\Exception\EntityException;
+
 interface EntityValidatorInterface
 {
     /**
      * @param EntityInterface $entity
-     * @return bool
+     * @throws EntityException
      */
-    public function isValid(EntityInterface $entity): bool;
-
-    /**
-     * @return string
-     */
-    public function getError(): string;
+    public function validate(EntityInterface $entity);
 }

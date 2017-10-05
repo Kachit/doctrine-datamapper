@@ -11,37 +11,40 @@ use Kachit\Database\Query\Filter;
 
 interface GatewayInterface
 {
+    const DEFAULT_PRIMARY_KEY = 'id';
+
     /**
      * @param Filter|null $filter
      * @return array
      */
-    public function fetchAll(Filter $filter = null);
+    public function fetchAll(Filter $filter = null): array;
 
     /**
      * @param Filter|null $filter
-     * @return mixed
+     * @return array
      */
-    public function fetch(Filter $filter = null);
+    public function fetch(Filter $filter = null): array;
 
     /**
      * @param mixed $pk
-     * @return array|mixed
+     * @param string $pkField
+     * @return array
      */
-    public function fetchByPk($pk);
+    public function fetchByPk($pk, string $pkField = self::DEFAULT_PRIMARY_KEY): array;
 
     /**
      * @param Filter|null $filter
-     * @param null $column
-     * @return mixed
+     * @param string|null $column
+     * @return integer
      */
-    public function count(Filter $filter = null, $column = null);
+    public function count(Filter $filter = null, string $column = null): int;
 
     /**
      * @param string $column
      * @param Filter|null $filter
      * @return mixed
      */
-    public function fetchColumn($column, Filter $filter = null);
+    public function fetchColumn(string $column, Filter $filter = null);
 
     /**
      * @param array $data
@@ -52,26 +55,28 @@ interface GatewayInterface
     /**
      * @param array $data
      * @param mixed $pk
+     * @param string $pkField
      * @return int
      */
-    public function updateByPk(array $data, $pk);
+    public function updateByPk(array $data, $pk, string $pkField = self::DEFAULT_PRIMARY_KEY): int;
 
     /**
      * @param array $data
      * @param Filter|null $filter
      * @return int
      */
-    public function update(array $data, Filter $filter = null);
+    public function update(array $data, Filter $filter = null): int;
 
     /**
      * @param mixed $pk
+     * @param string $pkField
      * @return int
      */
-    public function deleteByPk($pk);
+    public function deleteByPk($pk, string $pkField = self::DEFAULT_PRIMARY_KEY): int;
 
     /**
      * @param Filter|null $filter
      * @return int
      */
-    public function delete(Filter $filter = null);
+    public function delete(Filter $filter = null): int;
 }

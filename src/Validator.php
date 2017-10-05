@@ -7,17 +7,14 @@
  */
 namespace Kachit\Database;
 
+use Kachit\Database\Exception\EntityException;
+
 class Validator implements EntityValidatorInterface
 {
     /**
      * @var string
      */
     private $entityClass;
-
-    /**
-     * @var string
-     */
-    private $error;
 
     /**
      * Validator constructor
@@ -31,28 +28,16 @@ class Validator implements EntityValidatorInterface
 
     /**
      * @param EntityInterface $entity
-     * @return bool
+     * @throws EntityException
      */
-    public function isValid(EntityInterface $entity): bool
+    public function validate(EntityInterface $entity)
     {
         $actualClass = get_class($entity);
         if ($entity->isNull()) {
-            $this->error = sprintf('Entity "%s" is null', $actualClass);
+            throw new EntityException(sprintf('Entity "%s" is null', $actualClass));
         }
         if (!$entity instanceof $this->entityClass) {
-            $this->error = sprintf('Entity "%s" is not valid', $actualClass);
+            throw new EntityException(sprintf('Entity "%s" is not valid', $actualClass));
         }
-        if (empty($entity->getPk())) {
-            $this->error = sprintf('Entity "%s" has no primary key', $actualClass);
-        }
-        return $this->error;
-    }
-
-    /**
-     * @return string
-     */
-    public function getError(): string
-    {
-        return $this->error;
     }
 }

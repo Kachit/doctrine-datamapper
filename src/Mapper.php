@@ -8,6 +8,7 @@
 namespace Kachit\Database;
 
 use Kachit\Database\Exception\MapperException;
+use Kachit\Database\MetaData\Database;
 use Kachit\Database\Query\Filter;
 
 class Mapper implements MapperInterface
@@ -38,6 +39,11 @@ class Mapper implements MapperInterface
     protected $validator;
 
     /**
+     * @var MetaDataInterface
+     */
+    protected $metaData;
+
+    /**
      * Mapper constructor
      *
      * @param GatewayInterface $gateway
@@ -49,8 +55,9 @@ class Mapper implements MapperInterface
     {
         $this->gateway = $gateway;
         $this->entity = $entity;
-        $this->hydrator = ($hydrator) ? $hydrator : new Hydrator();
-        $this->collection = ($collection) ? $collection : new Collection();
+        $this->hydrator = ($hydrator) ? $hydrator : $this->getDefaultHydrator();
+        $this->collection = ($collection) ? $collection : $this->getDefaultCollection();
+        $this->metaData = $this->getDefaultMetadata();
     }
 
     /**
@@ -98,7 +105,6 @@ class Mapper implements MapperInterface
      */
     public function save(EntityInterface $entity): bool
     {
-        $this->validateEntity($entity);
         $pk = $entity->getPk();
         $data = $this->hydrator->extract($entity);
         if ($pk) {
@@ -116,7 +122,6 @@ class Mapper implements MapperInterface
      */
     public function delete(EntityInterface $entity): bool
     {
-        $this->validateEntity($entity);
         return $this->gateway->deleteByPk($entity->getPk());
     }
 
@@ -174,22 +179,6 @@ class Mapper implements MapperInterface
     }
 
     /**
-     * @param EntityInterface $entity
-     * @throws MapperException
-     */
-    protected function validateEntity(EntityInterface $entity)
-    {
-        $expectedClass = get_class($this->entity);
-        $actualClass = get_class($entity);
-        if ($entity->isNull()) {
-            throw new MapperException(sprintf('Entity "%s" is null', $actualClass));
-        }
-        if (!$entity instanceof $expectedClass) {
-            throw new MapperException(sprintf('Entity "%s" is not valid', $actualClass));
-        }
-    }
-
-    /**
      * @return CollectionInterface
      */
     protected function createCollection()
@@ -203,5 +192,29 @@ class Mapper implements MapperInterface
     protected function createEntity()
     {
         return clone $this->entity;
+    }
+
+    /**
+     * @return Collection
+     */
+    protected function getDefaultCollection(): Collection
+    {
+        return new Collection();
+    }
+
+    /**
+     * @return Hydrator
+     */
+    protected function getDefaultHydrator(): Hydrator
+    {
+        return new Hydrator();
+    }
+
+    /**
+     * @return MetaDataInterface
+     */
+    protected function getDefaultMetadata(): MetaDataInterface
+    {
+        return new Database($this->gateway->getConnection(), 'qwerty');
     }
 }

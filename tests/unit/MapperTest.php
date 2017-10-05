@@ -16,7 +16,7 @@ class MapperTest extends \Codeception\Test\Unit {
     /**
      *
      */
-    public function testFetchExistsData()
+    protected function testFetchExistsData()
     {
         $array = ['id' => 1, 'name' => 'foo', 'email' => 'foo@bar', 'active' => 1];
         $gateway = $this->getGatewayMock('fetch', $array);
@@ -37,7 +37,7 @@ class MapperTest extends \Codeception\Test\Unit {
     /**
      *
      */
-    public function testFetchNotExistsData()
+    protected function testFetchNotExistsData()
     {
         $array = [];
         $gateway = $this->getGatewayMock('fetch', $array);
@@ -58,7 +58,7 @@ class MapperTest extends \Codeception\Test\Unit {
     /**
      *
      */
-    public function testFetchAllExistsData()
+    protected function testFetchAllExistsData()
     {
         $array = [['id' => 1, 'name' => 'foo', 'email' => 'foo@bar', 'active' => 1], ['id' => 2, 'name' => 'foo1', 'email' => 'foo1@bar', 'active' => 1]];
         $gateway = $this->getGatewayMock('fetchAll', $array);
@@ -68,14 +68,14 @@ class MapperTest extends \Codeception\Test\Unit {
         $this->assertTrue(is_object($collection));
         $this->assertInstanceOf(CollectionInterface::class, $collection);
         $this->assertEquals(2, $collection->count());
+        $this->assertTrue($collection->has(0));
         $this->assertTrue($collection->has(1));
-        $this->assertTrue($collection->has(2));
     }
 
     /**
      *
      */
-    public function testFetchAllNotExistsData()
+    protected function testFetchAllNotExistsData()
     {
         $array = [];
         $gateway = $this->getGatewayMock('fetchAll', $array);
@@ -90,7 +90,7 @@ class MapperTest extends \Codeception\Test\Unit {
     /**
      *
      */
-    public function testSaveNullEntity()
+    protected function testSaveNullEntity()
     {
         $this->expectException(MapperException::class);
         $this->expectExceptionMessage('Entity "Kachit\Database\NullEntity" is null');
@@ -104,7 +104,7 @@ class MapperTest extends \Codeception\Test\Unit {
     /**
      *
      */
-    public function testSaveWrongEntity()
+    protected function testSaveWrongEntity()
     {
         $this->expectException(MapperException::class);
         $array = [];

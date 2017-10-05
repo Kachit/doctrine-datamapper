@@ -5,11 +5,12 @@
  * @author Kachit
  * @package Kachit\Database
  */
-namespace Kachit\Database\Meta;
+namespace Kachit\Database\MetaData;
 
 use Doctrine\DBAL\Connection;
+use Kachit\Database\MetaDataInterface;
 
-class Table
+class Database implements MetaDataInterface
 {
     protected $fields;
 
@@ -61,7 +62,7 @@ class Table
     /**
      * @return array
      */
-    public function getColumns()
+    public function getColumns(): array
     {
         return array_keys($this->columns);
     }
@@ -102,7 +103,7 @@ class Table
     /**
      * @return string
      */
-    public function getPrimaryKey()
+    public function getPrimaryKey(): string
     {
         return $this->primaryKey;
     }
