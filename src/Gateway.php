@@ -117,11 +117,10 @@ abstract class Gateway implements GatewayInterface
      * @param string|null $column
      * @return int
      */
-    public function count(Filter $filter = null, string $column = null): int
+    public function count(Filter $filter = null, string $column = '*'): int
     {
-        $fieldCount = ($column) ? $column : $this->getTableFields();
-        $fieldCount = $this->getTableAlias() . '.' . $fieldCount;
-        $count = 'COUNT(' . $fieldCount . ')';
+        $column = $this->getTableAlias() . '.' . $column;
+        $count = 'COUNT(' . $column . ')';
         return (int)$this->fetchColumn($count, $filter);
     }
 
