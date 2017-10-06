@@ -1,9 +1,10 @@
 <?php
 use Stubs\DB\Entity;
-use Kachit\Database\Mapper;
+use Stubs\DB\Mapper;
 use Stubs\DB\Gateway;
 use Kachit\Database\NullEntity;
 use Kachit\Database\Exception\MapperException;
+use Kachit\Database\Exception\EntityException;
 use Kachit\Database\CollectionInterface;
 
 class MapperTest extends \Codeception\Test\Unit {
@@ -16,7 +17,7 @@ class MapperTest extends \Codeception\Test\Unit {
     /**
      *
      */
-    protected function testFetchExistsData()
+    public function testFetchExistsData()
     {
         $array = ['id' => 1, 'name' => 'foo', 'email' => 'foo@bar', 'active' => 1];
         $gateway = $this->getGatewayMock('fetch', $array);
@@ -37,7 +38,7 @@ class MapperTest extends \Codeception\Test\Unit {
     /**
      *
      */
-    protected function testFetchNotExistsData()
+    public function testFetchNotExistsData()
     {
         $array = [];
         $gateway = $this->getGatewayMock('fetch', $array);
@@ -58,7 +59,7 @@ class MapperTest extends \Codeception\Test\Unit {
     /**
      *
      */
-    protected function testFetchAllExistsData()
+    public function testFetchAllExistsData()
     {
         $array = [['id' => 1, 'name' => 'foo', 'email' => 'foo@bar', 'active' => 1], ['id' => 2, 'name' => 'foo1', 'email' => 'foo1@bar', 'active' => 1]];
         $gateway = $this->getGatewayMock('fetchAll', $array);
@@ -75,7 +76,7 @@ class MapperTest extends \Codeception\Test\Unit {
     /**
      *
      */
-    protected function testFetchAllNotExistsData()
+    public function testFetchAllNotExistsData()
     {
         $array = [];
         $gateway = $this->getGatewayMock('fetchAll', $array);
@@ -90,9 +91,9 @@ class MapperTest extends \Codeception\Test\Unit {
     /**
      *
      */
-    protected function testSaveNullEntity()
+    public function testSaveNullEntity()
     {
-        $this->expectException(MapperException::class);
+        $this->expectException(EntityException::class);
         $this->expectExceptionMessage('Entity "Kachit\Database\NullEntity" is null');
         $array = [];
         $gateway = $this->getGatewayMock('fetchAll', $array);
@@ -104,9 +105,9 @@ class MapperTest extends \Codeception\Test\Unit {
     /**
      *
      */
-    protected function testSaveWrongEntity()
+    public function testSaveWrongEntity()
     {
-        $this->expectException(MapperException::class);
+        $this->expectException(EntityException::class);
         $array = [];
         $gateway = $this->getGatewayMock('fetchAll', $array);
         $entity = $this->getEntityMock();
