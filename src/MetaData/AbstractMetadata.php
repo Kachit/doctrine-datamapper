@@ -53,7 +53,20 @@ abstract class AbstractMetadata implements MetaDataInterface
             if (!in_array($key, $columns) || is_null($value)) {
                 unset($data[$key]);
             }
+            $data[$key] = $this->convertValue($value);
         }
         return $data;
+    }
+
+    /**
+     * @param mixed $value
+     * @return mixed
+     */
+    protected function convertValue($value)
+    {
+        if ($value === false) {
+            $value = 'false';
+        }
+        return $value;
     }
 }
