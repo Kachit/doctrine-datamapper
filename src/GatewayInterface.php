@@ -42,7 +42,7 @@ interface GatewayInterface
      * @param string|null $column
      * @return integer
      */
-    public function count(Filter $filter = null, string $column = null): int;
+    public function count(Filter $filter = null, string $column = '*'): int;
 
     /**
      * @param string $column
