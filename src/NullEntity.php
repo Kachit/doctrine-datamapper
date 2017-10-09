@@ -10,23 +10,6 @@ namespace Kachit\Database;
 class NullEntity implements EntityInterface
 {
     /**
-     * @return mixed
-     */
-    public function getPk()
-    {
-        return null;
-    }
-
-    /**
-     * @param mixed $pk
-     * @return EntityInterface
-     */
-    public function setPk($pk): EntityInterface
-    {
-        return $this;
-    }
-
-    /**
      * @return array
      */
     public function toArray(): array

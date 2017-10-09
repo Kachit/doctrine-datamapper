@@ -7,7 +7,6 @@
  */
 namespace Kachit\Database\Query\Parser;
 
-use Kachit\Database\Query\Filter;
 use Kachit\Database\Query\FilterInterface;
 
 class GetParamsQuery extends JsonQuery
@@ -17,6 +16,7 @@ class GetParamsQuery extends JsonQuery
     const QUERY_PARAM_GROUP_BY = 'group';
     const QUERY_PARAM_LIMIT = 'limit';
     const QUERY_PARAM_OFFSET = 'offset';
+    const QUERY_PARAM_INCLUDE = 'include';
 
     /**
      * @param array $query
@@ -24,14 +24,18 @@ class GetParamsQuery extends JsonQuery
      */
     public function parse($query): FilterInterface
     {
-        return parent::parse($query);
+        $filter = parent::parse($query);
+        if (is_array($query)) {
+            $this->parseIncludes($filter, $query);
+        }
+        return $filter;
     }
 
     /**
-     * @param Filter $filter
+     * @param FilterInterface $filter
      * @param array $query
      */
-    protected function parseOrderBy(Filter $filter, array $query)
+    protected function parseOrderBy(FilterInterface $filter, array $query)
     {
         if (isset($query[static::QUERY_PARAM_ORDER_BY]['field'])) {
             $order = $query[static::QUERY_PARAM_ORDER_BY]['field'];
@@ -46,11 +50,25 @@ class GetParamsQuery extends JsonQuery
     }
 
     /**
-     * @param Filter $filter
+     * @param FilterInterface $filter
+     * @param array $query
+     */
+    protected function parseIncludes(FilterInterface $filter, array $query)
+    {
+        if (isset($query[static::QUERY_PARAM_INCLUDE])) {
+            $includes = explode(',', $query[static::QUERY_PARAM_INCLUDE]);
+            foreach ($includes as $include) {
+                $filter->include($include);
+            }
+        }
+    }
+
+    /**
+     * @param FilterInterface $filter
      * @param $field
      * @param $conditions
      */
-    protected function parseConditions(Filter $filter, $field, $conditions)
+    protected function parseConditions(FilterInterface $filter, $field, $conditions)
     {
         if (is_scalar($conditions)) {
             $filter->createCondition($field, $conditions, FilterInterface::OPERATOR_IS_EQUAL);

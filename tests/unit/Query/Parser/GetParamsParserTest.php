@@ -82,4 +82,29 @@ class GetParamsParserTest extends \Codeception\Test\Unit {
         $filter = $parser->parse(null);
         $this->assertInstanceOf(Filter::class, $filter);
     }
+
+    /**
+     *
+     */
+    public function testParseSingleIncludes()
+    {
+        $query = ['include' => 'author',];
+        $parser = new GetParamsQuery();
+        $filter = $parser->parse($query);
+        $this->assertInstanceOf(Filter::class, $filter);
+        $this->assertTrue($filter->isIncluded('author'));
+    }
+
+    /**
+     *
+     */
+    public function testParseMultipleIncludes()
+    {
+        $query = ['include' => 'user,photo',];
+        $parser = new GetParamsQuery();
+        $filter = $parser->parse($query);
+        $this->assertInstanceOf(Filter::class, $filter);
+        $this->assertTrue($filter->isIncluded('user'));
+        $this->assertTrue($filter->isIncluded('photo'));
+    }
 }

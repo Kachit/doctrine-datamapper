@@ -69,10 +69,10 @@ class JsonQuery implements ParserInterface
     }
 
     /**
-     * @param Filter $filter
+     * @param FilterInterface $filter
      * @param array $query
      */
-    protected function parseFilter(Filter $filter, array $query)
+    protected function parseFilter(FilterInterface $filter, array $query)
     {
         if (!isset($query[static::QUERY_PARAM_FILTER]) || !is_array($query[static::QUERY_PARAM_FILTER])) {
             return;
@@ -83,11 +83,11 @@ class JsonQuery implements ParserInterface
     }
 
     /**
-     * @param Filter $filter
+     * @param FilterInterface $filter
      * @param $field
      * @param $conditions
      */
-    protected function parseConditions(Filter $filter, $field, $conditions)
+    protected function parseConditions(FilterInterface $filter, $field, $conditions)
     {
         if (is_scalar($conditions)) {
             $filter->createCondition($field, $conditions, FilterInterface::OPERATOR_IS_EQUAL);
@@ -101,10 +101,10 @@ class JsonQuery implements ParserInterface
     }
 
     /**
-     * @param Filter $filter
+     * @param FilterInterface $filter
      * @param array $query
      */
-    protected function parseLimitOffset(Filter $filter, array $query)
+    protected function parseLimitOffset(FilterInterface $filter, array $query)
     {
         if (isset($query[static::QUERY_PARAM_LIMIT])) {
             $filter->setLimit($this->filterValue($query[static::QUERY_PARAM_LIMIT], FILTER_SANITIZE_NUMBER_INT ));
@@ -115,10 +115,10 @@ class JsonQuery implements ParserInterface
     }
 
     /**
-     * @param Filter $filter
+     * @param FilterInterface $filter
      * @param array $query
      */
-    protected function parseOrderBy(Filter $filter, array $query)
+    protected function parseOrderBy(FilterInterface $filter, array $query)
     {
         if (isset($query[static::QUERY_PARAM_ORDER_BY]) && is_array($query[static::QUERY_PARAM_ORDER_BY])) {
             $orders = [self::ORDER_ASC, self::ORDER_DESC];
@@ -133,10 +133,10 @@ class JsonQuery implements ParserInterface
     }
 
     /**
-     * @param Filter $filter
+     * @param FilterInterface $filter
      * @param array $query
      */
-    protected function parseGroupBy(Filter $filter, array $query)
+    protected function parseGroupBy(FilterInterface $filter, array $query)
     {
         if (isset($query[static::QUERY_PARAM_GROUP_BY]) && is_array($query[static::QUERY_PARAM_GROUP_BY])) {
             foreach ($query[static::QUERY_PARAM_GROUP_BY] as $groupBy) {

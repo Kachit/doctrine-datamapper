@@ -130,4 +130,16 @@ interface FilterInterface
      * @return bool
      */
     public function isEmpty(): bool;
+
+    /**
+     * @param string $value
+     * @return FilterInterface
+     */
+    public function include(string $value): FilterInterface;
+
+    /**
+     * @param string $value
+     * @return bool
+     */
+    public function isIncluded(string $value): bool;
 }

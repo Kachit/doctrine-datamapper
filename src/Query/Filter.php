@@ -37,6 +37,11 @@ class Filter implements FilterInterface
     private $offset = 0;
 
     /**
+     * @var array
+     */
+    private $includes = [];
+
+    /**
      * Filter constructor.
      * @param Collection|null $conditions
      */
@@ -200,6 +205,25 @@ class Filter implements FilterInterface
     }
 
     /**
+     * @param string $value
+     * @return FilterInterface
+     */
+    public function include(string $value): FilterInterface
+    {
+        $this->includes[] = $value;
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     * @return bool
+     */
+    public function isIncluded(string $value): bool
+    {
+        return in_array($value, $this->includes);
+    }
+
+    /**
      * @return FilterInterface
      */
     public function clear(): FilterInterface
@@ -207,6 +231,7 @@ class Filter implements FilterInterface
         $this->conditions->clear();
         $this->orderBy = [];
         $this->groupBy = [];
+        $this->includes = [];
         $this->limit = 0;
         $this->offset = 0;
         return $this;
@@ -222,6 +247,7 @@ class Filter implements FilterInterface
             && empty($this->groupBy)
             && empty($this->limit)
             && empty($this->offset)
+            && empty($this->includes)
         );
     }
 }

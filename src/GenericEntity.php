@@ -2,7 +2,7 @@
 /**
  * Class GenericEntity
  *
- * @package Orbitum\Billing\Models\Entities\Virtual
+ * @package Kachit\Database\GenericEntity
  * @author Kachit
  */
 namespace Kachit\Database;
@@ -13,23 +13,6 @@ class GenericEntity extends Entity
      * @var array
      */
     private $properties = [];
-
-    /**
-     * @return mixed
-     */
-    public function getPk()
-    {
-        return microtime();
-    }
-
-    /**
-     * @param mixed $pk
-     * @return EntityInterface
-     */
-    public function setPk($pk)
-    {
-        return $this;
-    }
 
     /**
      * @param string $name
