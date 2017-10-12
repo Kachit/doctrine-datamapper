@@ -52,8 +52,9 @@ abstract class AbstractMetadata implements MetaDataInterface
         foreach ($data as $key => $value) {
             if (!in_array($key, $columns) || is_null($value)) {
                 unset($data[$key]);
+            } else {
+                $data[$key] = $this->convertValue($value);
             }
-            $data[$key] = $this->convertValue($value);
         }
         return $data;
     }
