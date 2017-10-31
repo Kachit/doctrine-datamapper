@@ -90,8 +90,9 @@ abstract class Gateway implements GatewayInterface
             $queryBuilder->getParameterTypes(),
             $this->getDefaultCacheProfile($cacheLifetime)
         );
-        $result = $stmt->fetch();
-        return ($result) ? $result : [];
+        $result = $stmt->fetchAll();
+        $stmt->closeCursor();
+        return ($result) ? $result[0] : [];
     }
 
     /**
