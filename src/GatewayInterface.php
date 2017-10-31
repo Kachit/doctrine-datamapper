@@ -20,22 +20,25 @@ interface GatewayInterface
 
     /**
      * @param Filter|null $filter
+     * @param int $cacheLifetime
      * @return array
      */
-    public function fetchAll(Filter $filter = null): array;
+    public function fetchAll(Filter $filter = null, int $cacheLifetime = 0): array;
 
     /**
      * @param Filter|null $filter
+     * @param int $cacheLifetime
      * @return array
      */
-    public function fetch(Filter $filter = null): array;
+    public function fetch(Filter $filter = null, int $cacheLifetime = 0): array;
 
     /**
      * @param mixed $pk
      * @param string $pkField
+     * @param int $cacheLifetime
      * @return array
      */
-    public function fetchByPk($pk, string $pkField = self::DEFAULT_PRIMARY_KEY): array;
+    public function fetchByPk($pk, string $pkField = self::DEFAULT_PRIMARY_KEY, int $cacheLifetime = 0): array;
 
     /**
      * @param Filter|null $filter

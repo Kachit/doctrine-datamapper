@@ -7,6 +7,7 @@
  */
 namespace Kachit\Database;
 
+use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Kachit\Database\Query\Builder;
 use Kachit\Database\Query\Filter;
 
@@ -56,39 +57,50 @@ abstract class Gateway implements GatewayInterface
 
     /**
      * @param Filter|null $filter
+     * @param int $cacheLifetime
      * @return array
      */
-    public function fetchAll(Filter $filter = null): array
+    public function fetchAll(Filter $filter = null, int $cacheLifetime = 0): array
     {
         $queryBuilder = $this->createQueryBuilder();
         $this->buildQuery($queryBuilder, $filter);
-        return $queryBuilder
-            ->execute()
-            ->fetchAll()
-        ;
+        $stmt = $this->connection->executeQuery(
+            $queryBuilder->getSQL(),
+            $queryBuilder->getParameters(),
+            $queryBuilder->getParameterTypes(),
+            $this->getDefaultCacheProfile($cacheLifetime)
+        );
+        $data = $stmt->fetchAll();
+        $stmt->closeCursor();
+        return $data;
     }
 
     /**
      * @param Filter|null $filter
+     * @param int $cacheLifetime
      * @return array
      */
-    public function fetch(Filter $filter = null): array
+    public function fetch(Filter $filter = null, int $cacheLifetime = 0): array
     {
         $queryBuilder = $this->createQueryBuilder();
         $this->buildQuery($queryBuilder, $filter);
-        $result = $queryBuilder
-            ->execute()
-            ->fetch()
-        ;
+        $stmt = $this->connection->executeQuery(
+            $queryBuilder->getSQL(),
+            $queryBuilder->getParameters(),
+            $queryBuilder->getParameterTypes(),
+            $this->getDefaultCacheProfile($cacheLifetime)
+        );
+        $result = $stmt->fetch();
         return ($result) ? $result : [];
     }
 
     /**
      * @param mixed $pk
      * @param string $pkField
+     * @param int $cacheLifetime
      * @return array
      */
-    public function fetchByPk($pk, string $pkField = self::DEFAULT_PRIMARY_KEY): array
+    public function fetchByPk($pk, string $pkField = self::DEFAULT_PRIMARY_KEY, int $cacheLifetime = 0): array
     {
         $filter = $this->buildPrimaryKeyFilter($pkField, $pk);
         return $this->fetch($filter);
@@ -246,5 +258,15 @@ abstract class Gateway implements GatewayInterface
     public function buildQuery(QueryBuilder $queryBuilder, Filter $filter = null)
     {
         $this->getBuilder()->build($queryBuilder, $filter);
+    }
+
+    /**
+     * @param int $lifetime
+     * @param string|null $cacheKey
+     * @return QueryCacheProfile
+     */
+    protected function getDefaultCacheProfile(int $lifetime, string $cacheKey = null)
+    {
+        return new QueryCacheProfile($lifetime, $cacheKey);
     }
 }

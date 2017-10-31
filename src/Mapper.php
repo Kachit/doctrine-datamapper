@@ -63,32 +63,35 @@ class Mapper implements MapperInterface
 
     /**
      * @param Filter|null $filter
+     * @param int $cacheLifetime
      * @return CollectionInterface|Entity[]
      */
-    public function fetchAll(Filter $filter = null): CollectionInterface
+    public function fetchAll(Filter $filter = null, int $cacheLifetime = 0): CollectionInterface
     {
-        $data = $this->gateway->fetchAll($filter);
+        $data = $this->gateway->fetchAll($filter, $cacheLifetime);
         return $this->hydrateCollection($data);
     }
 
     /**
      * @param Filter|null $filter
+     * @param int $cacheLifetime
      * @return EntityInterface
      */
-    public function fetch(Filter $filter = null): EntityInterface
+    public function fetch(Filter $filter = null, int $cacheLifetime = 0): EntityInterface
     {
-        $data = $this->gateway->fetch($filter);
+        $data = $this->gateway->fetch($filter, $cacheLifetime);
         return $this->hydrateEntity($data);
     }
 
     /**
      * @param mixed $pk
+     * @param int $cacheLifetime
      * @return EntityInterface
      */
-    public function fetchByPk($pk): EntityInterface
+    public function fetchByPk($pk, int $cacheLifetime = 0): EntityInterface
     {
         $pkField = $this->metaData->getPrimaryKeyColumn();
-        $data = $this->gateway->fetchByPk($pk, $pkField);
+        $data = $this->gateway->fetchByPk($pk, $pkField, $cacheLifetime);
         return $this->hydrateEntity($data);
     }
 

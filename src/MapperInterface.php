@@ -13,21 +13,24 @@ interface MapperInterface
 {
     /**
      * @param Filter|null $filter
+     * @param int $cacheLifetime
      * @return EntityInterface[]|CollectionInterface
      */
-    public function fetchAll(Filter $filter = null): CollectionInterface;
+    public function fetchAll(Filter $filter = null, int $cacheLifetime = 0): CollectionInterface;
 
     /**
      * @param Filter|null $filter
+     * @param int $cacheLifetime
      * @return EntityInterface
      */
-    public function fetch(Filter $filter = null): EntityInterface;
+    public function fetch(Filter $filter = null, int $cacheLifetime = 0): EntityInterface;
 
     /**
      * @param mixed $pk
+     * @param int $cacheLifetime
      * @return EntityInterface
      */
-    public function fetchByPk($pk): EntityInterface;
+    public function fetchByPk($pk, int $cacheLifetime = 0): EntityInterface;
 
     /**
      * @param Filter|null $filter
