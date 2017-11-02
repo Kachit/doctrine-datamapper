@@ -5,8 +5,8 @@ use Kachit\Database\Collection;
 use Kachit\Database\NullEntity;
 use Kachit\Database\Exception\CollectionException;
 
-class CollectionTest extends \Codeception\Test\Unit {
-
+class CollectionTest extends \Codeception\Test\Unit
+{
     /**
      * @var \UnitTester
      */

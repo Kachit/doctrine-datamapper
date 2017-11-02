@@ -264,10 +264,11 @@ abstract class Gateway implements GatewayInterface
     /**
      * @param int $lifetime
      * @param string|null $cacheKey
-     * @return QueryCacheProfile
+     * @return QueryCacheProfile|null
      */
     protected function getDefaultCacheProfile(int $lifetime, string $cacheKey = null)
     {
-        return new QueryCacheProfile($lifetime, $cacheKey);
+        $configuration = $this->connection->getConfiguration();
+        return ($configuration->getResultCacheImpl()) ? new QueryCacheProfile($lifetime, $cacheKey): null;
     }
 }
