@@ -1,5 +1,6 @@
 <?php
 use Stubs\DB\Gateway;
+use Mocks\DBALConnectionMock;
 
 class GatewayTest extends \Codeception\Test\Unit
 {
@@ -9,7 +10,7 @@ class GatewayTest extends \Codeception\Test\Unit
     protected $tester;
 
     /**
-     * @var Gateway|PHPUnit_Framework_MockObject_MockObject
+     * @var Gateway
      */
     protected $testable;
 
@@ -18,11 +19,7 @@ class GatewayTest extends \Codeception\Test\Unit
      */
     protected function _before()
     {
-        $this->testable = $this->getMockBuilder(Gateway::class)
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
-        $this->testable->method('getTableName')->willReturn('users');
+        $this->testable = new Gateway((new DBALConnectionMock())->createObject()->withExpressionBuilder()->get());
     }
 
     /**
@@ -32,5 +29,19 @@ class GatewayTest extends \Codeception\Test\Unit
     {
         $result = $this->testable->getTableName();
         $this->assertEquals('users', $result);
+    }
+
+    /**
+     *
+     */
+    protected function testGetDefaultCacheProfile()
+    {
+        $testable = $this->testable;
+        $method = function ($lifetime) {
+            return $this->getDefaultCacheProfile($lifetime);
+        };
+        $bind = $method->bindTo($testable, $testable);
+        $result = $bind(10);
+        $this->assertEmpty($result);
     }
 }
