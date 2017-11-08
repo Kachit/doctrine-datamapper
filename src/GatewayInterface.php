@@ -11,8 +11,6 @@ use Kachit\Database\Query\FilterInterface;
 
 interface GatewayInterface
 {
-    const DEFAULT_PRIMARY_KEY = 'id';
-
     /**
      * @return string
      */
@@ -38,7 +36,7 @@ interface GatewayInterface
      * @param int $cacheLifetime
      * @return array
      */
-    public function fetchByPk($pk, string $pkField = self::DEFAULT_PRIMARY_KEY, int $cacheLifetime = 0): array;
+    public function fetchByPk($pk, string $pkField = MetaDataInterface::DEFAULT_PRIMARY_KEY, int $cacheLifetime = 0): array;
 
     /**
      * @param FilterInterface|null $filter
@@ -66,7 +64,7 @@ interface GatewayInterface
      * @param string $pkField
      * @return int
      */
-    public function updateByPk(array $data, $pk, string $pkField = self::DEFAULT_PRIMARY_KEY): int;
+    public function updateByPk(array $data, $pk, string $pkField = MetaDataInterface::DEFAULT_PRIMARY_KEY): int;
 
     /**
      * @param array $data
@@ -80,7 +78,7 @@ interface GatewayInterface
      * @param string $pkField
      * @return int
      */
-    public function deleteByPk($pk, string $pkField = self::DEFAULT_PRIMARY_KEY): int;
+    public function deleteByPk($pk, string $pkField = MetaDataInterface::DEFAULT_PRIMARY_KEY): int;
 
     /**
      * @param FilterInterface|null $filter

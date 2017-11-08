@@ -9,6 +9,8 @@ namespace Kachit\Database;
 
 interface MetaDataInterface
 {
+    const DEFAULT_PRIMARY_KEY = 'id';
+
     /**
      * @return string
      */

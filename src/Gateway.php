@@ -101,7 +101,7 @@ abstract class Gateway implements GatewayInterface
      * @param int $cacheLifetime
      * @return array
      */
-    public function fetchByPk($pk, string $pkField = self::DEFAULT_PRIMARY_KEY, int $cacheLifetime = 0): array
+    public function fetchByPk($pk, string $pkField = MetaDataInterface::DEFAULT_PRIMARY_KEY, int $cacheLifetime = 0): array
     {
         $filter = $this->buildPrimaryKeyFilter($pkField, $pk);
         return $this->fetch($filter);
@@ -185,7 +185,7 @@ abstract class Gateway implements GatewayInterface
      * @param string $pkField
      * @return int
      */
-    public function updateByPk(array $data, $pk, string $pkField = self::DEFAULT_PRIMARY_KEY): int
+    public function updateByPk(array $data, $pk, string $pkField = MetaDataInterface::DEFAULT_PRIMARY_KEY): int
     {
         $filter = $this->buildPrimaryKeyFilter($pkField, $pk);
         return $this->update($data, $filter);
@@ -208,7 +208,7 @@ abstract class Gateway implements GatewayInterface
      * @param string $pkField
      * @return int
      */
-    public function deleteByPk($pk, string $pkField = self::DEFAULT_PRIMARY_KEY): int
+    public function deleteByPk($pk, string $pkField = MetaDataInterface::DEFAULT_PRIMARY_KEY): int
     {
         $filter = $this->buildPrimaryKeyFilter($pkField, $pk);
         return $this->delete($filter);
