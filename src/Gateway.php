@@ -56,11 +56,11 @@ abstract class Gateway implements GatewayInterface
     }
 
     /**
-     * @param Filter|null $filter
+     * @param FilterInterface|null $filter
      * @param int $cacheLifetime
      * @return array
      */
-    public function fetchAll(Filter $filter = null, int $cacheLifetime = 0): array
+    public function fetchAll(FilterInterface $filter = null, int $cacheLifetime = 0): array
     {
         $queryBuilder = $this->createQueryBuilder();
         $this->buildQuery($queryBuilder, $filter);
@@ -76,11 +76,11 @@ abstract class Gateway implements GatewayInterface
     }
 
     /**
-     * @param Filter|null $filter
+     * @param FilterInterface|null $filter
      * @param int $cacheLifetime
      * @return array
      */
-    public function fetch(Filter $filter = null, int $cacheLifetime = 0): array
+    public function fetch(FilterInterface $filter = null, int $cacheLifetime = 0): array
     {
         $queryBuilder = $this->createQueryBuilder();
         $this->buildQuery($queryBuilder, $filter);
@@ -109,10 +109,10 @@ abstract class Gateway implements GatewayInterface
 
     /**
      * @param string $column
-     * @param Filter|null $filter
+     * @param FilterInterface|null $filter
      * @return mixed
      */
-    public function fetchColumn(string $column, Filter $filter = null)
+    public function fetchColumn(string $column, FilterInterface $filter = null)
     {
         $queryBuilder = $this->createQueryBuilder();
         $this->buildQuery($queryBuilder, $filter);
@@ -126,11 +126,11 @@ abstract class Gateway implements GatewayInterface
     }
 
     /**
-     * @param Filter|null $filter
+     * @param FilterInterface|null $filter
      * @param string|null $column
      * @return int
      */
-    public function count(Filter $filter = null, string $column = '*'): int
+    public function count(FilterInterface $filter = null, string $column = '*'): int
     {
         $column = $this->getTableAlias() . '.' . $column;
         $count = 'COUNT(' . $column . ')';
@@ -161,10 +161,10 @@ abstract class Gateway implements GatewayInterface
 
     /**
      * @param array $data
-     * @param Filter $filter
+     * @param FilterInterface $filter
      * @return int
      */
-    public function update(array $data, Filter $filter = null): int
+    public function update(array $data, FilterInterface $filter = null): int
     {
         $queryBuilder = $this->createQueryBuilder();
         $this->getBuilder()->build($queryBuilder, $filter);
@@ -192,10 +192,10 @@ abstract class Gateway implements GatewayInterface
     }
 
     /**
-     * @param Filter $filter
+     * @param FilterInterface $filter
      * @return int
      */
-    public function delete(Filter $filter = null): int
+    public function delete(FilterInterface $filter = null): int
     {
         $queryBuilder = $this->createQueryBuilder();
         $queryBuilder->delete($this->getTableName());
@@ -235,7 +235,7 @@ abstract class Gateway implements GatewayInterface
      * @param mixed $pk
      * @return FilterInterface
      */
-    protected function buildPrimaryKeyFilter(string $pkField, $pk)
+    protected function buildPrimaryKeyFilter(string $pkField, $pk): FilterInterface
     {
         $filter = (new Filter())->createCondition($pkField, $pk);
         return $filter;
@@ -254,9 +254,9 @@ abstract class Gateway implements GatewayInterface
 
     /**
      * @param QueryBuilder $queryBuilder
-     * @param Filter|null $filter
+     * @param FilterInterface|null $filter
      */
-    public function buildQuery(QueryBuilder $queryBuilder, Filter $filter = null)
+    public function buildQuery(QueryBuilder $queryBuilder, FilterInterface $filter = null)
     {
         $this->getBuilder()->build($queryBuilder, $filter);
     }

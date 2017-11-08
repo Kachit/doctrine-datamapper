@@ -178,6 +178,16 @@ class Builder
     }
 
     /**
+     * @param string $field
+     * @return $this
+     */
+    public function include(string $field)
+    {
+        $this->filter->include($field);
+        return $this;
+    }
+
+    /**
      * @return FilterInterface
      */
     public function getFilter(): FilterInterface
