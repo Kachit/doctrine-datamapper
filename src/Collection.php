@@ -173,6 +173,43 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     }
 
     /**
+     * Apply a user function to every member of an collection
+     *
+     * @param callable $callback
+     * @return CollectionInterface
+     */
+    public function walk(callable $callback): CollectionInterface
+    {
+        array_walk($this->data, $callback);
+        return $this;
+    }
+
+    /**
+     * Sort collection by user function
+     *
+     * @param callable $callback
+     * @return CollectionInterface
+     */
+    public function sort(callable $callback): CollectionInterface
+    {
+        uasort($this->data, $callback);
+        return $this;
+    }
+
+    /**
+     * Return new collection which has
+     *
+     * @param int $offset
+     * @param int $limit
+     * @return CollectionInterface
+     */
+    public function slice($offset, $limit = null): CollectionInterface
+    {
+        $data = array_slice($this->data, $offset, $limit, true);
+        return new static($data);
+    }
+
+    /**
      * Get object keys
      *
      * @return array
@@ -180,6 +217,54 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     public function getKeys(): array
     {
         return array_keys($this->data);
+    }
+
+    /**
+     * Clear objects
+     *
+     * @return CollectionInterface
+     */
+    public function clear(): CollectionInterface
+    {
+        $this->data = [];
+        return $this;
+    }
+
+    /**
+     * Append collection
+     *
+     * @param Collection $collection
+     * @return CollectionInterface
+     */
+    public function append(Collection $collection): CollectionInterface
+    {
+        foreach ($collection as $object) {
+            $this->add($object);
+        }
+        return $this;
+    }
+
+    /**
+     * Get cloned object
+     *
+     * @param mixed $index
+     * @return EntityInterface
+     */
+    public function cloneObject($index): EntityInterface
+    {
+        return clone $this->get($index);
+    }
+
+    /**
+     * Clone collection
+     */
+    public function __clone()
+    {
+        $data = [];
+        foreach ($this->getKeys() as $index) {
+            $data[$index] = $this->cloneObject($index);
+        }
+        $this->data = $data;
     }
 
     /**

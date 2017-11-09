@@ -86,4 +86,44 @@ interface CollectionInterface
      * @return EntityInterface[]
      */
     public function toArray(): array;
+
+    /**
+     * Clear objects
+     *
+     * @return $this
+     */
+    public function clear(): CollectionInterface;
+
+    /**
+     * Append collection
+     *
+     * @param Collection $collection
+     * @return $this
+     */
+    public function append(Collection $collection): CollectionInterface;
+
+    /**
+     * Apply a user function to every member of an collection
+     *
+     * @param callable $callback
+     * @return CollectionInterface
+     */
+    public function walk(callable $callback): CollectionInterface;
+
+    /**
+     * Sort collection by user function
+     *
+     * @param callable $callback
+     * @return CollectionInterface
+     */
+    public function sort(callable $callback): CollectionInterface;
+
+    /**
+     * Return new collection which has
+     *
+     * @param int $offset
+     * @param int $limit
+     * @return CollectionInterface
+     */
+    public function slice($offset, $limit = null): CollectionInterface;
 }
