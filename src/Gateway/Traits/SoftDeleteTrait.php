@@ -1,7 +1,7 @@
 <?php
 namespace Kachit\Database\Gateway\Traits;
 
-use Kachit\Database\Query\Filter;
+use Kachit\Database\Query\FilterInterface;
 use Kachit\Database\GatewayInterface;
 /**
  * Soft delete plugin
@@ -13,10 +13,10 @@ use Kachit\Database\GatewayInterface;
 trait SoftDeleteTrait
 {
     /**
-     * @param Filter $filter
+     * @param FilterInterface $filter
      * @return int
      */
-    public function delete(Filter $filter = null): int
+    public function delete(FilterInterface $filter = null): int
     {
         $data = $this->getSoftDeleteCondition();
         return $this->update($data, $filter);
