@@ -215,6 +215,16 @@ class Filter implements FilterInterface
     }
 
     /**
+     * @param array $values
+     * @return FilterInterface
+     */
+    public function includes(array $values): FilterInterface
+    {
+        $this->includes = $values;
+        return $this;
+    }
+
+    /**
      * @param string $value
      * @return bool
      */

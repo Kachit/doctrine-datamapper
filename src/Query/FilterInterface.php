@@ -138,6 +138,12 @@ interface FilterInterface
     public function include(string $value): FilterInterface;
 
     /**
+     * @param array $values
+     * @return FilterInterface
+     */
+    public function includes(array $values): FilterInterface;
+
+    /**
      * @param string $value
      * @return bool
      */
