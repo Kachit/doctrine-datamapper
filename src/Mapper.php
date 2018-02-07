@@ -10,6 +10,7 @@ namespace Kachit\Database;
 use Kachit\Database\Exception\MapperException;
 use Kachit\Database\MetaData\Database;
 use Kachit\Database\Query\Filter;
+use Kachit\Database\Query\CacheInterface;
 
 class Mapper implements MapperInterface
 {
@@ -63,35 +64,35 @@ class Mapper implements MapperInterface
 
     /**
      * @param Filter|null $filter
-     * @param int $cacheLifetime
+     * @param CacheInterface $cache
      * @return CollectionInterface|Entity[]
      */
-    public function fetchAll(Filter $filter = null, int $cacheLifetime = 0): CollectionInterface
+    public function fetchAll(Filter $filter = null, CacheInterface $cache = null): CollectionInterface
     {
-        $data = $this->gateway->fetchAll($filter, $cacheLifetime);
+        $data = $this->gateway->fetchAll($filter, $cache);
         return $this->hydrateCollection($data);
     }
 
     /**
      * @param Filter|null $filter
-     * @param int $cacheLifetime
+     * @param CacheInterface $cache
      * @return EntityInterface
      */
-    public function fetch(Filter $filter = null, int $cacheLifetime = 0): EntityInterface
+    public function fetch(Filter $filter = null, CacheInterface $cache = null): EntityInterface
     {
-        $data = $this->gateway->fetch($filter, $cacheLifetime);
+        $data = $this->gateway->fetch($filter, $cache);
         return $this->hydrateEntity($data);
     }
 
     /**
      * @param mixed $pk
-     * @param int $cacheLifetime
+     * @param CacheInterface $cache
      * @return EntityInterface
      */
-    public function fetchByPk($pk, int $cacheLifetime = 0): EntityInterface
+    public function fetchByPk($pk, CacheInterface $cache = null): EntityInterface
     {
         $pkField = $this->metaData->getPrimaryKeyColumn();
-        $data = $this->gateway->fetchByPk($pk, $pkField, $cacheLifetime);
+        $data = $this->gateway->fetchByPk($pk, $pkField, $cache);
         return $this->hydrateEntity($data);
     }
 

@@ -14,6 +14,7 @@ use Kachit\Database\Query\Filter;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Kachit\Database\Query\FilterInterface;
+use Kachit\Database\Query\CacheInterface;
 
 abstract class Gateway implements GatewayInterface
 {
@@ -57,10 +58,10 @@ abstract class Gateway implements GatewayInterface
 
     /**
      * @param FilterInterface|null $filter
-     * @param int $cacheLifetime
+     * @param CacheInterface $cache
      * @return array
      */
-    public function fetchAll(FilterInterface $filter = null, int $cacheLifetime = 0): array
+    public function fetchAll(FilterInterface $filter = null, CacheInterface $cache = null): array
     {
         $queryBuilder = $this->createQueryBuilder();
         $this->buildQuery($queryBuilder, $filter);
@@ -68,7 +69,7 @@ abstract class Gateway implements GatewayInterface
             $queryBuilder->getSQL(),
             $queryBuilder->getParameters(),
             $queryBuilder->getParameterTypes(),
-            $this->getDefaultCacheProfile($cacheLifetime)
+            $this->getDefaultCacheProfile($cache)
         );
         $data = $stmt->fetchAll();
         $stmt->closeCursor();
@@ -77,10 +78,10 @@ abstract class Gateway implements GatewayInterface
 
     /**
      * @param FilterInterface|null $filter
-     * @param int $cacheLifetime
+     * @param CacheInterface $cache
      * @return array
      */
-    public function fetch(FilterInterface $filter = null, int $cacheLifetime = 0): array
+    public function fetch(FilterInterface $filter = null, CacheInterface $cache = null): array
     {
         $queryBuilder = $this->createQueryBuilder();
         $this->buildQuery($queryBuilder, $filter);
@@ -88,7 +89,7 @@ abstract class Gateway implements GatewayInterface
             $queryBuilder->getSQL(),
             $queryBuilder->getParameters(),
             $queryBuilder->getParameterTypes(),
-            $this->getDefaultCacheProfile($cacheLifetime)
+            $this->getDefaultCacheProfile($cache)
         );
         $result = $stmt->fetchAll();
         $stmt->closeCursor();
@@ -98,13 +99,13 @@ abstract class Gateway implements GatewayInterface
     /**
      * @param mixed $pk
      * @param string $pkField
-     * @param int $cacheLifetime
+     * @param CacheInterface $cache
      * @return array
      */
-    public function fetchByPk($pk, string $pkField = MetaDataInterface::DEFAULT_PRIMARY_KEY, int $cacheLifetime = 0): array
+    public function fetchByPk($pk, string $pkField = MetaDataInterface::DEFAULT_PRIMARY_KEY, CacheInterface $cache = null): array
     {
         $filter = $this->buildPrimaryKeyFilter($pkField, $pk);
-        return $this->fetch($filter);
+        return $this->fetch($filter, $cache);
     }
 
     /**
@@ -262,13 +263,12 @@ abstract class Gateway implements GatewayInterface
     }
 
     /**
-     * @param int $lifetime
-     * @param string|null $cacheKey
-     * @return QueryCacheProfile|null
+     * @param CacheInterface $cache
+     * @return QueryCacheProfile|CacheInterface|null
      */
-    protected function getDefaultCacheProfile(int $lifetime, string $cacheKey = null)
+    protected function getDefaultCacheProfile(CacheInterface $cache = null)
     {
         $configuration = $this->connection->getConfiguration();
-        return ($configuration->getResultCacheImpl()) ? new QueryCacheProfile($lifetime, $cacheKey): null;
+        return ($cache) ? $cache : $configuration->getResultCacheImpl();
     }
 }

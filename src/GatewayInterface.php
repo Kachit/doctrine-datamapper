@@ -8,6 +8,7 @@
 namespace Kachit\Database;
 
 use Kachit\Database\Query\FilterInterface;
+use Kachit\Database\Query\CacheInterface;
 
 interface GatewayInterface
 {
@@ -18,25 +19,25 @@ interface GatewayInterface
 
     /**
      * @param FilterInterface|null $filter
-     * @param int $cacheLifetime
+     * @param CacheInterface $cache
      * @return array
      */
-    public function fetchAll(FilterInterface $filter = null, int $cacheLifetime = 0): array;
+    public function fetchAll(FilterInterface $filter = null, CacheInterface $cache = null): array;
 
     /**
      * @param FilterInterface|null $filter
-     * @param int $cacheLifetime
+     * @param CacheInterface $cache
      * @return array
      */
-    public function fetch(FilterInterface $filter = null, int $cacheLifetime = 0): array;
+    public function fetch(FilterInterface $filter = null, CacheInterface $cache = null): array;
 
     /**
      * @param mixed $pk
      * @param string $pkField
-     * @param int $cacheLifetime
+     * @param CacheInterface $cache
      * @return array
      */
-    public function fetchByPk($pk, string $pkField = MetaDataInterface::DEFAULT_PRIMARY_KEY, int $cacheLifetime = 0): array;
+    public function fetchByPk($pk, string $pkField = MetaDataInterface::DEFAULT_PRIMARY_KEY, CacheInterface $cache = null): array;
 
     /**
      * @param FilterInterface|null $filter

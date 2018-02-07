@@ -8,29 +8,30 @@
 namespace Kachit\Database;
 
 use Kachit\Database\Query\Filter;
+use Kachit\Database\Query\CacheInterface;
 
 interface MapperInterface
 {
     /**
      * @param Filter|null $filter
-     * @param int $cacheLifetime
+     * @param CacheInterface $cache
      * @return EntityInterface[]|CollectionInterface
      */
-    public function fetchAll(Filter $filter = null, int $cacheLifetime = 0): CollectionInterface;
+    public function fetchAll(Filter $filter = null, CacheInterface $cache = null): CollectionInterface;
 
     /**
      * @param Filter|null $filter
-     * @param int $cacheLifetime
+     * @param CacheInterface $cache
      * @return EntityInterface
      */
-    public function fetch(Filter $filter = null, int $cacheLifetime = 0): EntityInterface;
+    public function fetch(Filter $filter = null, CacheInterface $cache = null): EntityInterface;
 
     /**
      * @param mixed $pk
-     * @param int $cacheLifetime
+     * @param CacheInterface $cache
      * @return EntityInterface
      */
-    public function fetchByPk($pk, int $cacheLifetime = 0): EntityInterface;
+    public function fetchByPk($pk, CacheInterface $cache = null): EntityInterface;
 
     /**
      * @param Filter|null $filter
