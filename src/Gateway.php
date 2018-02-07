@@ -9,6 +9,7 @@ namespace Kachit\Database;
 
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Kachit\Database\Query\Builder;
+use Kachit\Database\Query\Cache;
 use Kachit\Database\Query\Filter;
 
 use Doctrine\DBAL\Connection;
@@ -269,6 +270,6 @@ abstract class Gateway implements GatewayInterface
     protected function getDefaultCacheProfile(CacheInterface $cache = null)
     {
         $configuration = $this->connection->getConfiguration();
-        return ($cache) ? $cache : $configuration->getResultCacheImpl();
+        return ($cache) ? $cache : new Cache(0, null, $configuration->getResultCacheImpl());
     }
 }
