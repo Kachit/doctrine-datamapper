@@ -16,27 +16,34 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Kachit\Database\Query\FilterInterface;
 use Kachit\Database\Query\CacheInterface;
+use Kachit\Database\Gateway\Configuration;
 
 abstract class Gateway implements GatewayInterface
 {
     /**
      * @var Connection
      */
-    private $connection;
+    protected $connection;
 
     /**
      * @var Builder
      */
-    private $builder;
+    protected $builder;
+
+    /**
+     * @var Configuration
+     */
+    protected $configuration;
 
     /**
      * Gateway constructor
      *
      * @param Connection $connection
      */
-    public function __construct(Connection $connection)
+    public function __construct(Connection $connection, Configuration $configuration = null)
     {
         $this->connection = $connection;
+        $this->configuration = ($configuration) ?? new Configuration();
     }
 
     /**
@@ -269,7 +276,13 @@ abstract class Gateway implements GatewayInterface
      */
     protected function getDefaultCacheProfile(CacheInterface $cache = null)
     {
-        $configuration = $this->connection->getConfiguration();
-        return ($cache) ? $cache : new Cache(0, null, $configuration->getResultCacheImpl());
+        if (empty($cache)) {
+            $configuration = $this->connection->getConfiguration();
+            $cacheAdapter = $configuration->getResultCacheImpl();
+            if ($cacheAdapter && $this->configuration->getCacheLifeTime()) {
+                $cache = new Cache($this->configuration->getCacheLifeTime(), $this->configuration->getCacheKey(), $cacheAdapter);
+            }
+        }
+        return $cache;
     }
 }
