@@ -10,8 +10,11 @@ namespace Kachit\Database;
 use Kachit\Database\Exception\CollectionException;
 use Traversable;
 use Closure;
+use JsonSerializable;
+use IteratorAggregate;
+use ArrayIterator;
 
-class Collection implements CollectionInterface, \JsonSerializable, \IteratorAggregate
+class Collection implements CollectionInterface, JsonSerializable, IteratorAggregate
 {
     /**
      * @var EntityInterface[]
@@ -29,7 +32,6 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
 
     /**
      * @param EntityInterface $entity
-     * @throws CollectionException
      * @return CollectionInterface
      */
     public function add(EntityInterface $entity): CollectionInterface
@@ -173,7 +175,7 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     }
 
     /**
-     * Apply a user function to every member of an collection
+     * Apply a user function to every item of an collection
      *
      * @param callable $callback
      * @return CollectionInterface
@@ -182,6 +184,17 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
     {
         array_walk($this->data, $callback);
         return $this;
+    }
+
+    /**
+     * Map collection items
+     *
+     * @param callable $callback
+     * @return array
+     */
+    public function map(callable $callback): array
+    {
+        return array_walk($this->data, $callback);
     }
 
     /**
@@ -249,6 +262,7 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
      *
      * @param mixed $index
      * @return EntityInterface
+     * @throws CollectionException
      */
     public function cloneObject($index): EntityInterface
     {
@@ -257,6 +271,8 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
 
     /**
      * Clone collection
+     *
+     * @throws CollectionException
      */
     public function __clone()
     {
@@ -276,7 +292,7 @@ class Collection implements CollectionInterface, \JsonSerializable, \IteratorAgg
      */
     public function getIterator()
     {
-        return new \ArrayIterator($this->data);
+        return new ArrayIterator($this->data);
     }
 
     /**

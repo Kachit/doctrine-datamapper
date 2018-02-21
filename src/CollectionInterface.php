@@ -111,6 +111,14 @@ interface CollectionInterface
     public function walk(callable $callback): CollectionInterface;
 
     /**
+     * Map collection items
+     *
+     * @param callable $callback
+     * @return array
+     */
+    public function map(callable $callback): array;
+
+    /**
      * Sort collection by user function
      *
      * @param callable $callback
