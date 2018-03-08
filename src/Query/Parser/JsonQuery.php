@@ -122,7 +122,7 @@ class JsonQuery implements ParserInterface
     {
         if (isset($query[static::QUERY_PARAM_ORDER_BY]) && is_array($query[static::QUERY_PARAM_ORDER_BY])) {
             $orders = [self::ORDER_ASC, self::ORDER_DESC];
-            foreach ($query[self::QUERY_PARAM_ORDER_BY] as $orderBy) {
+            foreach ($query[static::QUERY_PARAM_ORDER_BY] as $orderBy) {
                 foreach ($orderBy as $field => $order) {
                     if (in_array(strtolower($order), $orders)) {
                         $filter->addOrderBy($field, $order);

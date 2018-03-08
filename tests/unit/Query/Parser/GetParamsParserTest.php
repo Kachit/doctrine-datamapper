@@ -50,8 +50,7 @@ class GetParamsParserTest extends \Codeception\Test\Unit {
     public function testCreateFilterWithOrderBy()
     {
         $query = ['order' => [
-            'field' => 'foo',
-            'type' => 'asc',
+            'foo' => 'asc',
         ]];
         $parser = new GetParamsQuery();
         $filter = $parser->parse($query);
