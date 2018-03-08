@@ -194,7 +194,7 @@ class Collection implements CollectionInterface, JsonSerializable, IteratorAggre
      */
     public function map(callable $callback): array
     {
-        return array_walk($this->data, $callback);
+        return array_map($callback, $this->data);
     }
 
     /**
