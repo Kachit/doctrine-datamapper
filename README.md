@@ -9,7 +9,7 @@ Simple datamapper
 Simple datamapper powered by doctrine2
 
 ```php
-//create db connection
+//create database connection
 $params = []
 $connection = new Doctrine\DBAL\Connection($params);
 ```
