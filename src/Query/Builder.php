@@ -42,6 +42,12 @@ class Builder
         if ($filter->getOffset()) {
             $queryBuilder->setFirstResult($filter->getOffset());
         }
+        if ($filter->getFields()) {
+            $callback = function($element) {
+                return $this->tableAlias . '.' . $element;
+            };
+            $queryBuilder->addSelect(array_map($callback, $filter->getFields()));
+        }
 
         foreach ($filter->getConditions() as $field => $conditions) {
             $this->buildQueryConditions($queryBuilder, $conditions, $this->tableAlias);

@@ -8,3 +8,4 @@ modules:
         - Mockery
         - Asserts
         - \Helper\Unit
+        - \Helper\MocksFactory

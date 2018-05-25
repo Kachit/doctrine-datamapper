@@ -1,6 +1,6 @@
 {
     "name": "kachit/doctrine-datamapper",
-    "description": "Simple datamapper powered by doctrine 2",
+    "description": "Simple datamapper powered by doctrine 2 dbal",
     "minimum-stability": "stable",
     "type": "library",
     "license": "MIT",
@@ -11,7 +11,10 @@
         }
     ],
     "autoload": {
-        "psr-4": { "Kachit\\Database\\": "src/" }
+        "psr-4": {
+            "Kachit\\Database\\": "src/",
+            "Kachit\\Database\\Mocks\\": "./tests/_support/Mocks/"
+        }
     },
     "autoload-dev": {
         "psr-4": {
@@ -23,7 +26,7 @@
         "doctrine/dbal":"2.5.*"
     },
     "require-dev": {
-        "codeception/codeception": "2.3.*",
+        "codeception/codeception": "2.4.*",
         "justblackbird/codeception-config-module": "^1.0",
         "codeception/mockery-module": "0.2.*",
         "squizlabs/php_codesniffer": "3.*"

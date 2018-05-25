@@ -19,6 +19,11 @@ class Filter implements FilterInterface
     /**
      * @var array
      */
+    private $fields = [];
+
+    /**
+     * @var array
+     */
     private $orderBy = [];
 
     /**
@@ -108,6 +113,24 @@ class Filter implements FilterInterface
     public function createCondition(string $field, $value, string $operator = self::OPERATOR_IS_EQUAL): FilterInterface
     {
         $this->addCondition(new Condition($field, $operator, $value));
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFields(): array
+    {
+        return $this->fields;
+    }
+
+    /**
+     * @param array $fields
+     * @return FilterInterface
+     */
+    public function setFields(array $fields): FilterInterface
+    {
+        $this->fields = $fields;
         return $this;
     }
 

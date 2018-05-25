@@ -30,6 +30,17 @@ interface FilterInterface
     public function getConditions(): array;
 
     /**
+     * @return array
+     */
+    public function getFields(): array;
+
+    /**
+     * @param array $fields
+     * @return FilterInterface
+     */
+    public function setFields(array $fields): FilterInterface;
+
+    /**
      * @param string $field
      * @param string $operator
      * @return bool

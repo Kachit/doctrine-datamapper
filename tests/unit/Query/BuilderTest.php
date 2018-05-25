@@ -64,4 +64,17 @@ class BuilderTest extends \Codeception\Test\Unit {
         $this->assertEquals('SELECT * FROM table t', $queryBuilder->getSQL());
         $this->assertEquals($expected, $queryBuilder->getParameters());
     }
+
+    /**
+     *
+     */
+    public function testBuildQueryWithSelectedFields()
+    {
+        $expected = [];
+        $queryBuilder = $this->qb->select()->from('table', 't');
+        $filter = $this->fb->getFilter()->setFields(['id', 'name']);
+        $this->testable->build($queryBuilder, $filter);
+        $this->assertEquals('SELECT t.id, t.name FROM table t', $queryBuilder->getSQL());
+        $this->assertEquals($expected, $queryBuilder->getParameters());
+    }
 }

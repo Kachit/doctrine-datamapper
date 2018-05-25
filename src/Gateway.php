@@ -119,9 +119,10 @@ abstract class Gateway implements GatewayInterface
     /**
      * @param string $column
      * @param FilterInterface|null $filter
+     * @param CacheInterface $cache = null
      * @return mixed
      */
-    public function fetchColumn(string $column, FilterInterface $filter = null)
+    public function fetchColumn(string $column, FilterInterface $filter = null, CacheInterface $cache = null)
     {
         $queryBuilder = $this->createQueryBuilder();
         $this->buildQuery($queryBuilder, $filter);

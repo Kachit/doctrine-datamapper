@@ -49,9 +49,10 @@ interface GatewayInterface
     /**
      * @param string $column
      * @param FilterInterface|null $filter
+     * @param CacheInterface $cache = null
      * @return mixed
      */
-    public function fetchColumn(string $column, FilterInterface $filter = null);
+    public function fetchColumn(string $column, FilterInterface $filter = null, CacheInterface $cache = null);
 
     /**
      * @param array $data
