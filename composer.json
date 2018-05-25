@@ -18,7 +18,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Stubs\\": "tests/Stubs/"
+            "Stubs\\": "tests/_support/Stubs/"
         }
     },
     "require": {

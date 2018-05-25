@@ -1,6 +1,7 @@
 <?php
 use Stubs\DB\Gateway;
 use Mocks\DBALConnectionMock;
+use Kachit\Database\Mocks\Doctrine\DBAL\ConnectionMock;
 
 class GatewayTest extends \Codeception\Test\Unit
 {
@@ -15,11 +16,17 @@ class GatewayTest extends \Codeception\Test\Unit
     protected $testable;
 
     /**
+     * @var ConnectionMock
+     */
+    protected $connection;
+
+    /**
      *
      */
     protected function _before()
     {
-        $this->testable = new Gateway((new DBALConnectionMock())->createObject()->withExpressionBuilder()->get());
+        $this->connection = $this->tester->mockDatabase();
+        $this->testable = new Gateway($this->connection);
     }
 
     /**

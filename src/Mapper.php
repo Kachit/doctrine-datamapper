@@ -50,16 +50,16 @@ class Mapper implements MapperInterface
      * @param GatewayInterface $gateway
      * @param EntityInterface $entity
      * @param HydratorInterface|null $hydrator
-     * @param CollectionInterface|null $collection
+     * @param MetaDataInterface|null $metadata
      */
-    public function __construct(GatewayInterface $gateway, EntityInterface $entity, HydratorInterface $hydrator = null, CollectionInterface $collection = null)
+    public function __construct(GatewayInterface $gateway, EntityInterface $entity, HydratorInterface $hydrator = null, MetaDataInterface $metadata = null)
     {
         $this->gateway = $gateway;
         $this->entity = $entity;
         $this->hydrator = ($hydrator) ? $hydrator : $this->createDefaultHydrator();
-        $this->collection = ($collection) ? $collection : $this->createDefaultCollection();
-        $this->metaData = $this->createDefaultMetadata();
+        $this->metaData = ($metadata) ?? $this->createDefaultMetadata();
         $this->validator = $this->createDefaultValidator();
+        $this->collection = $this->createDefaultCollection();
     }
 
     /**

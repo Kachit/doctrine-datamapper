@@ -8,8 +8,9 @@
 namespace Kachit\Database;
 
 use Kachit\Database\Exception\EntityException;
+use JsonSerializable;
 
-abstract class Entity implements EntityInterface, \JsonSerializable
+abstract class Entity implements EntityInterface, JsonSerializable
 {
     /**
      * Entity constructor.
