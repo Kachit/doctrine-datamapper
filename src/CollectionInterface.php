@@ -8,9 +8,12 @@
 namespace Kachit\Database;
 
 use Closure;
+use Countable;
+use JsonSerializable;
+use IteratorAggregate;
 use Kachit\Database\Exception\CollectionException;
 
-interface CollectionInterface
+interface CollectionInterface extends Countable, JsonSerializable, IteratorAggregate
 {
     /**
      * @param EntityInterface $entity

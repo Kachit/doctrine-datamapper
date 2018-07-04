@@ -10,11 +10,9 @@ namespace Kachit\Database;
 use Kachit\Database\Exception\CollectionException;
 use Traversable;
 use Closure;
-use JsonSerializable;
-use IteratorAggregate;
 use ArrayIterator;
 
-class Collection implements CollectionInterface, JsonSerializable, IteratorAggregate
+class Collection implements CollectionInterface
 {
     /**
      * @var EntityInterface[]
