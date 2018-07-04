@@ -82,7 +82,7 @@ class MapperTest extends \Codeception\Test\Unit {
         $gateway = $this->getGatewayMock('fetchAll', $array);
         $mapper = new Mapper($gateway, new Entity());
         $collection = $mapper->fetchAll();
-        $this->assertNotEmpty($collection);
+        $this->assertEmpty($collection);
         $this->assertTrue(is_object($collection));
         $this->assertInstanceOf(CollectionInterface::class, $collection);
         $this->assertEquals(0, $collection->count());
