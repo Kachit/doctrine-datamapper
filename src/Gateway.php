@@ -39,6 +39,7 @@ abstract class Gateway implements GatewayInterface
      * Gateway constructor
      *
      * @param Connection $connection
+     * @param Configuration $configuration
      */
     public function __construct(Connection $connection, Configuration $configuration = null)
     {

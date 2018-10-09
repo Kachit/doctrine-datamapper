@@ -82,20 +82,39 @@ class Builder
      */
     public function buildSingleCondition(QueryBuilder $queryBuilder, Condition $condition, $tableAlias)
     {
+        $needNamedParameter = true;
+
         $expr = $queryBuilder->expr();
         $operator = $condition->getOperator();
         $field = ($queryBuilder->getType() !== QueryBuilder::DELETE && $tableAlias) ? $tableAlias . '.' . $condition->getField() : $condition->getField();
         $type = ($condition->isList()) ? Connection::PARAM_STR_ARRAY : null;
         $value = $condition->getValue();
-        if (in_array($operator, [FilterInterface::OPERATOR_IS_NULL])) {
-            $value = ($value) ? 'IS NOT NULL' : 'IS NULL';
-        }
-        $namedParameter = $queryBuilder->createNamedParameter($value, $type);
 
-        if($condition->isList()) {
-            $namedParameter = '(' . $namedParameter . ')';
+        if ($operator == FilterInterface::OPERATOR_IS_NULL) {
+            $operator = $queryBuilder->getConnection()->getDatabasePlatform()->getIsNullExpression('');
+            $needNamedParameter = false;
         }
-        $where = $expr->comparison($field, $operator, $namedParameter);
+
+        if ($operator == FilterInterface::OPERATOR_IS_NOT_NULL) {
+            $operator = $queryBuilder->getConnection()->getDatabasePlatform()->getIsNotNullExpression('');
+            $needNamedParameter = false;
+        }
+
+        if (is_bool($value)) {
+            $type = \PDO::PARAM_BOOL;
+        }
+
+        if ($needNamedParameter) {
+            $namedParameter = $queryBuilder->createNamedParameter($value, $type);
+
+            if($condition->isList()) {
+                $namedParameter = '(' . $namedParameter . ')';
+            }
+            $where = $expr->comparison($field, $operator, $namedParameter);
+        } else {
+            $where = $expr->comparison($field, $operator, '');
+        }
+
         $queryBuilder
             ->andWhere($where)
         ;

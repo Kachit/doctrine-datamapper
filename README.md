@@ -9,12 +9,14 @@ Simple datamapper
 Simple datamapper powered by doctrine2
 
 ```php
+<?php
 //create database connection
-$params = []
-$connection = new Doctrine\DBAL\Connection($params);
+$params = [];
+$connection = Doctrine\DBAL\DriverManager::getConnection($params);
 ```
 
 ```php
+<?php
 //create your table gateway
 $gateway = new Your\Project\Namespace\TableGateway($connection);
 
@@ -31,6 +33,7 @@ $rows = $gateway->fetchAll($filter);
 ```
 
 ```php
+<?php
 //create mapper
 $entity = new Your\Project\Namespace\Entity();
 $mapper = new Your\Project\Namespace\Mapper($gateway, $entity);
