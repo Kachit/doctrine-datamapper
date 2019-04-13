@@ -163,12 +163,12 @@ class Collection implements CollectionInterface
     /**
      * Filter collection by user function
      *
-     * @param Closure $function
+     * @param callable $callback
      * @return CollectionInterface|EntityInterface[]
      */
-    public function filter(Closure $function): CollectionInterface
+    public function filter(callable $callback): CollectionInterface
     {
-        $data = array_filter($this->data, $function);
+        $data = array_filter($this->data, $callback);
         return new static($data);
     }
 
@@ -214,7 +214,7 @@ class Collection implements CollectionInterface
      * @param int $limit
      * @return CollectionInterface
      */
-    public function slice($offset, $limit = null): CollectionInterface
+    public function slice(int $offset, int $limit = null): CollectionInterface
     {
         $data = array_slice($this->data, $offset, $limit, true);
         return new static($data);

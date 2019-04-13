@@ -7,7 +7,6 @@
  */
 namespace Kachit\Database;
 
-use Closure;
 use Countable;
 use JsonSerializable;
 use IteratorAggregate;
@@ -52,10 +51,10 @@ interface CollectionInterface extends Countable, JsonSerializable, IteratorAggre
     public function isEmpty(): bool;
 
     /**
-     * @param Closure $function
+     * @param callable $callback
      * @return CollectionInterface
      */
-    public function filter(Closure $function): CollectionInterface;
+    public function filter(callable $callback): CollectionInterface;
 
     /**
      * Get first object
@@ -136,5 +135,5 @@ interface CollectionInterface extends Countable, JsonSerializable, IteratorAggre
      * @param int $limit
      * @return CollectionInterface
      */
-    public function slice($offset, $limit = null): CollectionInterface;
+    public function slice(int $offset, int $limit = null): CollectionInterface;
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Abstract mapper class
+ * Base mapper class
  *
  * @author Kachit
  * @package Kachit\Database
@@ -9,7 +9,7 @@ namespace Kachit\Database;
 
 use Kachit\Database\Exception\MapperException;
 use Kachit\Database\MetaData\Database;
-use Kachit\Database\Query\Filter;
+use Kachit\Database\Query\FilterInterface;
 use Kachit\Database\Query\CacheInterface;
 
 class Mapper implements MapperInterface
@@ -63,22 +63,22 @@ class Mapper implements MapperInterface
     }
 
     /**
-     * @param Filter|null $filter
+     * @param FilterInterface|null $filter
      * @param CacheInterface $cache
      * @return CollectionInterface|Entity[]
      */
-    public function fetchAll(Filter $filter = null, CacheInterface $cache = null): CollectionInterface
+    public function fetchAll(FilterInterface $filter = null, CacheInterface $cache = null): CollectionInterface
     {
         $data = $this->gateway->fetchAll($filter, $cache);
         return $this->hydrateCollection($data);
     }
 
     /**
-     * @param Filter|null $filter
+     * @param FilterInterface|null $filter
      * @param CacheInterface $cache
      * @return EntityInterface
      */
-    public function fetch(Filter $filter = null, CacheInterface $cache = null): EntityInterface
+    public function fetch(FilterInterface $filter = null, CacheInterface $cache = null): EntityInterface
     {
         $data = $this->gateway->fetch($filter, $cache);
         return $this->hydrateEntity($data);
@@ -97,10 +97,10 @@ class Mapper implements MapperInterface
     }
 
     /**
-     * @param Filter|null $filter
+     * @param FilterInterface|null $filter
      * @return int
      */
-    public function count(Filter $filter = null): int
+    public function count(FilterInterface $filter = null): int
     {
         return $this->gateway->count($filter);
     }

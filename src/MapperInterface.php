@@ -7,24 +7,24 @@
  */
 namespace Kachit\Database;
 
-use Kachit\Database\Query\Filter;
+use Kachit\Database\Query\FilterInterface;
 use Kachit\Database\Query\CacheInterface;
 
 interface MapperInterface
 {
     /**
-     * @param Filter|null $filter
+     * @param FilterInterface|null $filter
      * @param CacheInterface $cache
      * @return EntityInterface[]|CollectionInterface
      */
-    public function fetchAll(Filter $filter = null, CacheInterface $cache = null): CollectionInterface;
+    public function fetchAll(FilterInterface $filter = null, CacheInterface $cache = null): CollectionInterface;
 
     /**
-     * @param Filter|null $filter
+     * @param FilterInterface|null $filter
      * @param CacheInterface $cache
      * @return EntityInterface
      */
-    public function fetch(Filter $filter = null, CacheInterface $cache = null): EntityInterface;
+    public function fetch(FilterInterface $filter = null, CacheInterface $cache = null): EntityInterface;
 
     /**
      * @param mixed $pk
@@ -34,10 +34,10 @@ interface MapperInterface
     public function fetchByPk($pk, CacheInterface $cache = null): EntityInterface;
 
     /**
-     * @param Filter|null $filter
+     * @param FilterInterface|null $filter
      * @return int
      */
-    public function count(Filter $filter = null): int;
+    public function count(FilterInterface $filter = null): int;
 
     /**
      * @param EntityInterface $entity
