@@ -12,7 +12,7 @@ before_script:
 
 script:
  - mkdir -p build/logs
- - vendor/bin/codecept run --coverage-xml
+ - vendor/bin/codecept run --coverage-clover coverage.xml
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
