@@ -12,6 +12,11 @@ settings:
 extensions:
     enabled:
         - Codeception\Extension\RunFailed
+coverage:
+    enabled: true
+    show_only_summary: true
+    include:
+        - src/*
 modules:
     config:
         Db:
