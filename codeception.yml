@@ -14,6 +14,7 @@ extensions:
         - Codeception\Extension\RunFailed
 coverage:
     enabled: true
+    remote: false
     show_only_summary: true
     include:
         - src/*
