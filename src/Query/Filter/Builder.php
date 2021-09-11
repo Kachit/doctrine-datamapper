@@ -118,6 +118,7 @@ class Builder
     /**
      * @param string $field
      * @return $this
+     * @deprecated
      */
     public function withNull(string $field)
     {
@@ -128,8 +129,29 @@ class Builder
     /**
      * @param string $field
      * @return $this
+     * @deprecated
      */
     public function withNotNull(string $field)
+    {
+        $this->filter->createCondition($field, null, Filter::OPERATOR_IS_NOT_NULL);
+        return $this;
+    }
+
+    /**
+     * @param string $field
+     * @return $this
+     */
+    public function isNull(string $field)
+    {
+        $this->filter->createCondition($field, null, Filter::OPERATOR_IS_NULL);
+        return $this;
+    }
+
+    /**
+     * @param string $field
+     * @return $this
+     */
+    public function isNotNull(string $field)
     {
         $this->filter->createCondition($field, null, Filter::OPERATOR_IS_NOT_NULL);
         return $this;

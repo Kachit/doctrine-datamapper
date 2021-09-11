@@ -126,14 +126,17 @@ abstract class Gateway implements GatewayInterface
     public function fetchColumn(string $column, FilterInterface $filter = null, CacheInterface $cache = null)
     {
         $queryBuilder = $this->createQueryBuilder();
+        $queryBuilder->select($column);
         $this->buildQuery($queryBuilder, $filter);
-        return $queryBuilder
-            ->resetQueryPart('select')
-            ->resetQueryPart('orderBy')
-            ->select($column)
-            ->execute()
-            ->fetchColumn()
-        ;
+        $stmt = $this->connection->executeQuery(
+            $queryBuilder->getSQL(),
+            $queryBuilder->getParameters(),
+            $queryBuilder->getParameterTypes(),
+            $this->getDefaultCacheProfile($cache)
+        );
+        $result = $stmt->fetchColumn();
+        $stmt->closeCursor();
+        return $result;
     }
 
     /**

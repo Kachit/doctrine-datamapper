@@ -22,7 +22,8 @@ class Database extends AbstractMetadata
     private $connection;
 
     /**
-     * MetaData constructor.
+     * MetaData constructor
+     *
      * @param Connection $connection
      * @param string $tableName
      */

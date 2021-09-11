@@ -10,6 +10,7 @@ namespace Kachit\Database\Mocks\Doctrine\DBAL;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Cache\ArrayStatement;
+use Doctrine\DBAL\DBALException;
 
 class ConnectionMock extends Connection
 {
@@ -52,6 +53,28 @@ class ConnectionMock extends Connection
     }
 
     /**
+     * @var array
+     */
+    protected $queries = [];
+
+    /**
+     * @return array
+     */
+    public function getQueries(): array
+    {
+        return $this->queries;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLastQuery(): array
+    {
+        $queries = $this->queries;
+        return ($queries) ? array_pop($queries) : [];
+    }
+
+    /**
      * @return bool
      */
     public function connect()
@@ -77,12 +100,16 @@ class ConnectionMock extends Connection
      * @param array                                       $types  The types the previous parameters are in.
      * @param \Doctrine\DBAL\Cache\QueryCacheProfile|null $qcp    The query cache profile, optional.
      *
-     * @return \Doctrine\DBAL\Driver\Statement The executed statement.
+     * @return \Doctrine\DBAL\Driver\ResultStatement The executed statement.
      *
      * @throws \Doctrine\DBAL\DBALException
      */
     public function executeQuery($query, array $params = array(), $types = array(), QueryCacheProfile $qcp = null)
     {
+        $this->queries[] = [
+            'query' => $query,
+            'params' => $params
+        ];
         $data = ($this->fetchResults) ? array_shift($this->fetchResults) : [];
         $statement = new ArrayStatement($data);
         return $statement;
@@ -97,7 +124,17 @@ class ConnectionMock extends Connection
     }
 
     /**
-     * @override
+     * Inserts a table row with specified data.
+     *
+     * Table expression and columns are not escaped and are not safe for user-input.
+     *
+     * @param string         $table The expression of the table to insert data into, quoted or unquoted.
+     * @param mixed[]        $data  An associative array containing column-value pairs.
+     * @param int[]|string[] $types Types of the inserted data.
+     *
+     * @return int The number of affected rows.
+     *
+     * @throws DBALException
      */
     public function insert($tableName, array $data, array $types = array())
     {
@@ -145,7 +182,8 @@ class ConnectionMock extends Connection
     }
 
     /**
-     * @override
+     * @param null $seqName
+     * @return int|string
      */
     public function lastInsertId($seqName = null)
     {
@@ -213,6 +251,7 @@ class ConnectionMock extends Connection
     {
         $this->inserts = [];
         $this->updates = [];
+        $this->queries = [];
         $this->fetchResults = [];
         $this->lastInsertId = 0;
         return $this;
