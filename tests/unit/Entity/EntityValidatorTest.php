@@ -22,17 +22,11 @@ class EntityValidatorTest extends \Codeception\Test\Unit {
         $this->testable = new EntityValidator(new StubEntity());
     }
 
-    /**
-     *
-     */
     public function testValidateSuccess()
     {
         $this->testable->validate(new StubEntity(), 'id');
     }
 
-    /**
-     *
-     */
     public function testValidateNullEntity()
     {
         $this->expectException(EntityException::class);
@@ -40,19 +34,14 @@ class EntityValidatorTest extends \Codeception\Test\Unit {
         $this->testable->validate(new NullEntity(), 'id');
     }
 
-    /**
-     *
-     */
     public function testValidateWrongEntity()
     {
+        $entity = $this->getEntityMock();
         $this->expectException(EntityException::class);
-        //$this->expectExceptionMessage(sprintf('Entity "%s" is not valid', NullEntity::class));
-        $this->testable->validate($this->getEntityMock(), 'id');
+        $this->expectExceptionMessage(sprintf('Entity "%s" is not valid', get_class($entity)));
+        $this->testable->validate($entity, 'id');
     }
 
-    /**
-     *
-     */
     public function testValidateEntityWithoutPrimaryKey()
     {
         $this->expectException(EntityException::class);

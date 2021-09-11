@@ -20,27 +20,18 @@ class GatewayTest extends \Codeception\Test\Unit
      */
     protected $connection;
 
-    /**
-     *
-     */
     protected function _before()
     {
         $this->connection = $this->tester->mockDatabase();
         $this->testable = new Gateway($this->connection);
     }
 
-    /**
-     *
-     */
     public function testGetTableName()
     {
         $result = $this->testable->getTableName();
         $this->assertEquals('users', $result);
     }
 
-    /**
-     *
-     */
     protected function testGetDefaultCacheProfile()
     {
         $testable = $this->testable;

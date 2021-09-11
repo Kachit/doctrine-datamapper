@@ -10,9 +10,6 @@ class EntityTest extends \Codeception\Test\Unit {
      */
     protected $tester;
 
-    /**
-     *
-     */
     public function testCreateEntity()
     {
         $array = ['id' => 1, 'name' => 'foo', 'email' => 'foo@bar', 'active' => 1];

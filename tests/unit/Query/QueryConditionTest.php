@@ -9,10 +9,6 @@ class QueryConditionTest extends \Codeception\Test\Unit {
      */
     protected $tester;
 
-
-    /**
-     *
-     */
     public function testCreateConditionScalar()
     {
         $condition = new Condition('foo', FilterInterface::OPERATOR_IS_EQUAL, 1);
@@ -22,10 +18,6 @@ class QueryConditionTest extends \Codeception\Test\Unit {
         $this->assertFalse($condition->isList());
     }
 
-
-    /**
-     *
-     */
     public function testCreateConditionList()
     {
         $condition = new Condition('foo', FilterInterface::OPERATOR_IS_IN, [1]);

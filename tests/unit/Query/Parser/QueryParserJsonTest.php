@@ -1,5 +1,6 @@
 <?php
 use Kachit\Database\Query\Filter;
+use Kachit\Database\Query\FilterInterface;
 use Kachit\Database\Query\Parser\JsonQuery;
 use Kachit\Database\Query\Condition;
 
@@ -10,9 +11,6 @@ class QueryParserJsonTest extends \Codeception\Test\Unit {
      */
     protected $tester;
 
-    /**
-     *
-     */
     public function testCreateFilterFromArray()
     {
         $query = ['$filter' =>
@@ -26,6 +24,7 @@ class QueryParserJsonTest extends \Codeception\Test\Unit {
         $parser = new JsonQuery();
         $filter = $parser->parse($query);
         $this->assertInstanceOf(Filter::class, $filter);
+        $this->assertInstanceOf(FilterInterface::class, $filter);
         $this->assertTrue($filter->hasCondition('active', '='));
         $this->assertTrue($filter->hasCondition('id', 'IN'));
         $condition = $filter->getCondition('active', '=');
@@ -44,9 +43,6 @@ class QueryParserJsonTest extends \Codeception\Test\Unit {
         $this->assertEquals('IN', $condition->getOperator());
     }
 
-    /**
-     *
-     */
     public function testCreateFilterWithLimitOffset()
     {
         $query = ['$limit' => 10, '$skip' => 10];
@@ -56,9 +52,6 @@ class QueryParserJsonTest extends \Codeception\Test\Unit {
         $this->assertEquals($query['$skip'], $filter->getOffset());
     }
 
-    /**
-     *
-     */
     public function testCreateFilterFromJson()
     {
         $query = ['$filter' =>
@@ -73,6 +66,7 @@ class QueryParserJsonTest extends \Codeception\Test\Unit {
         $parser = new JsonQuery();
         $filter = $parser->parse($query);
         $this->assertInstanceOf(Filter::class, $filter);
+        $this->assertInstanceOf(FilterInterface::class, $filter);
         $this->assertTrue($filter->hasCondition('active', '='));
         $this->assertTrue($filter->hasCondition('id', 'IN'));
         $condition = $filter->getCondition('active', '=');
@@ -91,13 +85,41 @@ class QueryParserJsonTest extends \Codeception\Test\Unit {
         $this->assertEquals('IN', $condition->getOperator());
     }
 
-    /**
-     *
-     */
     public function testCreateFilterFromEmpty()
     {
         $parser = new JsonQuery();
         $filter = $parser->parse(null);
         $this->assertInstanceOf(Filter::class, $filter);
+        $this->assertInstanceOf(FilterInterface::class, $filter);
+    }
+
+    public function testParseGroupBy()
+    {
+        $query = ['$group' => ['foo', 'bar']];
+        $parser = new JsonQuery();
+        $filter = $parser->parse($query);
+        $this->assertInstanceOf(Filter::class, $filter);
+        $this->assertInstanceOf(FilterInterface::class, $filter);
+        $this->assertEquals(['foo', 'bar'], $filter->getGroupBy());
+    }
+
+    public function testParseOrderBy()
+    {
+        $query = ['$orderby' => [['foo' => 'ASC'], ['bar' => 'DESC']]];
+        $parser = new JsonQuery();
+        $filter = $parser->parse($query);
+        $this->assertInstanceOf(Filter::class, $filter);
+        $this->assertInstanceOf(FilterInterface::class, $filter);
+        $this->assertEquals(['foo' => 'ASC', 'bar' => 'DESC'], $filter->getOrderBy());
+    }
+
+    public function testParseOrderByInvalid()
+    {
+        $query = ['$orderby' => [['foo' => 'foo'], ['bar' => 'bar']]];
+        $parser = new JsonQuery();
+        $filter = $parser->parse($query);
+        $this->assertInstanceOf(Filter::class, $filter);
+        $this->assertInstanceOf(FilterInterface::class, $filter);
+        $this->assertEquals([], $filter->getOrderBy());
     }
 }

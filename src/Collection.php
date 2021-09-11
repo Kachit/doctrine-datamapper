@@ -110,10 +110,10 @@ class Collection implements CollectionInterface
      */
     public function getFirst(): EntityInterface
     {
-        $data = $this->toArray();
-        if (empty($data)) {
+        if ($this->isEmpty()) {
             throw new CollectionException('Collection is empty');
         }
+        $data = $this->toArray();
         return array_shift($data);
     }
     /**
@@ -124,10 +124,10 @@ class Collection implements CollectionInterface
      */
     public function getLast(): EntityInterface
     {
-        $data = $this->toArray();
-        if (empty($data)) {
+        if ($this->isEmpty()) {
             throw new CollectionException('Collection is empty');
         }
+        $data = $this->toArray();
         return array_pop($data);
     }
 

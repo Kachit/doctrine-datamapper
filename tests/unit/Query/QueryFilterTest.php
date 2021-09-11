@@ -14,18 +14,11 @@ class QueryFilterTest extends \Codeception\Test\Unit {
      */
     protected $testable;
 
-    /**
-     *
-     */
     protected function _before()
     {
         $this->testable = new Filter();
     }
 
-
-    /**
-     *
-     */
     public function testCreateCondition()
     {
         $this->testable
@@ -108,9 +101,6 @@ class QueryFilterTest extends \Codeception\Test\Unit {
         $this->assertFalse($this->testable->hasConditionsByField('foo'));
     }
 
-    /**
-     *
-     */
     public function testDeleteCondition()
     {
         $this->testable

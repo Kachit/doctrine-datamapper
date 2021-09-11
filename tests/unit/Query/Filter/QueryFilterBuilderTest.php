@@ -15,17 +15,11 @@ class QueryFilterBuilderTest extends \Codeception\Test\Unit {
      */
     protected $testable;
 
-    /**
-     *
-     */
     protected function _before()
     {
         $this->testable = new Builder();
     }
 
-    /**
-     *
-     */
     public function testBuildFilterByDefault()
     {
         $filter = $this->testable->getFilter();
@@ -34,9 +28,6 @@ class QueryFilterBuilderTest extends \Codeception\Test\Unit {
         $this->assertTrue($filter->isEmpty());
     }
 
-    /**
-     *
-     */
     public function testBuildFilterRecreation()
     {
         $filter = $this->testable->eq('foo', 'bar')->getFilter();
@@ -47,9 +38,6 @@ class QueryFilterBuilderTest extends \Codeception\Test\Unit {
         $this->assertTrue($newFilter->isEmpty());
     }
 
-    /**
-     *
-     */
     public function testBuildFilterRecreationFromFilter()
     {
         $filter = $this->testable->eq('foo', 'bar')->getFilter();

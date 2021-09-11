@@ -95,7 +95,7 @@ class JsonQuery implements ParserInterface
         } else {
             foreach ($conditions as $param => $value) {
                 if (isset($this->paramsOperatorsMap[$param])) {
-                    $filter->createCondition($field, $value, $this->paramsOperatorsMap[$param]);
+                    $filter->createCondition($field, $this->filterValue($value), $this->paramsOperatorsMap[$param]);
                 }
             }
         }
@@ -141,21 +141,19 @@ class JsonQuery implements ParserInterface
     {
         if (isset($query[static::QUERY_PARAM_GROUP_BY]) && is_array($query[static::QUERY_PARAM_GROUP_BY])) {
             foreach ($query[static::QUERY_PARAM_GROUP_BY] as $groupBy) {
-                foreach ($groupBy as $field) {
-                    $filter->addGroupBy($field);
-                }
+                $filter->addGroupBy($groupBy);
             }
         }
     }
 
     /**
-     * @param $value
+     * @param mixed $value
      * @param int $filter
      * @param null $options
      * @return mixed
      */
     protected function filterValue($value, $filter = FILTER_SANITIZE_STRING, $options = null)
     {
-        return filter_var($value, $filter, $options);
+        return is_array($value) ? $value : filter_var($value, $filter, $options);
     }
 }

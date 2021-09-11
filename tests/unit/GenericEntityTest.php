@@ -8,9 +8,6 @@ class GenericEntityTest extends \Codeception\Test\Unit {
      */
     protected $tester;
 
-    /**
-     *
-     */
     public function testCreateEntity()
     {
         $array = ['id' => 1, 'name' => 'foo', 'email' => 'foo@bar', 'active' => 1];
@@ -21,5 +18,8 @@ class GenericEntityTest extends \Codeception\Test\Unit {
         $this->assertEquals($array['name'], $entity->name);
         $this->assertEquals($array, $entity->toArray());
         $this->assertEquals(json_encode($array), json_encode($entity));
+        $entity->id = 2;
+        $this->assertEquals('bar', $entity->setName('bar')->getName());
+        $this->assertEquals(2, $entity->getId());
     }
 }

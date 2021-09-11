@@ -12,9 +12,6 @@ class HydratorTest extends \Codeception\Test\Unit
      */
     protected $tester;
 
-    /**
-     *
-     */
     public function testHydrate()
     {
         $array = ['id' => 1, 'name' => 'foo', 'email' => 'foo@bar', 'active' => 1];
@@ -31,9 +28,6 @@ class HydratorTest extends \Codeception\Test\Unit
         $this->assertEquals($entity->getName(), $result->getName());
     }
 
-    /**
-     *
-     */
     public function testHydrateEmpty()
     {
         $array = [];
@@ -50,9 +44,6 @@ class HydratorTest extends \Codeception\Test\Unit
         $this->assertEquals($entity->getName(), $result->getName());
     }
 
-    /**
-     *
-     */
     public function testExtract()
     {
         $array = ['id' => 1, 'name' => 'foo', 'email' => 'foo@bar', 'active' => 1];

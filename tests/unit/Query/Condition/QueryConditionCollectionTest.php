@@ -15,17 +15,11 @@ class QueryConditionCollectionTest extends \Codeception\Test\Unit {
      */
     protected $testable;
 
-    /**
-     *
-     */
     protected function _before()
     {
         $this->testable = new Collection();
     }
 
-    /**
-     *
-     */
     public function testAdd()
     {
         $condition = new Condition('foo', FilterInterface::OPERATOR_IS_EQUAL, 1);
@@ -33,9 +27,6 @@ class QueryConditionCollectionTest extends \Codeception\Test\Unit {
         $this->assertFalse($this->testable->isEmpty());
     }
 
-    /**
-     *
-     */
     public function testGetByField()
     {
         $condition = new Condition('foo', FilterInterface::OPERATOR_IS_EQUAL, 1);
@@ -51,9 +42,6 @@ class QueryConditionCollectionTest extends \Codeception\Test\Unit {
         $this->assertEquals(FilterInterface::OPERATOR_IS_EQUAL, $condition->getOperator());
     }
 
-    /**
-     *
-     */
     public function testHasByField()
     {
         $condition = new Condition('foo', FilterInterface::OPERATOR_IS_EQUAL, 1);
@@ -62,9 +50,6 @@ class QueryConditionCollectionTest extends \Codeception\Test\Unit {
         $this->assertTrue($this->testable->hasByField('foo'));
     }
 
-    /**
-     *
-     */
     public function testRemoveByField()
     {
         $condition = new Condition('foo', FilterInterface::OPERATOR_IS_EQUAL, 1);
@@ -74,9 +59,6 @@ class QueryConditionCollectionTest extends \Codeception\Test\Unit {
         $this->assertFalse($this->testable->hasByField('foo'));
     }
 
-    /**
-     *
-     */
     public function testGetByFieldAndOperator()
     {
         $condition = new Condition('foo', FilterInterface::OPERATOR_IS_EQUAL, 1);
@@ -90,9 +72,6 @@ class QueryConditionCollectionTest extends \Codeception\Test\Unit {
         $this->assertEmpty($this->testable->getByFieldAndOperator('foo', FilterInterface::OPERATOR_IS_NOT_EQUAL));
     }
 
-    /**
-     *
-     */
     public function testHasByFieldAndOperator()
     {
         $condition = new Condition('foo', FilterInterface::OPERATOR_IS_EQUAL, 1);
@@ -103,9 +82,6 @@ class QueryConditionCollectionTest extends \Codeception\Test\Unit {
         $this->assertFalse($this->testable->hasByFieldAndOperator('foo', FilterInterface::OPERATOR_IS_NOT_EQUAL));
     }
 
-    /**
-     *
-     */
     public function testRemoveByFieldAndOperator()
     {
         $condition = new Condition('foo', FilterInterface::OPERATOR_IS_EQUAL, 1);
@@ -145,9 +121,6 @@ class QueryConditionCollectionTest extends \Codeception\Test\Unit {
         $this->assertEquals(FilterInterface::OPERATOR_IS_EQUAL, $condition->getOperator());
     }
 
-    /**
-     *
-     */
     public function testGetIterator()
     {
         $iterator = $this->testable->getIterator();

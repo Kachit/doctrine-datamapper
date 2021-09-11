@@ -14,9 +14,6 @@ class MapperTest extends \Codeception\Test\Unit {
      */
     protected $tester;
 
-    /**
-     *
-     */
     public function testFetchExistsData()
     {
         $array = ['id' => 1, 'name' => 'foo', 'email' => 'foo@bar', 'active' => 1];
@@ -35,9 +32,6 @@ class MapperTest extends \Codeception\Test\Unit {
         $this->assertEquals(2, $entity->setId(2)->getPk());
     }
 
-    /**
-     *
-     */
     public function testFetchNotExistsData()
     {
         $array = [];
@@ -56,9 +50,6 @@ class MapperTest extends \Codeception\Test\Unit {
         $this->assertEquals(null, $entity->setId(2)->getPk());
     }
 
-    /**
-     *
-     */
     public function testFetchAllExistsData()
     {
         $array = [['id' => 1, 'name' => 'foo', 'email' => 'foo@bar', 'active' => 1], ['id' => 2, 'name' => 'foo1', 'email' => 'foo1@bar', 'active' => 1]];
@@ -73,9 +64,6 @@ class MapperTest extends \Codeception\Test\Unit {
         $this->assertTrue($collection->has(1));
     }
 
-    /**
-     *
-     */
     public function testFetchAllNotExistsData()
     {
         $array = [];
@@ -88,9 +76,6 @@ class MapperTest extends \Codeception\Test\Unit {
         $this->assertEquals(0, $collection->count());
     }
 
-    /**
-     *
-     */
     public function testSaveNullEntity()
     {
         $this->expectException(EntityException::class);
@@ -102,15 +87,13 @@ class MapperTest extends \Codeception\Test\Unit {
         $mapper->save($entity);
     }
 
-    /**
-     *
-     */
     public function testSaveWrongEntity()
     {
+        $entity = $this->getEntityMock();
         $this->expectException(EntityException::class);
+        $this->expectExceptionMessage(sprintf('Entity "%s" is not valid', get_class($entity)));
         $array = [];
         $gateway = $this->getGatewayMock('fetchAll', $array);
-        $entity = $this->getEntityMock();
         $mapper = new Mapper($gateway, new Entity());
         $mapper->save($entity);
     }

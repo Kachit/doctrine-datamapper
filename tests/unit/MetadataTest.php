@@ -7,9 +7,6 @@ class MetadataTest extends \Codeception\Test\Unit
      */
     protected $tester;
 
-    /**
-     *
-     */
     public function testFetchExistsData()
     {
 

@@ -10,9 +10,6 @@ class QueryParserGetParamsTest extends \Codeception\Test\Unit {
      */
     protected $tester;
 
-    /**
-     *
-     */
     public function testCreateFilterFromArray()
     {
         $query = ['filter' =>
@@ -44,9 +41,6 @@ class QueryParserGetParamsTest extends \Codeception\Test\Unit {
         $this->assertEquals('IN', $condition->getOperator());
     }
 
-    /**
-     *
-     */
     public function testCreateFilterWithOrderBy()
     {
         $query = ['order' => [
@@ -60,9 +54,6 @@ class QueryParserGetParamsTest extends \Codeception\Test\Unit {
         $this->assertEquals('asc', $order['foo']);
     }
 
-    /**
-     *
-     */
     public function testCreateFilterWithLimitOffset()
     {
         $query = ['limit' => 10, 'offset' => 10];
@@ -72,9 +63,6 @@ class QueryParserGetParamsTest extends \Codeception\Test\Unit {
         $this->assertEquals($query['offset'], $filter->getOffset());
     }
 
-    /**
-     *
-     */
     public function testCreateFilterFromEmpty()
     {
         $parser = new GetParamsQuery();
@@ -82,9 +70,6 @@ class QueryParserGetParamsTest extends \Codeception\Test\Unit {
         $this->assertInstanceOf(Filter::class, $filter);
     }
 
-    /**
-     *
-     */
     public function testParseSingleIncludes()
     {
         $query = ['include' => 'author',];
@@ -94,9 +79,6 @@ class QueryParserGetParamsTest extends \Codeception\Test\Unit {
         $this->assertTrue($filter->isIncluded('author'));
     }
 
-    /**
-     *
-     */
     public function testParseMultipleIncludes()
     {
         $query = ['include' => 'user,photo',];
@@ -105,5 +87,16 @@ class QueryParserGetParamsTest extends \Codeception\Test\Unit {
         $this->assertInstanceOf(Filter::class, $filter);
         $this->assertTrue($filter->isIncluded('user'));
         $this->assertTrue($filter->isIncluded('photo'));
+    }
+
+    public function testParseFromExistsFilter()
+    {
+        $query = ['limit' => 10, 'offset' => 10];
+        $existedFilter = (new Filter())->createCondition('foo', 'bar');
+        $parser = new GetParamsQuery();
+        $filter = $parser->parse($query, $existedFilter);
+        $this->assertEquals($query['limit'], $filter->getLimit());
+        $this->assertEquals($query['offset'], $filter->getOffset());
+        $this->assertTrue($filter->hasConditionsByField('foo'));
     }
 }
