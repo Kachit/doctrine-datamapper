@@ -3,7 +3,7 @@ use Kachit\Database\Query\Filter;
 use Kachit\Database\Query\Parser\JsonQuery;
 use Kachit\Database\Query\Condition;
 
-class JsonParserTest extends \Codeception\Test\Unit {
+class QueryParserJsonTest extends \Codeception\Test\Unit {
 
     /**
      * @var \UnitTester

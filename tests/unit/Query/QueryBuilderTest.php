@@ -4,7 +4,7 @@ use Kachit\Database\Query\Filter\Builder as FilterBuilder;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Mocks\DBALConnectionMock;
 
-class BuilderTest extends \Codeception\Test\Unit {
+class QueryBuilderTest extends \Codeception\Test\Unit {
 
     /**
      * @var \UnitTester

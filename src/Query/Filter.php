@@ -65,7 +65,7 @@ class Filter implements FilterInterface
 
     /**
      * @param string $field
-     * @return array
+     * @return Condition[]
      */
     public function getConditionsByField(string $field): array
     {
@@ -282,6 +282,14 @@ class Filter implements FilterInterface
     public function isIncluded(string $value): bool
     {
         return in_array($value, $this->includes);
+    }
+
+    /**
+     * @return array
+     */
+    public function getIncludes(): array
+    {
+        return $this->includes;
     }
 
     /**

@@ -62,7 +62,7 @@ class Collection
      */
     public function getByFieldAndOperator(string $field, string $operator)
     {
-        return $this->data[$field][$operator];
+        return ($this->hasByFieldAndOperator($field, $operator)) ? $this->data[$field][$operator] : null;
     }
 
     /**

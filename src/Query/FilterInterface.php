@@ -177,4 +177,9 @@ interface FilterInterface
      * @return bool
      */
     public function isIncluded(string $value): bool;
+
+    /**
+     * @return array
+     */
+    public function getIncludes(): array;
 }

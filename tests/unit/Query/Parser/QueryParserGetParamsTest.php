@@ -3,7 +3,7 @@ use Kachit\Database\Query\Filter;
 use Kachit\Database\Query\Parser\GetParamsQuery;
 use Kachit\Database\Query\Condition;
 
-class GetParamsParserTest extends \Codeception\Test\Unit {
+class QueryParserGetParamsTest extends \Codeception\Test\Unit {
 
     /**
      * @var \UnitTester

@@ -47,16 +47,6 @@ class Condition
     }
 
     /**
-     * @param mixed $field
-     * @return $this
-     */
-    public function setField(string $field)
-    {
-        $this->field = $field;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getOperator(): string
@@ -65,31 +55,11 @@ class Condition
     }
 
     /**
-     * @param mixed $operator
-     * @return $this
-     */
-    public function setOperator(string $operator)
-    {
-        $this->operator = $operator;
-        return $this;
-    }
-
-    /**
      * @return mixed
      */
     public function getValue()
     {
         return $this->value;
-    }
-
-    /**
-     * @param mixed $value
-     * @return $this
-     */
-    public function setValue($value)
-    {
-        $this->value = $value;
-        return $this;
     }
 
     /**
