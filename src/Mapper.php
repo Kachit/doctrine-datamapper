@@ -65,7 +65,7 @@ class Mapper implements MapperInterface
     /**
      * @param FilterInterface|null $filter
      * @param CacheInterface $cache
-     * @return CollectionInterface|Entity[]
+     * @return CollectionInterface|EntityInterface[]
      */
     public function fetchAll(FilterInterface $filter = null, CacheInterface $cache = null): CollectionInterface
     {
@@ -188,7 +188,7 @@ class Mapper implements MapperInterface
     /**
      * @return CollectionInterface
      */
-    protected function createCollection()
+    protected function createCollection(): CollectionInterface
     {
         return clone $this->collection;
     }
@@ -196,31 +196,31 @@ class Mapper implements MapperInterface
     /**
      * @return EntityInterface
      */
-    protected function createEntity()
+    protected function createEntity(): EntityInterface
     {
         return clone $this->entity;
     }
 
     /**
-     * @return Collection
+     * @return CollectionInterface
      */
-    protected function createDefaultCollection(): Collection
+    protected function createDefaultCollection(): CollectionInterface
     {
         return new Collection();
     }
 
     /**
-     * @return Hydrator
+     * @return HydratorInterface
      */
-    protected function createDefaultHydrator(): Hydrator
+    protected function createDefaultHydrator(): HydratorInterface
     {
         return new Hydrator();
     }
 
     /**
-     * @return Validator
+     * @return EntityValidatorInterface
      */
-    protected function createDefaultValidator(): Validator
+    protected function createDefaultValidator(): EntityValidatorInterface
     {
         return new Validator($this->entity);
     }

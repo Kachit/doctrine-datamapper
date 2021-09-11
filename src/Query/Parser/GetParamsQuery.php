@@ -20,11 +20,12 @@ class GetParamsQuery extends JsonQuery
 
     /**
      * @param array $query
+     * @param FilterInterface $filter = null
      * @return FilterInterface
      */
-    public function parse($query): FilterInterface
+    public function parse($query, FilterInterface $filter = null): FilterInterface
     {
-        $filter = parent::parse($query);
+        $filter = parent::parse($query, $filter);
         if (is_array($query)) {
             $this->parseIncludes($filter, $query);
         }

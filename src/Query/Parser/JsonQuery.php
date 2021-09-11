@@ -51,11 +51,12 @@ class JsonQuery implements ParserInterface
 
     /**
      * @param mixed $query
+     * @param FilterInterface $filter = null
      * @return FilterInterface
      */
-    public function parse($query): FilterInterface
+    public function parse($query, FilterInterface $filter = null): FilterInterface
     {
-        $filter = new Filter();
+        $filter = $filter ?? new Filter();
         if (is_string($query)) {
             $query = json_decode($query, true);
         }

@@ -9,6 +9,7 @@ namespace Kachit\Database;
 
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Kachit\Database\Query\Builder;
+use Kachit\Database\Query\BuilderInterface;
 use Kachit\Database\Query\Cache;
 use Kachit\Database\Query\Filter;
 
@@ -50,7 +51,7 @@ abstract class Gateway implements GatewayInterface
     /**
      * @return Connection
      */
-    public function getConnection()
+    public function getConnection(): Connection
     {
         return $this->connection;
     }
@@ -154,7 +155,7 @@ abstract class Gateway implements GatewayInterface
     /**
      * @return QueryBuilder
      */
-    public function createQueryBuilder()
+    public function createQueryBuilder(): QueryBuilder
     {
         return $this->getConnection()
             ->createQueryBuilder()
@@ -251,14 +252,13 @@ abstract class Gateway implements GatewayInterface
      */
     protected function buildPrimaryKeyFilter(string $pkField, $pk): FilterInterface
     {
-        $filter = (new Filter())->createCondition($pkField, $pk);
-        return $filter;
+        return (new Filter())->createCondition($pkField, $pk);
     }
 
     /**
-     * @return Builder
+     * @return BuilderInterface
      */
-    protected function getBuilder()
+    protected function getBuilder(): BuilderInterface
     {
         if (empty($this->builder)) {
             $this->builder = new Builder($this->getTableAlias());

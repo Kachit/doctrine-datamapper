@@ -10,7 +10,7 @@ namespace Kachit\Database\Query;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\DBAL\Connection;
 
-class Builder
+class Builder implements BuilderInterface
 {
     /**
      * @var string
