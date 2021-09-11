@@ -74,6 +74,17 @@ class GatewayTest extends \Codeception\Test\Unit
         $this->assertEquals([], $query['params']);
     }
 
+    public function testFetchAllEmpty()
+    {
+        $result = $this->testable->fetchAll();
+        //data
+        $this->assertEmpty($result);
+        //query
+        $query = $this->connection->getLastQuery();
+        $this->assertEquals('SELECT t.* FROM users t', $query['query']);
+        $this->assertEquals([], $query['params']);
+    }
+
     public function testFetchAllWithFilter()
     {
         $expected = ['id' => 1, 'name' => 'name', 'email' => 'email', 'active' => true];
@@ -96,6 +107,17 @@ class GatewayTest extends \Codeception\Test\Unit
         $result = $this->testable->fetch();
         //data
         $this->assertEquals($expected, $result);
+        //query
+        $query = $this->connection->getLastQuery();
+        $this->assertEquals('SELECT t.* FROM users t', $query['query']);
+        $this->assertEquals([], $query['params']);
+    }
+
+    public function testFetchEmpty()
+    {
+        $result = $this->testable->fetch();
+        //data
+        $this->assertEmpty($result);
         //query
         $query = $this->connection->getLastQuery();
         $this->assertEquals('SELECT t.* FROM users t', $query['query']);
@@ -143,6 +165,31 @@ class GatewayTest extends \Codeception\Test\Unit
         $this->assertEquals([], $query['params']);
     }
 
+    public function testFetchColumnWithFilter()
+    {
+        $this->connection->addFetchResult([[123]]);
+
+        $filter = (new Builder())->eq('id', 1)->getFilter();
+        $result = $this->testable->fetchColumn('COUNT(*)', $filter);
+        //data
+        $this->assertEquals(123, $result);
+        //query
+        $query = $this->connection->getLastQuery();
+        $this->assertEquals('SELECT COUNT(*) FROM users t WHERE t.id = :dcValue1', $query['query']);
+        $this->assertEquals(['dcValue1' => 1], $query['params']);
+    }
+
+    public function testFetchColumnEmpty()
+    {
+        $result = $this->testable->fetchColumn('COUNT(*)');
+        //data
+        $this->assertEmpty($result);
+        //query
+        $query = $this->connection->getLastQuery();
+        $this->assertEquals('SELECT COUNT(*) FROM users t', $query['query']);
+        $this->assertEquals([], $query['params']);
+    }
+
     public function testCount()
     {
         $this->connection->addFetchResult([[123]]);
@@ -165,6 +212,20 @@ class GatewayTest extends \Codeception\Test\Unit
         $query = $this->connection->getLastQuery();
         $this->assertEquals('SELECT COUNT(t.id) FROM users t', $query['query']);
         $this->assertEquals([], $query['params']);
+    }
+
+    public function testCountWithFilter()
+    {
+        $this->connection->addFetchResult([[123]]);
+
+        $filter = (new Builder())->eq('id', 1)->getFilter();
+        $result = $this->testable->count($filter);
+        //data
+        $this->assertEquals(123, $result);
+        //query
+        $query = $this->connection->getLastQuery();
+        $this->assertEquals('SELECT COUNT(t.*) FROM users t WHERE t.id = :dcValue1', $query['query']);
+        $this->assertEquals(['dcValue1' => 1], $query['params']);
     }
 
     public function testInsert()

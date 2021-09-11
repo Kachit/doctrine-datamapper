@@ -2,10 +2,21 @@
 use Stubs\DB\Entity;
 use Stubs\DB\Mapper;
 use Stubs\DB\Gateway;
+
 use Kachit\Database\NullEntity;
 use Kachit\Database\Exception\MapperException;
 use Kachit\Database\Exception\EntityException;
+use Kachit\Database\Query\Filter\Builder;
 use Kachit\Database\CollectionInterface;
+use Kachit\Database\Collection;
+use Kachit\Database\MetaDataInterface;
+use Kachit\Database\GatewayInterface;
+use Kachit\Database\EntityInterface;
+use Kachit\Database\HydratorInterface;
+use Kachit\Database\Hydrator;
+use Kachit\Database\EntityValidatorInterface;
+use Kachit\Database\Validator;
+use Kachit\Database\Mocks\Doctrine\DBAL\ConnectionMock;
 
 class MapperTest extends \Codeception\Test\Unit {
 
@@ -14,115 +25,217 @@ class MapperTest extends \Codeception\Test\Unit {
      */
     protected $tester;
 
-    public function testFetchExistsData()
-    {
-        $array = ['id' => 1, 'name' => 'foo', 'email' => 'foo@bar', 'active' => 1];
-        $gateway = $this->getGatewayMock('fetch', $array);
-        $mapper = new Mapper($gateway, new Entity());
-        /* @var Entity $entity */
-        $entity = $mapper->fetch();
-        $this->assertNotEmpty($entity);
-        $this->assertTrue(is_object($entity));
-        $this->assertInstanceOf(Entity::class, $entity);
-        $this->assertFalse($entity->isNull());
-        $this->assertEquals($entity->getId(), $entity->getPk());
-        $this->assertEquals('foo', $entity->getName());
-        $this->assertEquals($array, $entity->toArray());
-        $this->assertEquals(json_encode($array), json_encode($entity));
-        $this->assertEquals(2, $entity->setId(2)->getPk());
-    }
-
-    public function testFetchNotExistsData()
-    {
-        $array = [];
-        $gateway = $this->getGatewayMock('fetch', $array);
-        $mapper = new Mapper($gateway, new Entity());
-        /* @var Entity $entity */
-        $entity = $mapper->fetch();
-        $this->assertNotEmpty($entity);
-        $this->assertTrue(is_object($entity));
-        $this->assertInstanceOf(NullEntity::class, $entity);
-        $this->assertTrue($entity->isNull());
-        $this->assertEquals($entity->getId(), $entity->getPk());
-        $this->assertEquals(null, $entity->getName());
-        $this->assertEquals($array, $entity->toArray());
-        $this->assertEquals(json_encode((object)$array), json_encode($entity));
-        $this->assertEquals(null, $entity->setId(2)->getPk());
-    }
-
-    public function testFetchAllExistsData()
-    {
-        $array = [['id' => 1, 'name' => 'foo', 'email' => 'foo@bar', 'active' => 1], ['id' => 2, 'name' => 'foo1', 'email' => 'foo1@bar', 'active' => 1]];
-        $gateway = $this->getGatewayMock('fetchAll', $array);
-        $mapper = new Mapper($gateway, new Entity());
-        $collection = $mapper->fetchAll();
-        $this->assertNotEmpty($collection);
-        $this->assertTrue(is_object($collection));
-        $this->assertInstanceOf(CollectionInterface::class, $collection);
-        $this->assertEquals(2, $collection->count());
-        $this->assertTrue($collection->has(0));
-        $this->assertTrue($collection->has(1));
-    }
-
-    public function testFetchAllNotExistsData()
-    {
-        $array = [];
-        $gateway = $this->getGatewayMock('fetchAll', $array);
-        $mapper = new Mapper($gateway, new Entity());
-        $collection = $mapper->fetchAll();
-        $this->assertEmpty($collection);
-        $this->assertTrue(is_object($collection));
-        $this->assertInstanceOf(CollectionInterface::class, $collection);
-        $this->assertEquals(0, $collection->count());
-    }
-
-    public function testSaveNullEntity()
-    {
-        $this->expectException(EntityException::class);
-        $this->expectExceptionMessage(sprintf('Entity "%s" is null', NullEntity::class));
-        $array = [];
-        $gateway = $this->getGatewayMock('fetchAll', $array);
-        $entity = new NullEntity();
-        $mapper = new Mapper($gateway, new Entity());
-        $mapper->save($entity);
-    }
-
-    public function testSaveWrongEntity()
-    {
-        $entity = $this->getEntityMock();
-        $this->expectException(EntityException::class);
-        $this->expectExceptionMessage(sprintf('Entity "%s" is not valid', get_class($entity)));
-        $array = [];
-        $gateway = $this->getGatewayMock('fetchAll', $array);
-        $mapper = new Mapper($gateway, new Entity());
-        $mapper->save($entity);
-    }
+    /**
+     * @var Mapper
+     */
+    protected $testable;
 
     /**
-     * @param $method
-     * @param array $result
-     * @return PHPUnit_Framework_MockObject_MockObject| Gateway
+     * @var ConnectionMock
      */
-    private function getGatewayMock($method, array $result = [])
+    protected $connection;
+
+    protected function _before()
     {
-        $source = $this->getMockBuilder(Gateway::class)
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
-        $source->method($method)->willReturn($result);
-        return $source;
+        $this->connection = $this->tester->mockDatabase();
+        $gateway = new Gateway($this->connection);
+        $this->testable = new Mapper($gateway, new Entity());
+        $this->connection->reset();
     }
 
-    /**
-     * @return PHPUnit_Framework_MockObject_MockObject| NullEntity
-     */
-    private function getEntityMock()
+    public function testFetchAll()
     {
-        $source = $this->getMockBuilder(NullEntity::class)
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
-        $source->method('isNull')->willReturn(false);
-        return $source;
+        $expected = ['id' => 1, 'name' => 'name', 'email' => 'email', 'active' => true];
+        $this->connection->addFetchResult([$expected]);
+        $result = $this->testable->fetchAll();
+        //data
+        $this->assertInstanceOf(CollectionInterface::class, $result);
+        $this->assertEquals(1, $result->count());
+        $this->assertEquals($expected, $result->getFirst()->toArray());
+        //query
+        $query = $this->connection->getLastQuery();
+        $this->assertEquals('SELECT t.* FROM users t', $query['query']);
+        $this->assertEquals([], $query['params']);
+    }
+
+    public function testFetchAllWithFilter()
+    {
+        $expected = ['id' => 1, 'name' => 'name', 'email' => 'email', 'active' => true];
+        $this->connection->addFetchResult([$expected]);
+
+        $filter = (new Builder())->eq('id', 1)->getFilter();
+        $result = $this->testable->fetchAll($filter);
+        //data
+        $this->assertInstanceOf(CollectionInterface::class, $result);
+        $this->assertEquals(1, $result->count());
+        $this->assertEquals($expected, $result->getFirst()->toArray());
+        //query
+        $query = $this->connection->getLastQuery();
+        $this->assertEquals('SELECT t.* FROM users t WHERE t.id = :dcValue1', $query['query']);
+        $this->assertEquals(['dcValue1' => 1], $query['params']);
+    }
+
+    public function testFetchAllEmpty()
+    {
+        $result = $this->testable->fetchAll();
+        //data
+        $this->assertInstanceOf(CollectionInterface::class, $result);
+        $this->assertEquals(0, $result->count());
+        //query
+        $query = $this->connection->getLastQuery();
+        $this->assertEquals('SELECT t.* FROM users t', $query['query']);
+        $this->assertEquals([], $query['params']);
+    }
+
+    public function testFetch()
+    {
+        $expected = ['id' => 1, 'name' => 'name', 'email' => 'email', 'active' => true];
+        $this->connection->addFetchResult([$expected]);
+        $result = $this->testable->fetch();
+        //data
+        $this->assertInstanceOf(EntityInterface::class, $result);
+        $this->assertInstanceOf(Entity::class, $result);
+        $this->assertEquals($expected, $result->toArray());
+        //query
+        $query = $this->connection->getLastQuery();
+        $this->assertEquals('SELECT t.* FROM users t', $query['query']);
+        $this->assertEquals([], $query['params']);
+    }
+
+    public function testFetchEmpty()
+    {
+        $result = $this->testable->fetch();
+        //data
+        $this->assertInstanceOf(EntityInterface::class, $result);
+        $this->assertInstanceOf(NullEntity::class, $result);
+        //query
+        $query = $this->connection->getLastQuery();
+        $this->assertEquals('SELECT t.* FROM users t', $query['query']);
+        $this->assertEquals([], $query['params']);
+    }
+
+    public function testFetchWithFilter()
+    {
+        $expected = ['id' => 1, 'name' => 'name', 'email' => 'email', 'active' => true];
+        $this->connection->addFetchResult([$expected]);
+
+        $filter = (new Builder())->eq('id', 1)->getFilter();
+        $result = $this->testable->fetch($filter);
+        //data
+        $this->assertInstanceOf(EntityInterface::class, $result);
+        $this->assertInstanceOf(Entity::class, $result);
+        $this->assertEquals($expected, $result->toArray());
+        //query
+        $query = $this->connection->getLastQuery();
+        $this->assertEquals('SELECT t.* FROM users t WHERE t.id = :dcValue1', $query['query']);
+        $this->assertEquals(['dcValue1' => 1], $query['params']);
+    }
+
+    public function testFetchByPk()
+    {
+        $expected = ['id' => 1, 'name' => 'name', 'email' => 'email', 'active' => true];
+        $this->connection->addFetchResult([$expected]);
+
+        $result = $this->testable->fetchByPk(1);
+        //data
+        $this->assertInstanceOf(EntityInterface::class, $result);
+        $this->assertInstanceOf(Entity::class, $result);
+        $this->assertEquals($expected, $result->toArray());
+        //query
+        $query = $this->connection->getLastQuery();
+        $this->assertEquals('SELECT t.* FROM users t WHERE t.id = :dcValue1', $query['query']);
+        $this->assertEquals(['dcValue1' => 1], $query['params']);
+    }
+
+    public function testCount()
+    {
+        $expected = ['id' => 1, 'name' => 'name', 'email' => 'email', 'active' => true];
+        $this->connection->addFetchResult([[1]]);
+
+        $result = $this->testable->count();
+        //data
+        $this->assertEquals(1, $result);
+        //query
+        $query = $this->connection->getLastQuery();
+        $this->assertEquals('SELECT COUNT(t.*) FROM users t', $query['query']);
+        $this->assertEquals([], $query['params']);
+    }
+
+    public function testCountWithFilter()
+    {
+        $this->connection->addFetchResult([[123]]);
+
+        $filter = (new Builder())->eq('id', 1)->getFilter();
+        $result = $this->testable->count($filter);
+        //data
+        $this->assertEquals(123, $result);
+        //query
+        $query = $this->connection->getLastQuery();
+        $this->assertEquals('SELECT COUNT(t.*) FROM users t WHERE t.id = :dcValue1', $query['query']);
+        $this->assertEquals(['dcValue1' => 1], $query['params']);
+    }
+
+    public function testDelete()
+    {
+        $entity = new Entity(['id' => 1]);
+        $result = $this->testable->delete($entity);
+        //query
+        $this->assertCount(1, $this->connection->getUpdates());
+
+        $query = $this->connection->getLastUpdate();
+        $this->assertEquals('DELETE FROM users WHERE id = :dcValue1', $query['query']);
+        $this->assertEquals(['dcValue1' => 1], $query['params']);
+    }
+
+    public function testCreateDefaultMetadata()
+    {
+        $result = $this->tester->callNonPublicMethod($this->testable, 'createDefaultMetadata');
+        $this->assertInstanceOf(MetaDataInterface::class, $result);
+    }
+
+    public function testGetTableGateway()
+    {
+        $result = $this->tester->callNonPublicMethod($this->testable, 'getTableGateway');
+        $this->assertInstanceOf(Gateway::class, $result);
+        $this->assertInstanceOf(GatewayInterface::class, $result);
+    }
+
+    public function testCreateDefaultValidator()
+    {
+        $result = $this->tester->callNonPublicMethod($this->testable, 'createDefaultValidator');
+        $this->assertInstanceOf(Validator::class, $result);
+        $this->assertInstanceOf(EntityValidatorInterface::class, $result);
+    }
+
+    public function testCreateDefaultHydrator()
+    {
+        $result = $this->tester->callNonPublicMethod($this->testable, 'createDefaultHydrator');
+        $this->assertInstanceOf(Hydrator::class, $result);
+        $this->assertInstanceOf(HydratorInterface::class, $result);
+    }
+
+    public function testCreateDefaultCollection()
+    {
+        $result = $this->tester->callNonPublicMethod($this->testable, 'createDefaultCollection');
+        $this->assertInstanceOf(Collection::class, $result);
+        $this->assertInstanceOf(CollectionInterface::class, $result);
+    }
+
+    public function testCreateCollection()
+    {
+        $collection = $this->tester->callNonPublicMethod($this->testable, 'createDefaultCollection');
+        $result = $this->tester->callNonPublicMethod($this->testable, 'createCollection');
+        $this->assertInstanceOf(Collection::class, $result);
+        $this->assertInstanceOf(CollectionInterface::class, $result);
+        $this->assertNotEquals(spl_object_hash($collection), spl_object_hash($result));
+    }
+
+    public function testCreateEntity()
+    {
+        $entity = $this->tester->callNonPublicProperty($this->testable, 'entity');
+        $result = $this->tester->callNonPublicMethod($this->testable, 'createEntity');
+        $this->assertInstanceOf(Entity::class, $result);
+        $this->assertInstanceOf(EntityInterface::class, $result);
+        $this->assertNotEquals(spl_object_hash($entity), spl_object_hash($result));
     }
 }
