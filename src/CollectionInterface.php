@@ -116,9 +116,9 @@ interface CollectionInterface extends Countable, JsonSerializable, IteratorAggre
      * Map collection items
      *
      * @param callable $callback
-     * @return array
+     * @return CollectionInterface
      */
-    public function map(callable $callback): array;
+    public function map(callable $callback): CollectionInterface;
 
     /**
      * Sort collection by user function

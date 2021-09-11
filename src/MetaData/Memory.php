@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Memory
+ * Class MetaData Memory
  *
  * @package Kachit\Database\MetaData
  * @author Kachit

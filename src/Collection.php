@@ -188,11 +188,11 @@ class Collection implements CollectionInterface
      * Map collection items
      *
      * @param callable $callback
-     * @return array
+     * @return CollectionInterface
      */
-    public function map(callable $callback): array
+    public function map(callable $callback): CollectionInterface
     {
-        return array_map($callback, $this->data);
+        return new static(array_map($callback, $this->data));
     }
 
     /**

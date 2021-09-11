@@ -23,4 +23,45 @@ class UnitTester extends \Codeception\Actor
    /**
     * Define custom actions here
     */
+    /**
+     * @param object $obj
+     * @param string $name
+     * @param array $args
+     * @return mixed
+     */
+    public function callNonPublicMethod($obj, string $name, array $args = [])
+    {
+        $class = new \ReflectionClass($obj);
+        $method = $class->getMethod($name);
+        $method->setAccessible(true);
+        return $method->invokeArgs($obj, $args);
+    }
+
+    /**
+     * @param string $class
+     * @param string $name
+     * @param array $args
+     * @return mixed
+     */
+    public function callNonPublicStaticMethod(string $class, string $name, array $args = [])
+    {
+        $class = new \ReflectionClass($class);
+        $method = $class->getMethod($name);
+        $method->setAccessible(true);
+        return $method->invoke($class, ...$args);
+    }
+
+    /**
+     * @param object $obj
+     * @param string $name
+     * @param array $args
+     * @return mixed
+     */
+    public function callNonPublicProperty($obj, string $name)
+    {
+        $class = new \ReflectionClass($obj);
+        $property = $class->getProperty($name);
+        $property->setAccessible(true);
+        return $property->getValue($obj);
+    }
 }

@@ -81,7 +81,7 @@ abstract class Gateway implements GatewayInterface
             $queryBuilder->getParameterTypes(),
             $this->getDefaultCacheProfile($cache)
         );
-        $data = $stmt->fetchAll();
+        $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         $stmt->closeCursor();
         return $data;
     }
@@ -101,7 +101,7 @@ abstract class Gateway implements GatewayInterface
             $queryBuilder->getParameterTypes(),
             $this->getDefaultCacheProfile($cache)
         );
-        $result = $stmt->fetchAll();
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         $stmt->closeCursor();
         return ($result) ? $result[0] : [];
     }

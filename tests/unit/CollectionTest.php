@@ -193,7 +193,93 @@ class CollectionTest extends \Codeception\Test\Unit
         $result = $collection->walk(function (Entity $entity) {
             return $entity->setId($entity->getId() * 3);
         });
+        $this->assertEquals(spl_object_hash($collection), spl_object_hash($result));
         $this->assertEquals(3, $result->getFirst()->getId());
         $this->assertEquals(6, $result->getLast()->getId());
+    }
+
+    public function testMap()
+    {
+        $collection = new Collection();
+        $collection->add(new Entity(['id' => 1, 'name' => 'foo1', 'email' => 'foo1@bar', 'active' => 1]));
+        $collection->add(new Entity(['id' => 2, 'name' => 'foo2', 'email' => 'foo2@bar', 'active' => 1]));
+
+        $result = $collection->map(function (Entity $entity) {
+            return $entity->setId($entity->getId() * 3);
+        });
+        $this->assertNotEquals(spl_object_hash($collection), spl_object_hash($result));
+        $this->assertEquals(3, $result->getFirst()->getId());
+        $this->assertEquals(6, $result->getLast()->getId());
+    }
+
+    public function testFilter()
+    {
+        $collection = new Collection();
+        $collection->add(new Entity(['id' => 1, 'name' => 'foo1', 'email' => 'foo1@bar', 'active' => 1]));
+        $collection->add(new Entity(['id' => 2, 'name' => 'foo2', 'email' => 'foo2@bar', 'active' => 1]));
+        $collection->add(new Entity(['id' => 3, 'name' => 'foo2', 'email' => 'foo2@bar', 'active' => 1]));
+        $collection->add(new Entity(['id' => 4, 'name' => 'foo2', 'email' => 'foo2@bar', 'active' => 1]));
+
+        $result = $collection->filter(function (Entity $entity) {
+            return $entity->getId() % 2;
+        });
+        $this->assertEquals(1, $result->getFirst()->getId());
+        $this->assertEquals(3, $result->getLast()->getId());
+    }
+
+    public function testSort()
+    {
+        $collection = new Collection();
+        $collection->add(new Entity(['id' => 4, 'name' => 'foo1', 'email' => 'foo1@bar', 'active' => 1]));
+        $collection->add(new Entity(['id' => 2, 'name' => 'foo2', 'email' => 'foo2@bar', 'active' => 1]));
+        $collection->add(new Entity(['id' => 1, 'name' => 'foo2', 'email' => 'foo2@bar', 'active' => 1]));
+        $collection->add(new Entity(['id' => 5, 'name' => 'foo2', 'email' => 'foo2@bar', 'active' => 1]));
+
+        $result = $collection->sort(function (Entity $firstObject, Entity $secondObject) {
+            if ($firstObject->getId() == $secondObject->getId()) {
+                return 0;
+            }
+            return ($firstObject->getId() < $secondObject->getId()) ? -1 : 1;
+        });
+        $this->assertEquals(1, $result->getFirst()->getId());
+        $this->assertEquals(5, $result->getLast()->getId());
+    }
+
+    public function testGetKeys()
+    {
+        $collection = new Collection();
+        $collection->add(new Entity(['id' => 1, 'name' => 'foo1', 'email' => 'foo1@bar', 'active' => 1]));
+        $collection->add(new Entity(['id' => 2, 'name' => 'foo2', 'email' => 'foo2@bar', 'active' => 1]));
+        $collection->add(new Entity(['id' => 3, 'name' => 'foo2', 'email' => 'foo2@bar', 'active' => 1]));
+        $collection->add(new Entity(['id' => 4, 'name' => 'foo2', 'email' => 'foo2@bar', 'active' => 1]));
+
+        $result = $collection->getKeys();
+        $this->assertEquals([0, 1, 2, 3], $result);
+    }
+
+    public function testCloneObject()
+    {
+        $collection = new Collection();
+        $entity = new Entity(['id' => 1, 'name' => 'foo1', 'email' => 'foo1@bar', 'active' => 1]);
+        $collection->add($entity);
+
+        $result = $collection->cloneObject(0);
+        $this->assertInstanceOf(Entity::class, $result);
+        $this->assertEquals($entity->toArray(), $result->toArray());
+        $this->assertNotEquals(spl_object_hash($entity), spl_object_hash($result));
+    }
+
+    public function testClone()
+    {
+        $collection = new Collection();
+        $collection->add(new Entity(['id' => 1, 'name' => 'foo1', 'email' => 'foo1@bar', 'active' => 1]));
+        $collection->add(new Entity(['id' => 2, 'name' => 'foo2', 'email' => 'foo2@bar', 'active' => 1]));
+
+        $result = clone $collection;
+        $this->assertInstanceOf(Collection::class, $result);
+        $this->assertEquals($collection->toArray(), $result->toArray());
+        $this->assertNotEquals(spl_object_hash($collection), spl_object_hash($result));
+        $this->assertEquals($collection->get(0)->toArray(), $result->get(0)->toArray());
+        $this->assertNotEquals(spl_object_hash($collection->get(0)), spl_object_hash($result->get(0)));
     }
 }

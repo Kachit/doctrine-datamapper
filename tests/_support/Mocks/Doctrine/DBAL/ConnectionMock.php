@@ -108,7 +108,8 @@ class ConnectionMock extends Connection
     {
         $this->queries[] = [
             'query' => $query,
-            'params' => $params
+            'params' => $params,
+            'types' => $types,
         ];
         $data = ($this->fetchResults) ? array_shift($this->fetchResults) : [];
         $statement = new ArrayStatement($data);
@@ -138,8 +139,30 @@ class ConnectionMock extends Connection
      */
     public function insert($tableName, array $data, array $types = array())
     {
-        $this->inserts[$tableName][] = $data;
         $this->lastInsertId++;
+        $this->inserts[] = [
+            'table' => $tableName,
+            'data' => $data,
+            'last_insert_id' => $this->lastInsertId,
+        ];
+        return $this->lastInsertId;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLastInsert(): array
+    {
+        $queries = $this->inserts;
+        return ($queries) ? array_pop($queries) : [];
+    }
+
+    /**
+     * @param null $seqName
+     * @return int|string
+     */
+    public function lastInsertId($seqName = null)
+    {
         return $this->lastInsertId;
     }
 
@@ -157,7 +180,12 @@ class ConnectionMock extends Connection
      */
     public function update($tableExpression, array $data, array $identifier, array $types = array())
     {
-        $this->updates[$tableExpression][] = $data;
+        $this->updates[] = [
+            'expression' => $tableExpression,
+            'data' => $data,
+            'identifier' => $identifier,
+            'types' => $types,
+        ];
         return 1;
     }
 
@@ -177,17 +205,21 @@ class ConnectionMock extends Connection
      */
     public function executeUpdate($query, array $params = array(), array $types = array())
     {
-        $this->updates[$query] = $params;
+        $this->updates[] = [
+            'query' => $query,
+            'params' => $params,
+            'types' => $types,
+        ];
         return 1;
     }
 
     /**
-     * @param null $seqName
-     * @return int|string
+     * @return array
      */
-    public function lastInsertId($seqName = null)
+    public function getLastUpdate(): array
     {
-        return $this->lastInsertId;
+        $queries = $this->updates;
+        return ($queries) ? array_pop($queries) : [];
     }
 
     /**
@@ -195,6 +227,12 @@ class ConnectionMock extends Connection
      */
     public function fetchColumn($statement, array $params = array(), $colnum = 0, array $types = array())
     {
+        $this->queries[] = [
+            'query' => $statement,
+            'params' => $params,
+            'types' => $types,
+            'colnum' => $colnum,
+        ];
         return 1;
     }
 
