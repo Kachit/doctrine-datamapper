@@ -15,7 +15,7 @@ class Builder implements BuilderInterface
     /**
      * @var string
      */
-    private $tableAlias;
+    protected $tableAlias;
 
     /**
      * Builder constructor.

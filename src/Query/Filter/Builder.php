@@ -15,7 +15,7 @@ class Builder
     /**
      * @var FilterInterface
      */
-    private $filter;
+    protected $filter;
 
     /**
      * Builder constructor

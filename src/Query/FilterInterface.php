@@ -42,6 +42,24 @@ interface FilterInterface
 
     /**
      * @param string $field
+     * @return array
+     */
+    public function getConditionsByField(string $field): array;
+
+    /**
+     * @param string $field
+     * @return bool
+     */
+    public function hasConditionsByField(string $field): bool;
+
+    /**
+     * @param string $field
+     * @return FilterInterface
+     */
+    public function removeConditionsByField(string $field): FilterInterface;
+
+    /**
+     * @param string $field
      * @param string $operator
      * @return bool
      */

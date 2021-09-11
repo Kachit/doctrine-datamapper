@@ -58,7 +58,7 @@ abstract class Entity implements EntityInterface, JsonSerializable
     public function getEntityField(string $field)
     {
         if (!$this->hasEntityField($field)) {
-            throw new EntityException('Property is not exists');
+            throw new EntityException(sprintf('Property "%s" is not exists', $field));
         }
         return $this->$field;
     }
@@ -72,7 +72,7 @@ abstract class Entity implements EntityInterface, JsonSerializable
     public function setEntityField(string $field, $value): EntityInterface
     {
         if (!$this->hasEntityField($field)) {
-            throw new EntityException('Property is not exists');
+            throw new EntityException(sprintf('Property "%s" is not exists', $field));
         }
         $this->$field = $value;
         return $this;

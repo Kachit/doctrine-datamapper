@@ -1,4 +1,6 @@
 <?php
+
+use Kachit\Database\Exception\EntityException;
 use Stubs\DB\Entity;
 
 class EntityTest extends \Codeception\Test\Unit {
@@ -20,5 +22,21 @@ class EntityTest extends \Codeception\Test\Unit {
         $this->assertEquals($array, $entity->toArray());
         $this->assertEquals(json_encode($array), json_encode($entity));
         $this->assertEquals(2, $entity->setId(2)->getPk());
+        $entity->setEntityField('id', 3);
+        $this->assertEquals(3, $entity->getEntityField('id'));
+    }
+
+    public function testGetEntityFieldNotExists()
+    {
+        $this->expectException(EntityException::class);
+        $this->expectExceptionMessage('Property "foo" is not exists');
+        (new Entity())->getEntityField('foo');
+    }
+
+    public function testSetEntityFieldNotExists()
+    {
+        $this->expectException(EntityException::class);
+        $this->expectExceptionMessage('Property "foo" is not exists');
+        (new Entity())->setEntityField('foo', 'bar');
     }
 }

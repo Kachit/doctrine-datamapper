@@ -40,7 +40,7 @@ class Validator implements EntityValidatorInterface
         if (!$entity instanceof $this->entityClass) {
             throw new EntityException(sprintf('Entity "%s" is not valid', $actualClass));
         }
-        if (!$entity->hasEntityField($pkField)) {
+        if (!$entity->hasEntityField((string)$pkField)) {
             throw new EntityException(sprintf('Entity "%s" has not primary key field', $actualClass));
         }
     }

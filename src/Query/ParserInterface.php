@@ -11,7 +11,8 @@ interface ParserInterface
 {
     /**
      * @param mixed $query
+     * @param FilterInterface $filter = null
      * @return FilterInterface
      */
-    public function parse($query): FilterInterface;
+    public function parse($query, FilterInterface $filter = null): FilterInterface;
 }

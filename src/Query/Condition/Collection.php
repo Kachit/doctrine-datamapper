@@ -31,9 +31,9 @@ class Collection
      * @param string $field
      * @return Condition[]
      */
-    public function getByField(string $field)
+    public function getByField(string $field): array
     {
-        return $this->data[$field];
+        return $this->data[$field] ?? [];
     }
 
     /**
@@ -43,6 +43,16 @@ class Collection
     public function hasByField(string $field): bool
     {
         return isset($this->data[$field]);
+    }
+
+    /**
+     * @param string $field
+     * @return Collection
+     */
+    public function removeByField(string $field)
+    {
+        unset($this->data[$field]);
+        return $this;
     }
 
     /**

@@ -14,37 +14,37 @@ class Filter implements FilterInterface
     /**
      * @var Collection
      */
-    private $conditions;
+    protected $conditions;
 
     /**
      * @var array
      */
-    private $fields = [];
+    protected $fields = [];
 
     /**
      * @var array
      */
-    private $orderBy = [];
+    protected $orderBy = [];
 
     /**
      * @var array
      */
-    private $groupBy = [];
+    protected $groupBy = [];
 
     /**
      * @var int
      */
-    private $limit = 0;
+    protected $limit = 0;
 
     /**
      * @var int
      */
-    private $offset = 0;
+    protected $offset = 0;
 
     /**
      * @var array
      */
-    private $includes = [];
+    protected $includes = [];
 
     /**
      * Filter constructor.
@@ -61,6 +61,34 @@ class Filter implements FilterInterface
     public function getConditions(): array
     {
         return $this->conditions->toArray();
+    }
+
+    /**
+     * @param string $field
+     * @return array
+     */
+    public function getConditionsByField(string $field): array
+    {
+        return $this->conditions->getByField($field);
+    }
+
+    /**
+     * @param string $field
+     * @return bool
+     */
+    public function hasConditionsByField(string $field): bool
+    {
+        return $this->conditions->hasByField($field);
+    }
+
+    /**
+     * @param string $field
+     * @return FilterInterface
+     */
+    public function removeConditionsByField(string $field): FilterInterface
+    {
+        $this->conditions->removeByField($field);
+        return $this;
     }
 
     /**

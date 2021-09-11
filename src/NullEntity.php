@@ -9,6 +9,11 @@ namespace Kachit\Database;
 
 class NullEntity implements EntityInterface
 {
+    public function __construct(array $data = [])
+    {
+        $this->fillFromArray($data);
+    }
+
     /**
      * @return array
      */

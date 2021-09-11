@@ -94,7 +94,7 @@ class MapperTest extends \Codeception\Test\Unit {
     public function testSaveNullEntity()
     {
         $this->expectException(EntityException::class);
-        $this->expectExceptionMessage('Entity "Kachit\Database\NullEntity" is null');
+        $this->expectExceptionMessage(sprintf('Entity "%s" is null', NullEntity::class));
         $array = [];
         $gateway = $this->getGatewayMock('fetchAll', $array);
         $entity = new NullEntity();
