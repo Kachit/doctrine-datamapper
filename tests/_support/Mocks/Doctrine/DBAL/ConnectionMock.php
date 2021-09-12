@@ -79,6 +79,7 @@ class ConnectionMock extends Connection
      */
     public function connect()
     {
+        $this->_conn = new DriverConnectionMock();
         return true;
     }
 
