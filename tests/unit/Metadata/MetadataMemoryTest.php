@@ -40,26 +40,58 @@ class MetadataMemoryTest extends \Codeception\Test\Unit
         $this->assertEquals('false', $result);
     }
 
-    public function testFilterRow()
+    public function testFilterRowForInsert()
     {
         $row = ['id' => 1, 'foo' => 'foo', 'bar' => true];
-        $result = $this->testable->filterRow($row);
+        $result = $this->testable->filterRowForInsert($row);
         $this->assertEquals($row, $result);
     }
 
-    public function testFilterRowWithFalseValue()
+    public function testFilterRowForInsertWithFalseValue()
     {
         $row = ['id' => 1, 'foo' => 'foo', 'bar' => false];
         $expected = ['id' => 1, 'foo' => 'foo', 'bar' => 'false'];
-        $result = $this->testable->filterRow($row);
+        $result = $this->testable->filterRowForInsert($row);
         $this->assertEquals($expected, $result);
     }
 
-    public function testFilterRowWithFiltered()
+    public function testFilterRowForInsertWithNullValue()
+    {
+        $row = ['id' => 1, 'foo' => 'foo', 'bar' => null];
+        $expected = ['id' => 1, 'foo' => 'foo'];
+        $result = $this->testable->filterRowForInsert($row);
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testFilterRowForInsertWithFiltered()
     {
         $row = ['id' => 1, 'foo' => 'foo', 'bar' => true, 'qwer' => 'zqwer'];
         $expected = ['id' => 1, 'foo' => 'foo', 'bar' => true];
-        $result = $this->testable->filterRow($row);
+        $result = $this->testable->filterRowForInsert($row);
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testFilterRowForUpdate()
+    {
+        $row = ['id' => 1, 'foo' => 'foo', 'bar' => true];
+        $expected = ['foo' => 'foo', 'bar' => true];
+        $result = $this->testable->filterRowForUpdate($row);
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testFilterRowForUpdateNullValues()
+    {
+        $row = ['id' => 1, 'foo' => 'foo', 'bar' => null];
+        $expected = ['foo' => 'foo', 'bar' => null];
+        $result = $this->testable->filterRowForUpdate($row);
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testFilterRowForUpdateWithFiltered()
+    {
+        $row = ['id' => 1, 'foo' => 'foo', 'bar' => null, 'r' => 'r'];
+        $expected = ['foo' => 'foo', 'bar' => null];
+        $result = $this->testable->filterRowForUpdate($row);
         $this->assertEquals($expected, $result);
     }
 }

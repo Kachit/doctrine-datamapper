@@ -117,11 +117,12 @@ class Mapper implements MapperInterface
         $pkField = $this->metaData->getPrimaryKeyColumn();
         $this->validator->validate($entity, $pkField);
         $data = $this->hydrator->extract($entity);
-        $data = $this->metaData->filterRow($data);
         $pk = $entity->getEntityField($pkField);
         if ($pk) {
+            $data = $this->metaData->filterRowForUpdate($data);
             $result = $this->gateway->updateByPk($data, $pk, $pkField);
         } else {
+            $data = $this->metaData->filterRowForInsert($data);
             $result = $this->gateway->insert($data);
             $pk = $result;
         }

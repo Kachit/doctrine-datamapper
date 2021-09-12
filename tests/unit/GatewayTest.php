@@ -249,8 +249,8 @@ class GatewayTest extends \Codeception\Test\Unit
         $this->assertCount(1, $this->connection->getUpdates());
 
         $query = $this->connection->getLastUpdate();
-        $this->assertEquals("UPDATE users t SET id = 1, name = 'name', email = 'email', active = 1", $query['query']);
-        $this->assertEquals([], $query['params']);
+        $this->assertEquals('UPDATE users t SET id = :id, name = :name, email = :email, active = :active', $query['query']);
+        $this->assertEquals(['id' => 1, 'name' => 'name', 'email' => 'email', 'active' => true], $query['params']);
     }
 
     public function testUpdateByFilter()
@@ -262,8 +262,8 @@ class GatewayTest extends \Codeception\Test\Unit
         $this->assertCount(1, $this->connection->getUpdates());
 
         $query = $this->connection->getLastUpdate();
-        $this->assertEquals("UPDATE users t SET id = 1, name = 'name', email = 'email', active = 1 WHERE t.id = :dcValue1", $query['query']);
-        $this->assertEquals(['dcValue1' => 1], $query['params']);
+        $this->assertEquals("UPDATE users t SET id = :id, name = :name, email = :email, active = :active WHERE t.id = :dcValue1", $query['query']);
+        $this->assertEquals(['id' => 1, 'name' => 'name', 'email' => 'email', 'active' => true, 'dcValue1' => 1], $query['params']);
     }
 
     public function testUpdateByPk()
@@ -274,8 +274,8 @@ class GatewayTest extends \Codeception\Test\Unit
         $this->assertCount(1, $this->connection->getUpdates());
 
         $query = $this->connection->getLastUpdate();
-        $this->assertEquals("UPDATE users t SET id = 1, name = 'name', email = 'email', active = 1 WHERE t.id = :dcValue1", $query['query']);
-        $this->assertEquals(['dcValue1' => 1], $query['params']);
+        $this->assertEquals("UPDATE users t SET id = :id, name = :name, email = :email, active = :active WHERE t.id = :dcValue1", $query['query']);
+        $this->assertEquals(['id' => 1, 'name' => 'name', 'email' => 'email', 'active' => true, 'dcValue1' => 1], $query['params']);
     }
 
     public function testDelete()

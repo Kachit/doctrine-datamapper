@@ -189,7 +189,8 @@ abstract class Gateway implements GatewayInterface
             ->update($this->getTableName(), $this->getTableAlias())
         ;
         foreach ($data as $column => $value) {
-            $queryBuilder->set($column, $this->getConnection()->quote($value));
+            $queryBuilder->set($column, ':' . $column);
+            $queryBuilder->setParameter($column, $value);
         }
         return (int)$queryBuilder->execute();
     }

@@ -46,7 +46,7 @@ abstract class AbstractMetadata implements MetaDataInterface
      * @param array $data
      * @return array
      */
-    public function filterRow(array $data): array
+    public function filterRowForInsert(array $data): array
     {
         $columns = $this->getColumns();
         foreach ($data as $key => $value) {
@@ -57,6 +57,34 @@ abstract class AbstractMetadata implements MetaDataInterface
             }
         }
         return $data;
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     */
+    public function filterRowForUpdate(array $data): array
+    {
+        $columns = $this->getColumns();
+        foreach ($data as $key => $value) {
+            if (!in_array($key, $columns) || ($key === $this->getPrimaryKeyColumn())) {
+                unset($data[$key]);
+            } else {
+                $data[$key] = $this->convertValue($value);
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     * @deprecated
+     * @codeCoverageIgnore
+     */
+    public function filterRow(array $data): array
+    {
+        return $this->filterRowForInsert($data);
     }
 
     /**

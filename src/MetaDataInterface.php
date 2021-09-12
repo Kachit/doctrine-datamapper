@@ -22,8 +22,14 @@ interface MetaDataInterface
     public function getColumns(): array;
 
     /**
-     * @param array $array
+     * @param array $data
      * @return array
      */
-    public function filterRow(array $array): array;
+    public function filterRowForInsert(array $data): array;
+
+    /**
+     * @param array $data
+     * @return array
+     */
+    public function filterRowForUpdate(array $data): array;
 }

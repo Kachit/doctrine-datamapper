@@ -18,6 +18,6 @@ class GatewaySoftDelete extends Gateway
      */
     protected function getSoftDeleteCondition(): array
     {
-        return ['active' => 'false'];
+        return ['active' => false];
     }
 }

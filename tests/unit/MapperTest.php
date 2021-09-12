@@ -221,8 +221,8 @@ class MapperTest extends \Codeception\Test\Unit {
         $this->assertEquals(['dcValue1' => 1], $query['params']);
 
         $query = $this->connection->getLastUpdate();
-        $this->assertEquals("UPDATE users t SET id = 1, name = 'name', email = 'email', active = 1 WHERE t.id = :dcValue1", $query['query']);
-        $this->assertEquals(['dcValue1' => 1], $query['params']);
+        $this->assertEquals("UPDATE users t SET name = :name, email = :email, active = :active WHERE t.id = :dcValue1", $query['query']);
+        $this->assertEquals(['name' => 'name', 'email' => 'email', 'active' => true, 'dcValue1' => 1], $query['params']);
     }
 
     public function testSyncEntity()

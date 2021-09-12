@@ -29,7 +29,7 @@ class GatewaySoftDeleteTest extends \Codeception\Test\Unit
     public function testGetSoftDeleteCondition()
     {
         $result = $this->tester->callNonPublicMethod($this->testable, 'getSoftDeleteCondition');
-        $this->assertEquals(['active' => 'false'], $result);
+        $this->assertEquals(['active' => false], $result);
     }
 
     public function testDelete()
@@ -39,7 +39,7 @@ class GatewaySoftDeleteTest extends \Codeception\Test\Unit
         $this->assertCount(1, $this->connection->getUpdates());
 
         $query = $this->connection->getLastUpdate();
-        $this->assertEquals("UPDATE users t SET active = 'false'", $query['query']);
-        $this->assertEquals([], $query['params']);
+        $this->assertEquals('UPDATE users t SET active = :active', $query['query']);
+        $this->assertEquals(['active' => false], $query['params']);
     }
 }
