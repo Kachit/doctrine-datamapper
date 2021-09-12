@@ -3,7 +3,7 @@
 use Kachit\Database\Exception\EntityException;
 use Kachit\Database\NullEntity;
 use Stubs\DB\Entity as StubEntity;
-use Kachit\Database\Validator as EntityValidator;
+use Kachit\Database\Entity\Validator as EntityValidator;
 
 class EntityValidatorTest extends \Codeception\Test\Unit {
 

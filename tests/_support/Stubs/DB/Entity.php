@@ -105,7 +105,7 @@ class Entity extends AbstractEntity
     /**
      * @return int
      */
-    public function getActive()
+    public function isActive()
     {
         return $this->active;
     }

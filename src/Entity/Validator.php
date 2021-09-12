@@ -1,12 +1,14 @@
 <?php
 /**
- * Class ValidatorInterface
+ * Class EntityValidatorInterface
  *
- * @package Kachit\Database
+ * @package Kachit\Database\Entity
  * @author Kachit
  */
-namespace Kachit\Database;
+namespace Kachit\Database\Entity;
 
+use Kachit\Database\EntityInterface;
+use Kachit\Database\EntityValidatorInterface;
 use Kachit\Database\Exception\EntityException;
 
 class Validator implements EntityValidatorInterface

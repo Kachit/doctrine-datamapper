@@ -156,6 +156,16 @@ interface FilterInterface
     public function clear(): FilterInterface;
 
     /**
+     * @return string
+     */
+    public function getError();
+
+    /**
+     * @return bool
+     */
+    public function isValid(): bool;
+
+    /**
      * @return bool
      */
     public function isEmpty(): bool;

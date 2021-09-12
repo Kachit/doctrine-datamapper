@@ -15,7 +15,7 @@ use Kachit\Database\EntityInterface;
 use Kachit\Database\HydratorInterface;
 use Kachit\Database\Hydrator;
 use Kachit\Database\EntityValidatorInterface;
-use Kachit\Database\Validator;
+use Kachit\Database\Entity\Validator;
 use Kachit\Database\Mocks\Doctrine\DBAL\ConnectionMock;
 
 class MapperTest extends \Codeception\Test\Unit {
@@ -149,7 +149,6 @@ class MapperTest extends \Codeception\Test\Unit {
 
     public function testCount()
     {
-        $expected = ['id' => 1, 'name' => 'name', 'email' => 'email', 'active' => true];
         $this->connection->addFetchResult([[1]]);
 
         $result = $this->testable->count();
@@ -185,6 +184,86 @@ class MapperTest extends \Codeception\Test\Unit {
         $query = $this->connection->getLastUpdate();
         $this->assertEquals('DELETE FROM users WHERE id = :dcValue1', $query['query']);
         $this->assertEquals(['dcValue1' => 1], $query['params']);
+    }
+
+    public function testSaveInsert()
+    {
+        $expected = ['id' => 1, 'name' => 'name', 'email' => 'email', 'active' => true];
+        $this->connection->addFetchResult([[]]);
+
+        $entity = new Entity(['name' => 'name', 'email' => 'email', 'active' => true]);
+        $result = $this->testable->save($entity);
+        $this->assertTrue($result);
+        $this->assertEquals($expected, $entity->toArray());
+        //query
+        $query = $this->connection->getLastQuery();
+        $this->assertEquals('SELECT t.* FROM users t WHERE t.id = :dcValue1', $query['query']);
+        $this->assertEquals(['dcValue1' => 1], $query['params']);
+
+        $query = $this->connection->getLastInsert();
+        $this->assertEquals('users', $query['table']);
+        $this->assertEquals(['name' => 'name', 'email' => 'email', 'active' => true], $query['data']);
+        $this->assertEquals(1, $query['last_insert_id']);
+    }
+
+    public function testSaveUpdate()
+    {
+        $expected = ['id' => 1, 'name' => 'name', 'email' => 'email', 'active' => true];
+        $this->connection->addFetchResult([[]]);
+
+        $entity = new Entity(['id' => 1, 'name' => 'name', 'email' => 'email', 'active' => true]);
+        $result = $this->testable->save($entity);
+        $this->assertTrue($result);
+        $this->assertEquals($expected, $entity->toArray());
+        //query
+        $query = $this->connection->getLastQuery();
+        $this->assertEquals('SELECT t.* FROM users t WHERE t.id = :dcValue1', $query['query']);
+        $this->assertEquals(['dcValue1' => 1], $query['params']);
+
+        $query = $this->connection->getLastUpdate();
+        $this->assertEquals("UPDATE users t SET id = 1, name = 'name', email = 'email', active = 1 WHERE t.id = :dcValue1", $query['query']);
+        $this->assertEquals(['dcValue1' => 1], $query['params']);
+    }
+
+    public function testSyncEntity()
+    {
+        $expected = ['id' => 1, 'name' => 'name', 'email' => 'email', 'active' => true];
+        $this->connection->addFetchResult([$expected]);
+
+        $entity = (new Entity($expected))->setActive(false);
+        $this->tester->callNonPublicMethod($this->testable, 'syncEntity', [$entity]);
+        $this->assertInstanceOf(Entity::class, $entity);
+        $this->assertInstanceOf(EntityInterface::class, $entity);
+        $this->assertEquals($expected, $entity->toArray());
+        $this->assertTrue($entity->isActive());
+        //query
+        $query = $this->connection->getLastQuery();
+        $this->assertEquals('SELECT t.* FROM users t WHERE t.id = :dcValue1', $query['query']);
+        $this->assertEquals(['dcValue1' => 1], $query['params']);
+    }
+
+    public function testHydrateEntity()
+    {
+        $expected = ['id' => 1, 'name' => 'name', 'email' => 'email', 'active' => true];
+        $entity = $this->tester->callNonPublicProperty($this->testable, 'entity');
+        /* @var Entity $result */
+        $result = $this->tester->callNonPublicMethod($this->testable, 'hydrateEntity', [$expected]);
+        $this->assertInstanceOf(Entity::class, $result);
+        $this->assertInstanceOf(EntityInterface::class, $result);
+        $this->assertEquals($expected, $result->toArray());
+        $this->assertNotEquals(spl_object_hash($entity), spl_object_hash($result));
+    }
+
+    public function testHydrateCollection()
+    {
+        $expected = [['id' => 1, 'name' => 'name', 'email' => 'email', 'active' => true]];
+        $entity = $this->tester->callNonPublicProperty($this->testable, 'collection');
+        /* @var Collection $result */
+        $result = $this->tester->callNonPublicMethod($this->testable, 'hydrateCollection', [$expected]);
+        $this->assertInstanceOf(Collection::class, $result);
+        $this->assertInstanceOf(CollectionInterface::class, $result);
+        $this->assertEquals($expected[0], $result->getFirst()->toArray());
+        $this->assertNotEquals(spl_object_hash($entity), spl_object_hash($result));
     }
 
     public function testCreateDefaultMetadata()

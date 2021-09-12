@@ -79,6 +79,14 @@ abstract class Entity implements EntityInterface, JsonSerializable
     }
 
     /**
+     * @return array
+     */
+    public function getEntityFields(): array
+    {
+        return array_keys($this->toArray());
+    }
+
+    /**
      * Specify data which should be serialized to JSON
      * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
      * @return mixed data which can be serialized by <b>json_encode</b>,

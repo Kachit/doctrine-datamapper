@@ -149,4 +149,10 @@ class QueryFilterTest extends \Codeception\Test\Unit {
         $this->assertEquals(['foo', 'bar'], $this->testable->getIncludes());
         $this->assertTrue($this->testable->isIncluded('bar'));
     }
+
+    public function testIsValid()
+    {
+        $this->assertTrue($this->testable->isValid());
+        $this->assertEmpty($this->testable->getError());
+    }
 }

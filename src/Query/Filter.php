@@ -47,6 +47,11 @@ class Filter implements FilterInterface
     protected $includes = [];
 
     /**
+     * @var string
+     */
+    protected $error;
+
+    /**
      * Filter constructor.
      * @param Collection|null $conditions
      */
@@ -293,6 +298,14 @@ class Filter implements FilterInterface
     }
 
     /**
+     * @return string
+     */
+    public function getError()
+    {
+        return $this->error;
+    }
+
+    /**
      * @return FilterInterface
      */
     public function clear(): FilterInterface
@@ -303,7 +316,16 @@ class Filter implements FilterInterface
         $this->includes = [];
         $this->limit = 0;
         $this->offset = 0;
+        $this->error = null;
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isValid(): bool
+    {
+        return true;
     }
 
     /**

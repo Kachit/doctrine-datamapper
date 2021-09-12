@@ -36,4 +36,10 @@ class EntityTest extends \Codeception\Test\Unit {
         $this->expectExceptionMessage('Property "foo" is not exists');
         (new Entity())->setEntityField('foo', 'bar');
     }
+
+    public function testGetEntityFields()
+    {
+        $result = (new Entity())->getEntityFields();
+        $this->assertEquals(['id', 'name', 'email', 'active'], $result);
+    }
 }

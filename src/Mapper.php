@@ -7,6 +7,7 @@
  */
 namespace Kachit\Database;
 
+use Kachit\Database\Entity\Validator;
 use Kachit\Database\Exception\MapperException;
 use Kachit\Database\MetaData\Database;
 use Kachit\Database\Query\FilterInterface;
@@ -51,15 +52,16 @@ class Mapper implements MapperInterface
      * @param EntityInterface $entity
      * @param HydratorInterface|null $hydrator
      * @param MetaDataInterface|null $metadata
+     * @param CollectionInterface|null $collection
      */
-    public function __construct(GatewayInterface $gateway, EntityInterface $entity, HydratorInterface $hydrator = null, MetaDataInterface $metadata = null)
+    public function __construct(GatewayInterface $gateway, EntityInterface $entity, HydratorInterface $hydrator = null, MetaDataInterface $metadata = null, CollectionInterface $collection = null)
     {
         $this->gateway = $gateway;
         $this->entity = $entity;
-        $this->hydrator = ($hydrator) ? $hydrator : $this->createDefaultHydrator();
-        $this->metaData = ($metadata) ?? $this->createDefaultMetadata();
+        $this->hydrator = $hydrator ?? $this->createDefaultHydrator();
+        $this->metaData = $metadata ?? $this->createDefaultMetadata();
+        $this->collection = $collection ?? $this->createDefaultCollection();
         $this->validator = $this->createDefaultValidator();
-        $this->collection = $this->createDefaultCollection();
     }
 
     /**
