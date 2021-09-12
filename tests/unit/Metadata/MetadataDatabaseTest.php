@@ -30,26 +30,18 @@ class MetadataDatabaseTest extends \Codeception\Test\Unit
     {
         $this->connection->addFetchResult([
             [
-                'field' => 'id',
-                'pri' => 't',
+                'indrelid' => 1,
+                'idkey' => 1,
             ],
             [
-                'field' => 'name',
-                'pri' => '',
-            ],
-            [
-                'field' => 'email',
-                'pri' => '',
-            ],
-            [
-                'field' => 'active',
-                'pri' => '',
+                'indrelid' => 2,
+                'idkey' => 2,
             ],
         ]);
         $this->assertEquals('id', $this->testable->getPrimaryKeyColumn());
     }
 
-    protected function testGetColumns()
+    public function testGetColumns()
     {
         $this->connection->addFetchResult([
             [

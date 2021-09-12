@@ -80,6 +80,25 @@ class DatabasePlatformMock extends AbstractPlatform
     }
 
     /**
+     * {@inheritDoc}
+     */
+    protected function getReservedKeywordsClass()
+    {
+        return 'Doctrine\DBAL\Platforms\Keywords\PostgreSQLKeywords';
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @license New BSD License
+     * @link http://ezcomponents.org/docs/api/trunk/DatabaseSchema/ezcDbSchemaPgsqlReader.html
+     */
+    public function getListTableIndexesSQL($table, $currentDatabase = null)
+    {
+        return '';
+    }
+
+    /**
      * @param string      $table
      * @param string|null $database
      *

@@ -44,7 +44,7 @@ class Builder implements BuilderInterface
         }
         if ($filter->getFields()) {
             $callback = function($element) {
-                return $this->tableAlias . '.' . $element;
+                return $this->addTableAliasToField($element, $this->tableAlias);
             };
             $queryBuilder->addSelect(array_map($callback, $filter->getFields()));
         }
@@ -54,10 +54,10 @@ class Builder implements BuilderInterface
         }
 
         foreach ($filter->getOrderBy() as $field => $order) {
-            $queryBuilder->addOrderBy($this->tableAlias . '.' . $field, $order);
+            $queryBuilder->addOrderBy($this->addTableAliasToField($field, $this->tableAlias), $order);
         }
         foreach ($filter->getGroupBy() as $field) {
-            $queryBuilder->addGroupBy($this->tableAlias . '.' . $field);
+            $queryBuilder->addGroupBy($this->addTableAliasToField($field, $this->tableAlias));
         }
     }
 
@@ -86,7 +86,8 @@ class Builder implements BuilderInterface
 
         $expr = $queryBuilder->expr();
         $operator = $condition->getOperator();
-        $field = ($queryBuilder->getType() !== QueryBuilder::DELETE && $tableAlias) ? $tableAlias . '.' . $condition->getField() : $condition->getField();
+        $field = $condition->getField();
+        $field = ($queryBuilder->getType() !== QueryBuilder::DELETE) ? $this->addTableAliasToField($field, $tableAlias) : $field;
         $type = ($condition->isList()) ? Connection::PARAM_STR_ARRAY : null;
         $value = $condition->getValue();
 
@@ -118,5 +119,15 @@ class Builder implements BuilderInterface
         $queryBuilder
             ->andWhere($where)
         ;
+    }
+
+    /**
+     * @param string $field
+     * @param string $tableAlias
+     * @return string
+     */
+    protected function addTableAliasToField(string $field, $tableAlias): string
+    {
+        return ($tableAlias && !strpos($field, '.')) ? $tableAlias . '.' . $field : $field;
     }
 }

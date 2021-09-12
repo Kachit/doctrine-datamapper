@@ -2,7 +2,7 @@
 use Kachit\Database\Query\Builder;
 use Kachit\Database\Query\Filter\Builder as FilterBuilder;
 use Doctrine\DBAL\Query\QueryBuilder;
-use Mocks\DBALConnectionMock;
+use Kachit\Database\Mocks\Doctrine\DBAL\ConnectionMock;
 
 class QueryBuilderTest extends \Codeception\Test\Unit {
 
@@ -26,11 +26,18 @@ class QueryBuilderTest extends \Codeception\Test\Unit {
      */
     protected $fb;
 
+    /**
+     * @var ConnectionMock
+     */
+    protected $connection;
+
     protected function _before()
     {
         $this->testable = new Builder('t');
         $this->fb = new FilterBuilder();
-        $this->qb = new QueryBuilder((new DBALConnectionMock())->createObject()->withExpressionBuilder()->get());
+        $this->connection = $this->tester->mockDatabase();
+        $this->qb = new QueryBuilder($this->connection);
+        $this->connection->reset();
     }
 
     public function testBuilderEmpty()
@@ -41,12 +48,12 @@ class QueryBuilderTest extends \Codeception\Test\Unit {
         $this->assertEmpty($queryBuilder->getParameters());
     }
 
-    protected function testBuilderLimitOffset()
+    public function testBuilderLimitOffset()
     {
         $filter = $this->fb->limit(10)->offset(10)->getFilter();
         $queryBuilder = $this->qb->select('*')->from('table', 't');
         $this->testable->build($queryBuilder, $filter);
-        $this->assertEquals('SELECT * FROM table t', $queryBuilder->getSQL());
+        $this->assertEquals('SELECT * FROM table t LIMIT 10 OFFSET 10', $queryBuilder->getSQL());
         $this->assertEmpty($queryBuilder->getParameters());
     }
 
@@ -56,6 +63,15 @@ class QueryBuilderTest extends \Codeception\Test\Unit {
         $queryBuilder = $this->qb->select('*')->from('table', 't');
         $this->testable->build($queryBuilder, $filter);
         $this->assertEquals('SELECT * FROM table t ORDER BY t.foo asc', $queryBuilder->getSQL());
+        $this->assertEmpty($queryBuilder->getParameters());
+    }
+
+    public function testBuilderOrderByDotted()
+    {
+        $filter = $this->fb->orderBy('p.foo')->getFilter();
+        $queryBuilder = $this->qb->select('*')->from('table', 't');
+        $this->testable->build($queryBuilder, $filter);
+        $this->assertEquals('SELECT * FROM table t ORDER BY p.foo asc', $queryBuilder->getSQL());
         $this->assertEmpty($queryBuilder->getParameters());
     }
 
@@ -74,6 +90,15 @@ class QueryBuilderTest extends \Codeception\Test\Unit {
         $queryBuilder = $this->qb->select('*')->from('table', 't');
         $this->testable->build($queryBuilder, $filter);
         $this->assertEquals('SELECT * FROM table t GROUP BY t.foo', $queryBuilder->getSQL());
+        $this->assertEmpty($queryBuilder->getParameters());
+    }
+
+    public function testBuilderGroupByDotted()
+    {
+        $filter = $this->fb->groupBy('p.foo')->getFilter();
+        $queryBuilder = $this->qb->select('*')->from('table', 't');
+        $this->testable->build($queryBuilder, $filter);
+        $this->assertEquals('SELECT * FROM table t GROUP BY p.foo', $queryBuilder->getSQL());
         $this->assertEmpty($queryBuilder->getParameters());
     }
 
@@ -99,6 +124,19 @@ class QueryBuilderTest extends \Codeception\Test\Unit {
         $this->assertEquals($expected, $queryBuilder->getParameters());
     }
 
+    public function testBuildSimpleSelectDotted()
+    {
+        $expected = [
+            'dcValue1' => 'zwer',
+            'dcValue2' => [1, 2, 3]
+        ];
+        $queryBuilder = $this->qb->select('*')->from('table', 't');
+        $filter = $this->fb->eq('p.cwer', 'zwer')->in('f.foo', [1, 2, 3])->getFilter();
+        $this->testable->build($queryBuilder, $filter);
+        $this->assertEquals('SELECT * FROM table t WHERE (p.cwer = :dcValue1) AND (f.foo IN (:dcValue2))', $queryBuilder->getSQL());
+        $this->assertEquals($expected, $queryBuilder->getParameters());
+    }
+
     public function testBuildSimpleSelectWithEmptyFilter()
     {
         $expected = [];
@@ -119,6 +157,16 @@ class QueryBuilderTest extends \Codeception\Test\Unit {
         $this->assertEquals($expected, $queryBuilder->getParameters());
     }
 
+    public function testBuildQueryWithSelectedFieldsWithDotted()
+    {
+        $expected = [];
+        $queryBuilder = $this->qb->select()->from('table', 't');
+        $filter = $this->fb->getFilter()->setFields(['id', 'name', 'p.id']);
+        $this->testable->build($queryBuilder, $filter);
+        $this->assertEquals('SELECT t.id, t.name, p.id FROM table t', $queryBuilder->getSQL());
+        $this->assertEquals($expected, $queryBuilder->getParameters());
+    }
+
     public function testBuildQueryWithBooleanCondition()
     {
         $expected = ['dcValue1' => true];
@@ -126,6 +174,26 @@ class QueryBuilderTest extends \Codeception\Test\Unit {
         $filter = $this->fb->eq('active', true)->getFilter();
         $this->testable->build($queryBuilder, $filter);
         $this->assertEquals('SELECT * FROM table t WHERE t.active = :dcValue1', $queryBuilder->getSQL());
+        $this->assertEquals($expected, $queryBuilder->getParameters());
+    }
+
+    public function testBuildQueryWithNullCondition()
+    {
+        $expected = [];
+        $queryBuilder = $this->qb->select('*')->from('table', 't');
+        $filter = $this->fb->isNull('active')->getFilter();
+        $this->testable->build($queryBuilder, $filter);
+        $this->assertEquals('SELECT * FROM table t WHERE t.active  IS NULL ', $queryBuilder->getSQL());
+        $this->assertEquals($expected, $queryBuilder->getParameters());
+    }
+
+    public function testBuildQueryWithNotNullCondition()
+    {
+        $expected = [];
+        $queryBuilder = $this->qb->select('*')->from('table', 't');
+        $filter = $this->fb->isNotNull('active')->getFilter();
+        $this->testable->build($queryBuilder, $filter);
+        $this->assertEquals('SELECT * FROM table t WHERE t.active  IS NOT NULL ', $queryBuilder->getSQL());
         $this->assertEquals($expected, $queryBuilder->getParameters());
     }
 }
