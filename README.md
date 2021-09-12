@@ -1,7 +1,7 @@
 Simple doctrine datamapper
 ===========
-[![License](https://poser.pugx.org/leaphly/cart-bundle/license.svg)](https://packagist.org/packages/leaphly/cart-bundle)
-[![Build Status](https://app.travis-ci.com/Kachit/doctrine-datamapper.svg?branch=master)](https://travis-ci.com/Kachit/doctrine-datamapper)
+[![License](https://poser.pugx.org/leaphly/cart-bundle/license.svg)](https://packagist.org/packages/kachit/doctrine-datamapper)
+[![Build Status](https://app.travis-ci.com/Kachit/doctrine-datamapper.svg?branch=master)](https://app.travis-ci.com/github/Kachit/doctrine-datamapper)
 [![codecov](https://codecov.io/gh/Kachit/doctrine-datamapper/branch/master/graph/badge.svg?token=SVNIII4H2W)](https://codecov.io/gh/Kachit/doctrine-datamapper)
 [![Latest Stable Version](https://poser.pugx.org/kachit/doctrine-datamapper/v/stable)](https://packagist.org/packages/kachit/doctrine-datamapper)
 [![Total Downloads](https://poser.pugx.org/kachit/doctrine-datamapper/downloads)](https://packagist.org/packages/kachit/doctrine-datamapper)
