@@ -8,13 +8,20 @@
 namespace Kachit\Database\MetaData;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Schema\Column;
+use Doctrine\DBAL\Schema\Index;
 
 class Database extends AbstractMetadata
 {
     /**
      * @var bool
      */
-    private $initialized = false;
+    private $initialized_primary_key = false;
+
+    /**
+     * @var bool
+     */
+    private $initialized_columns = false;
 
     /**
      * @var Connection
@@ -38,20 +45,31 @@ class Database extends AbstractMetadata
      */
     public function getColumns(): array
     {
-        $this->initialize();
-        return parent::getColumns();
+        $this->initializeColumns();
+        return array_keys(parent::getColumns());
     }
 
     /**
      * @return void
      */
-    protected function initialize()
+    protected function initializeColumns()
     {
-        if (empty($this->initialized)) {
-            $sql = $this->connection->getDatabasePlatform()->getListTableColumnsSQL($this->tableName);
-            $columns = $this->connection->query($sql)->fetchAll();
+        if (empty($this->initialized_columns)) {
+            $columns = $this->connection->getSchemaManager()->listTableColumns($this->tableName);
             $this->extractColumnsData($columns);
-            $this->initialized = true;
+            $this->initialized_columns = true;
+        }
+    }
+
+    /**
+     * @return void
+     */
+    protected function initializePrimaryKey()
+    {
+        if (empty($this->initialized_primary_key)) {
+            $indexes = $this->connection->getSchemaManager()->listTableIndexes($this->tableName);
+            $this->extractIndexesData($indexes);
+            $this->initialized_primary_key = true;
         }
     }
 
@@ -60,47 +78,31 @@ class Database extends AbstractMetadata
      */
     public function getPrimaryKeyColumn(): string
     {
-        $this->initialize();
+        $this->initializePrimaryKey();
         return parent::getPrimaryKeyColumn();
     }
 
     /**
-     * @param array $columns
+     * @param Column[] $columns
      */
     private function extractColumnsData(array $columns)
     {
-        $driverName = $this->connection->getDriver()->getName();
-        $columnsMap = $this->getDriversColumnsMap()[$driverName];
         foreach ($columns as $column) {
-            $columnName = $columnsMap['columnNameField'];
-            $this->columns[] = $column[$columnName];
-            if (empty($this->primaryKey)) {
-                if (isset($column[$columnsMap['columnNamePrimaryKeyField']]) &&
-                    $column[$columnsMap['columnNamePrimaryKeyField']] == $columnsMap['columnValuePrimaryKeyField']) {
-                    $this->primaryKey = $column[$columnName];
-                }
-            }
+            $this->columns[$column->getName()] = $column;
         }
     }
 
     /**
-     * @return array
+     * @param Index[] $indexes
      */
-    private function getDriversColumnsMap(): array
+    private function extractIndexesData(array $indexes)
     {
-        return [
-            'pdo_pgsql' => [
-                'columnNameField' => 'field',
-                'columnValueField' => 'default',
-                'columnNamePrimaryKeyField' => 'pri',
-                'columnValuePrimaryKeyField' => 't',
-            ],
-            'pdo_mysql' => [
-                'columnNameField' => 'Field',
-                'columnValueField' => 'Default',
-                'columnNamePrimaryKeyField' => 'Key',
-                'columnValuePrimaryKeyField' => 'PRI',
-            ],
-        ];
+        foreach ($indexes as $index) {
+            if ($index->isPrimary()) {
+                $columns = $index->getColumns();
+                $this->primaryKey = array_shift($columns);
+                break;
+            }
+        }
     }
 }

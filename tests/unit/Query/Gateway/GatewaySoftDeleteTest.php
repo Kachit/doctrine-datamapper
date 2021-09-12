@@ -1,7 +1,5 @@
 <?php
 use Stubs\DB\GatewaySoftDelete;
-use Kachit\Database\Query\Filter;
-use Kachit\Database\Query\Filter\Builder;
 use Kachit\Database\Mocks\Doctrine\DBAL\ConnectionMock;
 
 class GatewaySoftDeleteTest extends \Codeception\Test\Unit
