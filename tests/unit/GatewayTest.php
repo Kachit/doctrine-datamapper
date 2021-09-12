@@ -3,6 +3,8 @@ use Stubs\DB\Gateway;
 use Kachit\Database\Query\Filter;
 use Kachit\Database\Query\Filter\Builder;
 use Kachit\Database\Mocks\Doctrine\DBAL\ConnectionMock;
+use Kachit\Database\Gateway\Configuration;
+use Doctrine\Common\Cache\ArrayCache;
 
 class GatewayTest extends \Codeception\Test\Unit
 {
@@ -23,8 +25,10 @@ class GatewayTest extends \Codeception\Test\Unit
 
     protected function _before()
     {
+        $configuration = (new Configuration())->setCacheKey('foo')->setCacheLifeTime(10);
         $this->connection = $this->tester->mockDatabase();
-        $this->testable = new Gateway($this->connection);
+        $this->connection->getConfiguration()->setResultCacheImpl(new ArrayCache());
+        $this->testable = new Gateway($this->connection, $configuration);
         $this->connection->reset();
     }
 
