@@ -63,13 +63,12 @@ class Builder implements BuilderInterface
 
     /**
      * @param QueryBuilder $queryBuilder
-     * @param array $conditions
+     * @param Condition[] $conditions
      * @param string $tableAlias
      */
     public function buildQueryConditions(QueryBuilder $queryBuilder, array $conditions, $tableAlias = null)
     {
         $tableAlias = $tableAlias ? $tableAlias : $this->tableAlias;
-        /* @var Condition $condition */
         foreach ($conditions as $condition) {
             $this->buildSingleCondition($queryBuilder, $condition, $tableAlias);
         }

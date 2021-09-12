@@ -11,17 +11,35 @@ Simple datamapper powered by doctrine2
 ```php
 <?php
 //create database connection
-$params = [];
+$params = [
+    'driver' => 'pdo_pgsql',
+    'host' => '127.0.0.1',
+    'port' => 5432,
+    'dbname' => 'db',
+    'user' => 'postgres',
+    'password' => '',
+];
 $connection = Doctrine\DBAL\DriverManager::getConnection($params);
 ```
 
 ```php
 <?php
 //create your table gateway
-$gateway = new Your\Project\Models\TableGateway($connection);
+class FooGateway extends Kachit\Database\Gateway
+{
+    /**
+     * @return string
+     */
+    public function getTableName(): string
+    {
+        return 'users';
+    }
+}
+
+$gateway = new FooGateway($connection);
 
 //fetch by PK
-$row = $gateway->fetchByPk($id);
+$row = $gateway->fetchByPk(1);
 
 //fetch all without filter
 $rows = $gateway->fetchAll();
@@ -34,9 +52,15 @@ $rows = $gateway->fetchAll($filter);
 
 ```php
 <?php
+//create
+class FooEntity extends Kachit\Database\Entity
+{
+    protected $id;
+}
 //create mapper
-$entity = new Your\Project\Models\Entity();
-$mapper = new Your\Project\Models\Mapper($gateway, $entity);
+$gateway = new FooGateway();
+$entity = new FooEntity();
+$mapper = new Kachit\Database\Mapper($gateway, $entity);
 
 //fetch by PK
 $entity = $mapper->fetchByPk(1);
