@@ -52,10 +52,31 @@ $rows = $gateway->fetchAll($filter);
 
 ```php
 <?php
-//create
+//create entity
 class FooEntity extends Kachit\Database\Entity
 {
+    /**
+     * @var int
+     */
     protected $id;
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     * @return FooEntity
+     */
+    public function setId(int $id)
+    {
+        $this->id = $id;
+        return $this;
+    }
 }
 //create mapper
 $gateway = new FooGateway();
